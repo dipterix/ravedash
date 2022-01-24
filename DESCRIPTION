@@ -1,0 +1,21 @@
+Package: ravedash
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Authors@R: c(
+    person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph"))
+    )
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    raveio (>= 0.0.5.9000),
+    shidashi (>= 0.1.0),
+    shiny (>= 1.7.1)
+Remotes: 
+    dipterix/shidashi,
+    beauchamplab/raveio,
+    rstudio/shiny
+RoxygenNote: 7.1.2
