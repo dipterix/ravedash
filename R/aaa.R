@@ -1,5 +1,12 @@
 #' @importFrom shidashi render
+#' @importFrom dipsaus %?<-%
 NULL
+
+stopifnot2 <- function (..., msg = "Condition not satisfied") {
+  if (!all(c(...))) {
+    stop(msg)
+  }
+}
 
 rand_string <- function (length = 20) {
   paste(sample(c(letters, LETTERS, 0:9), length, replace = TRUE),

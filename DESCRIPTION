@@ -1,21 +1,34 @@
 Package: ravedash
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Dashboard 
 Version: 0.1.0
 Authors@R: c(
     person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph"))
     )
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
+    dipsaus (>= 0.2.0),
+    logger (>= 0.2.2),
     raveio (>= 0.0.5.9000),
     shidashi (>= 0.1.0),
-    shiny (>= 1.7.1)
-Remotes: 
+    shiny (>= 1.7.1),
+    shinyWidgets (>= 0.6.3),
+    threeBrain (>= 0.2.4)
+Suggests: 
+    fastmap (>= 1.1.0),
+    crayon (>= 1.4.2)
+Remotes:  
     dipterix/shidashi,
     beauchamplab/raveio,
-    rstudio/shiny
+    rstudio/shiny,
+    dipterix/dipsaus,
+    r-lib/fastmap,
+    daroczig/logger,
+    dreamRs/shinyWidgets,
+    dipterix/threeBrain,
+    r-lib/crayon
 RoxygenNote: 7.1.2

@@ -317,6 +317,8 @@ presets_loader_subject <- function(
 
 }
 
+
+
 #' @export
 presets_loader_epoch <- function(
   id = "loader_epoch_name",
@@ -375,7 +377,7 @@ presets_loader_epoch <- function(
       ravedash::flex_item2(
         shinyWidgets::prettyCheckbox(
           inputId = paste0(id, "_default"),
-          label = "Set this epoch as the default",
+          label = "Set as the default",
           status = "success",
           shape = "square",
           animation = "smooth"
@@ -388,6 +390,8 @@ presets_loader_epoch <- function(
     loader_subject <- comp$get_dependent_component(loader_subject_id)
 
     shiny::observe({
+      open_loader <- watch_loader_opened(session = session)
+      if(!open_loader){ return() }
       if(!loader_subject$sv$is_valid()){ return() }
       project_name <- loader_project$current_value
       subject_code <- loader_subject$current_value
@@ -403,6 +407,19 @@ presets_loader_epoch <- function(
 
       epoch_choices <- subject$epoch_names
 
+      default_epochname <- subject$get_default("epoch_name")
+      if(length(default_epochname)){
+        default_epochname <- default_epochname[[1]]
+        shinyWidgets::updatePrettyCheckbox(
+          session, inputId = paste0(id, "_default"),
+          label = sprintf("Set as the default (current: %s)", default_epochname)
+        )
+      } else {
+        shinyWidgets::updatePrettyCheckbox(
+          session, inputId = paste0(id, "_default"),
+          label = "Set as the default"
+        )
+      }
       epoch_name <- comp$get_settings_value(
         default = subject$get_default("epoch_name"),
         constraint = epoch_choices,
@@ -418,6 +435,7 @@ presets_loader_epoch <- function(
       shiny::bindEvent(
         input[[loader_project$id]],
         input[[loader_subject$id]],
+        watch_loader_opened(session = session),
         ignoreNULL = TRUE
       )
 
@@ -452,7 +470,7 @@ presets_loader_reference <- function(
       ),
       shinyWidgets::prettyCheckbox(
         inputId = paste0(id, "_default"),
-        label = "Set this reference as the default",
+        label = "Set as the default",
         status = "success",
         shape = "square",
         animation = "smooth"
@@ -464,6 +482,8 @@ presets_loader_reference <- function(
     loader_subject <- comp$get_dependent_component(loader_subject_id)
 
     shiny::observe({
+      open_loader <- watch_loader_opened(session = session)
+      if(!open_loader){ return() }
       if(!loader_subject$sv$is_valid()){ return() }
       project_name <- loader_project$current_value
       subject_code <- loader_subject$current_value
@@ -477,10 +497,23 @@ presets_loader_reference <- function(
                                  value = subject, expire_after = 10)
       }
 
+      default_refname <- subject$get_default("reference_name")
+      if(length(default_refname)){
+        default_refname <- default_refname[[1]]
+        shinyWidgets::updatePrettyCheckbox(
+          session, inputId = paste0(id, "_default"),
+          label = sprintf("Set as the default (current: %s)", default_refname)
+        )
+      } else {
+        shinyWidgets::updatePrettyCheckbox(
+          session, inputId = paste0(id, "_default"),
+          label = "Set as the default"
+        )
+      }
       ref_choices <- subject$reference_names
       reference_name <-
         comp$get_settings_value(
-          default = subject$get_default("reference_name"),
+          default = default_refname,
           constraint = ref_choices,
           use_cache = TRUE
         )
@@ -495,6 +528,7 @@ presets_loader_reference <- function(
       shiny::bindEvent(
         input[[loader_project$id]],
         input[[loader_subject$id]],
+        watch_loader_opened(session = session),
         ignoreNULL = TRUE
       )
 

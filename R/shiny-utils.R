@@ -1,3 +1,29 @@
+# icons
+#' @title Shiny icons
+#' @export
+shiny_icons <- list(
+  bars = shiny::icon("bars"),
+  grid = shiny::icon("th"),
+  keyboard = shiny::icon("keyboard"),
+  help = shiny::icon('question-circle'),
+  sync = shiny::icon('sync'),
+  expand = shiny::icon('expand'),
+  tasks = shiny::icon('tasks'),
+  angle_right = shiny::icon('angle-right'),
+  arrow_right = shiny::icon('arrow-right'),
+  external_link = shiny::icon('external-link-alt'),
+  plus = shiny::icon('plus'),
+  minus = shiny::icon('minus'),
+  download = shiny::icon("download"),
+  save = shiny::icon("save"),
+  trash = shiny::icon("trash"),
+  export = shiny::icon("file-export"),
+  puzzle = shiny::icon("puzzle-piece"),
+  user_md = shiny::icon("user-md"),
+  image = shiny::icon("file-image"),
+  magic = shiny::icon("magic")
+)
+
 #' @export
 register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .rave_id){
   if(is.null(session)){
@@ -91,6 +117,56 @@ fire_rave_event <- function(key, value, global = FALSE, force = FALSE, session =
 }
 
 #' @export
+get_rave_event <- function(key, session = shiny::getDefaultReactiveDomain()){
+  force(key)
+  tool <- register_rave_session(session)
+
+  return(tool$rave_event[[key]])
+}
+
+#' @export
+open_loader <- function(session = shiny::getDefaultReactiveDomain()){
+  fire_rave_event('open_loader', Sys.time())
+}
+
+#' @export
+close_loader <- function(session = shiny::getDefaultReactiveDomain()){
+  fire_rave_event('open_loader', NULL)
+}
+
+#' @export
+watch_loader_opened <- function(session = shiny::getDefaultReactiveDomain()){
+  tool <- register_rave_session(session)
+  res <- tool$rave_event$open_loader
+  structure(!is.null(res), timestamp = res)
+}
+
+#' @export
+watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()){
+  tool <- register_rave_session(session)
+  res <- tool$rave_event$data_loaded
+  structure(length(res) && !isFALSE(res), timestamp = res)
+}
+
+#' @export
+current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDomain()){
+  if(dipsaus::shiny_is_running()) {
+    tool <- register_rave_session(session = session)
+    return(shidashi::get_theme(tool$theme_event, session = session))
+  } else {
+    if(missing(default)){
+      default <- list(theme = "light", background = "#FFFFFF", foreground = "#000000")
+    } else {
+      default <- as.list(default)[c("theme", "background", "foreground")]
+      default$theme %?<-% "light"
+      default$background %?<-% "#FFFFFF"
+      default$foreground %?<-% "#000000"
+    }
+    return(default)
+  }
+}
+
+#' @export
 footer_crumb <- function(module_id = NULL){
   ns <- shiny::NS(module_id)
   shiny::div(
@@ -98,17 +174,32 @@ footer_crumb <- function(module_id = NULL){
     shiny::div(
       class = "btn-group dropup",
       role="group",
-      shiny::a(
-        type="button", class="btn btn-default btn-go-top border-right-1", href="#",
-        shidashi::as_icon("rocket")
+      # shiny::a(
+      #   type="button", class="btn btn-default btn-go-top border-right-1", href="#",
+      #   shidashi::as_icon("rocket")
+      # ),
+      shiny::tags$button(
+        type="button",
+        id = ns("loader_short_message"),
+        class="btn btn-default border-right-1 btn-go-top shiny-text-output rave-button",
+        `data-toggle` = "tooltip",
+        title = "Click to toggle the data loader",
+        `rave-action` = '{"type": "loader_toggle"}'
       ),
       shiny::tags$button(
         type="button",
-        class="btn btn-default border-left-1 btn-go-top action-button",
-        id = ns("loader_show"),
-        shiny::textOutput(ns("loader_short_message"), inline = TRUE),
-        `data-toggle` = "tooltip",
-        title = "Click to toggle the data loader"
+        class="btn btn-default btn-go-top border-left-1 dropdown-toggle dropdown-toggle-split", href="#",
+        "data-toggle"="dropdown",
+        "aria-haspopup"="false",
+        "aria-expanded"="false",
+        shiny::span(
+          class = "sr-only",
+          "Dropdown-Open"
+        )
+      ),
+      shiny::div(
+        class = "dropdown-menu dropdown-menu-right",
+        title = "Jump to:"
       )
     )
   )
@@ -161,6 +252,52 @@ logger_threshold <- function(
   )
   logger::log_threshold(level = loglevel, namespace = namespace, ...)
 }
+
+#' @export
+add_html_class <- function(selector, class,
+                           session = shiny::getDefaultReactiveDomain()){
+  session$sendCustomMessage("shidashi.add_class", list(
+    selector = selector,
+    class = class
+  ))
+}
+
+#' @export
+remove_html_class <- function(selector, class,
+                              session = shiny::getDefaultReactiveDomain()){
+  session$sendCustomMessage("shidashi.remove_class", list(
+    selector = selector,
+    class = class
+  ))
+}
+
+#' @export
+run_analysis_button <- function(label = "Run analysis (Ctrl+Enter)", icon = NULL, width = NULL, type = "primary",
+                                btn_type = "button", class = "", ...){
+  if (length(type) > 1) {
+    type <- type[[1]]
+  }
+  stopifnot2(length(type) == 0 || type[[1]] %in% c("default",
+                                                   "primary", "info", "success", "warning", "danger"), msg = "type must be in 'default', 'primary', 'info', 'success', 'warning', 'danger'")
+
+  args <- list(...)
+  style <- c(args[["style"]], "")[[1]]
+  width <- c(width, "auto")[[1]]
+  style <- paste0("width: ", shiny::validateCssUnit(width),
+                  ";", style)
+  class <- dipsaus::combine_html_class(
+    sprintf("btn btn-%s rave-button %s", type, class))
+
+  shiny::tags$button(
+    class = class,
+    style = style,
+    type = btn_type,
+    "rave-action" = '{"type": "run_analysis"}',
+    list(shidashi::as_icon(icon), label)
+  )
+}
+
+
 
 #' @export
 logger <- local({
