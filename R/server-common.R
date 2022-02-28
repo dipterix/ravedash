@@ -6,8 +6,27 @@
 #' must return either \code{TRUE} if data has been loaded or \code{FALSE}
 #' if loader needs to be open to load data.
 #' @param ... ignored
-#' @return no value returned
+#' @return A list of server utility functions; see 'Examples' below.
 #' @examples
+#'
+#' # Debug in non-reactive session: create fake session
+#' fake_session <- shiny::MockShinySession$new()
+#' fake_input <- fake_session$input
+#' fake_output <- fake_session$output
+#'
+#' # register common-server function
+#' module_server_common(input = fake_input,
+#'                      output = fake_output,
+#'                      session = fake_session)
+#' server_tools <- get_default_handlers(fake_session)
+#'
+#' # Print each function to see the usage
+#'
+#' server_tools$auto_recalculate
+#'
+#' server_tools$run_analysis_onchange
+#'
+#' server_tools$run_analysis_flag
 #'
 #'
 #' # 'RAVE' module server function
@@ -47,9 +66,32 @@
 #'
 #' @export
 module_server_common <- function(input, output, session, check_data_loaded, ...){
+
+  if(missing(session)){
+    if(dipsaus::shiny_is_running()){
+      logger("`module_server_common`: session must be provided in production!", level = "fatal")
+      stop("`module_server_common`: session must be provided in production!")
+    } else {
+      logger("`module_server_common`: session must be provided in production. Using mock session to debug.", level = "warning")
+    }
+    session <- shiny::MockShinySession$new()
+    input <- session$input
+    output <- session$output
+  }
+
+  if(missing(check_data_loaded)) {
+    logger("`module_server_common`: `check_data_loaded` is missing. Data loader is disabled", level = "debug")
+    check_data_loaded <- function(){ return(TRUE) }
+  }
+
+
   ravedash::register_rave_session(session = session)
+  reactive_handlers <- session$userData$ravedash_reactive_handlers
   local_reactives <- shiny::reactiveValues(
-    first_time = TRUE
+    first_time = TRUE,
+    auto_recalculate = 0L,
+    renew_auto_recalculate = NULL,
+    auto_recalculate_back_up = 0L
   )
 
   handler_on_data_changed <- shiny::observe({
@@ -148,5 +190,209 @@ module_server_common <- function(input, output, session, check_data_loaded, ...)
       ignoreNULL = FALSE
     )
 
-  invisible()
+
+  run_analysis_flag <- shiny::debounce(shiny::reactive({
+    if(shiny::isolate(isTRUE(
+        local_reactives$auto_recalculate_back_up > 0 &&
+        local_reactives$auto_recalculate <= 0
+    ))) {
+      auto_recalculate(local_reactives$auto_recalculate_back_up)
+      return(NULL)
+    }
+    get_rave_event("run_analysis")
+  }), millis = 300, priority = 99)
+
+  run_analysis <- function() {
+
+    module_id <- session$ns(NULL)
+    if(!length(module_id) || module_id == ""){ return() }
+    module <- shiny::isolate(get_rave_event("active_module"))
+    if(!(is.list(module) && isTRUE(module$id == module_id))) {
+      logger("Module ID: expected {module_id} vs. actual {module$id}",
+                       level = "trace", use_glue = TRUE)
+      return()
+    }
+    if(shiny::isolate(watch_loader_opened())) {
+      logger("Module loader has been opened, pause auto-calculation", level = "trace")
+      return()
+    }
+
+    fire_rave_event(
+      key = "run_analysis",
+      list(
+        type = "run_analysis",
+        timestamp = strftime(Sys.time(), "%Y-%m-%dT%T"),
+        parent_frame = FALSE
+      ),
+      force = TRUE,
+      global = FALSE
+    )
+  }
+
+  sensitive_input <- shiny::reactive({
+    shiny::reactiveValuesToList(input)
+  })
+
+  watch_input_changed <- shiny::debounce({
+    shiny::bindEvent(
+      shiny::reactive({
+        watch_ids <- local_reactives$watch_ids
+        if(!length(watch_ids)){ return(NULL) }
+        inputs <- sensitive_input()
+        res <- structure(lapply(watch_ids, function(nm){
+          inputs[[nm]]
+        }), names = watch_ids)
+        dipsaus::drop_nulls(res)
+      }),
+      local_reactives$watch_ids,
+      local_reactives$renew_auto_recalculate,
+      sensitive_input(),
+      ignoreNULL = TRUE, ignoreInit = TRUE
+    )
+  }, millis = 100, priority = 100)
+
+  run_analysis_onchange <- function(inputIds){
+    logger("run_analysis_onchange", level = "trace")
+    local_reactives$watch_ids <- inputIds
+  }
+
+  shiny::observe({
+
+    v <- local_reactives$auto_recalculate
+    vb <- local_reactives$auto_recalculate_back_up
+    if(v <= 0 && vb <= 0){ return() }
+
+    if(v > 0){
+      module_id <- session$ns(NULL)
+      module <- shiny::isolate(get_rave_event("active_module"))
+      if(
+        !length(module_id) || module_id == "" ||
+        !is.list(module) || !isTRUE(module$id == module_id)
+      ){
+        local_reactives$auto_recalculate_back_up <- local_reactives$auto_recalculate
+        local_reactives$auto_recalculate <- 0L
+        shidashi::show_notification(message = shiny::div(
+          shiny::p("Auto re-calculation is temporarily disabled because you have switched to another module."),
+          dipsaus::actionButtonStyled(session$ns("_reenable_autocalculation_"), "Click here to re-activate")
+        ), title = "Auto re-calculation disabled", type = "info", close = TRUE, autohide = FALSE,
+        class = "ravedash-reenable_autocalculation-notif")
+        return()
+      }
+
+      local_reactives$auto_recalculate <- v - 1
+      local_reactives$auto_recalculate_back_up <- 0L
+      shidashi::clear_notifications(class = "ravedash-reenable_autocalculation-notif")
+      logger("Auto-recalculation triggered", level = "trace")
+      run_analysis()
+
+    }
+
+  }) |>
+    shiny::bindEvent(
+      watch_input_changed(),
+      local_reactives$renew_auto_recalculate,
+      ignoreNULL = TRUE,
+      ignoreInit = TRUE
+    )
+
+  shiny::observe({
+    local_reactives$auto_recalculate <- max(
+      local_reactives$auto_recalculate,
+      local_reactives$auto_recalculate_back_up
+    )
+    local_reactives$auto_recalculate_back_up <- 0L
+    local_reactives$renew_auto_recalculate <- Sys.time()
+    shidashi::clear_notifications(class = "ravedash-reenable_autocalculation-notif")
+  }) |>
+    shiny::bindEvent(
+      input[["_reenable_autocalculation_"]]
+    )
+
+  auto_recalculate <- function(flag){
+
+    current <- isTRUE(shiny::isolate(local_reactives$auto_recalculate > 0))
+    if(missing(flag)){
+      return(current)
+    }
+    if(length(flag) != 1){
+      logger("`auto_recalculate`: flag must be length of 1", level = "warning")
+      return(current)
+    }
+    if(is.logical(flag)){
+      if(flag){
+        local_reactives$auto_recalculate <- Inf
+        local_reactives$auto_recalculate_back_up <- 0L
+      } else {
+        local_reactives$auto_recalculate <- 0L
+        local_reactives$auto_recalculate_back_up <- 0L
+      }
+      local_reactives$renew_auto_recalculate <- Sys.time()
+    } else {
+      if(!is.numeric(flag)){
+        logger("`auto_recalculate`: flag must be logical or numeric", level = "warning")
+        return(current)
+      }
+      local_reactives$auto_recalculate <- flag
+      local_reactives$auto_recalculate_back_up <- 0L
+      local_reactives$renew_auto_recalculate <- Sys.time()
+    }
+    shidashi::clear_notifications(class = "ravedash-reenable_autocalculation-notif")
+    logger("Set auto-recalculate flag to {flag}", level = "trace", use_glue = TRUE)
+    return(isTRUE(flag > 0))
+  }
+
+  reactive_handlers$run_analysis_flag <- structure(
+    run_analysis_flag, class = "ravedash_printable",
+    docs = paste(
+      sep = "\n",
+      "Flag to run analysis pipeline. Usage:\n",
+      "# Obtain the server utility functions",
+      "module_server_common(input, output, session)",
+      "server_tools <- get_default_handlers()\n",
+      "shiny::bindEvent(",
+      "  shiny::observe({",
+      "    <Run your algorithms, e.g. `raveio::pipeline_run(...)>",
+      "  }),",
+      "  server_tools$run_analysis_flag(),",
+      "  ignoreNULL = TRUE, ignoreInit = TRUE",
+      ")"
+    )
+  )
+  # reactive_handlers$run_analysis <- run_analysis
+  reactive_handlers$run_analysis_onchange <- structure(
+    run_analysis_onchange, class = "ravedash_printable",
+    docs = paste(
+      sep = "\n",
+      "Function to set input IDs to watch. These inputs will trigger auto re-calculate. Usage:\n",
+      "# Obtain the server utility functions",
+      "module_server_common(input, output, session)",
+      "server_tools <- get_default_handlers()\n",
+      'server_tools$run_analysis_onchange(c("inputId_1", "inputId_2", ...))'
+    )
+  )
+  reactive_handlers$auto_recalculate <- structure(
+    auto_recalculate, class = "ravedash_printable",
+    docs = paste(
+      sep = "\n",
+      "Function to turn auto-recalculation on and off. Usage:\n",
+      "# Obtain the server utility functions",
+      "module_server_common(input, output, session)",
+      "server_tools <- get_default_handlers()\n",
+      'server_tools$auto_recalculate(TRUE)    # Turn on forever',
+      'server_tools$auto_recalculate(FALSE)   # Turn off forever',
+      'server_tools$auto_recalculate(1)       # Turn on once'
+    )
+  )
+
+  invisible(reactive_handlers)
+}
+
+#' @export
+print.ravedash_printable <- function(x, ...){
+  docs <- attr(x, "docs")
+  if(is.null(docs)){
+    NextMethod("print")
+  } else {
+    cat(attr(x, "docs"), "\n", sep = "")
+  }
 }

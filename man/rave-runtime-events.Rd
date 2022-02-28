@@ -3,6 +3,7 @@
 \name{rave-runtime-events}
 \alias{rave-runtime-events}
 \alias{register_rave_session}
+\alias{get_default_handlers}
 \alias{fire_rave_event}
 \alias{get_rave_event}
 \alias{open_loader}
@@ -13,6 +14,8 @@
 \title{'RAVE' run-time events}
 \usage{
 register_rave_session(session = shiny::getDefaultReactiveDomain(), .rave_id)
+
+get_default_handlers(session = shiny::getDefaultReactiveDomain())
 
 fire_rave_event(
   key,

@@ -16,13 +16,32 @@ if loader needs to be open to load data.}
 \item{...}{ignored}
 }
 \value{
-no value returned
+A list of server utility functions; see 'Examples' below.
 }
 \description{
 Common shiny server function to enable modules that requires
 data loader panel.
 }
 \examples{
+
+# Debug in non-reactive session: create fake session
+fake_session <- shiny::MockShinySession$new()
+fake_input <- fake_session$input
+fake_output <- fake_session$output
+
+# register common-server function
+module_server_common(input = fake_input,
+                     output = fake_output,
+                     session = fake_session)
+server_tools <- get_default_handlers(fake_session)
+
+# Print each function to see the usage
+
+server_tools$auto_recalculate
+
+server_tools$run_analysis_onchange
+
+server_tools$run_analysis_flag
 
 
 # 'RAVE' module server function

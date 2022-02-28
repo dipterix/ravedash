@@ -223,6 +223,11 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
   rave_event <- shidashi::register_global_reactiveValues(name = "rave_reactives", session = session)
 
   root_session <- session$rootScope()
+
+  if(!inherits(session$userData$ravedash_reactive_handlers, "fastmap2")){
+    session$userData$ravedash_reactive_handlers <- dipsaus::fastmap2()
+  }
+
   if(!root_session$cache$exists('rave_id')){
     if(!missing(.rave_id)){
       rave_id <- paste(unlist(.rave_id), collapse = "")
@@ -267,10 +272,24 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
 
 #' @rdname rave-runtime-events
 #' @export
+get_default_handlers <- function(session = shiny::getDefaultReactiveDomain()){
+  if(is.null(session)){
+    session <- shiny::MockShinySession$new()
+  }
+  if(!inherits(session$userData$ravedash_reactive_handlers, "fastmap2")){
+    register_rave_session(session = session)
+  }
+  session$userData$ravedash_reactive_handlers
+}
+
+#' @rdname rave-runtime-events
+#' @export
 fire_rave_event <- function(key, value, global = FALSE, force = FALSE, session = shiny::getDefaultReactiveDomain()){
   force(key)
   force(value)
   tool <- register_rave_session(session)
+
+  logger("Firing RAVE-event: ", key, level = "trace")
 
   if(global) {
     sess <- get(x = '.sessions')
