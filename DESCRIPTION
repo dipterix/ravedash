@@ -10,13 +10,15 @@ Description: More about what it does (maybe more than one line)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Language: en-US
 Imports: 
     dipsaus (>= 0.2.0),
     logger (>= 0.2.2),
     raveio (>= 0.0.5.9000),
-    shidashi (>= 0.1.0),
+    rpymat (>= 0.1.2),
+    shidashi (>= 0.1.0.9000),
     shiny (>= 1.7.1),
-    shinyWidgets (>= 0.6.3),
+    shinyWidgets (>= 0.6.2),
     threeBrain (>= 0.2.4)
 Suggests: 
     fastmap (>= 1.1.0),
@@ -30,5 +32,6 @@ Remotes:
     daroczig/logger,
     dreamRs/shinyWidgets,
     dipterix/threeBrain,
-    r-lib/crayon
+    r-lib/crayon,
+    dipterix/rpymat
 RoxygenNote: 7.1.2

@@ -206,6 +206,21 @@ RAVEShinyComponent <- R6::R6Class(
 )
 
 
+#' @name rave-ui-preset
+#' @param id input or output ID of the element; this ID will be prepended with
+#' module namespace
+#' @param varname,varnames variable name(s) in the module's settings file
+#' @param label,labels readable label(s) of the element
+#' @param height height of the element
+#' @param loader_project_id the ID of \code{presets_loader_project} if
+#' different to the default
+#' @param loader_subject_id the ID of \code{presets_loader_subject} if
+#' different to the default
+#' @param loader_reference_id the ID of \code{presets_loader_reference} if
+#' different to the default
+#' @param loader_electrodes_id the ID of \code{presets_loader_electrodes} if
+#' different to the default
+#' @title Preset reusable 'RAVE' front-end elements
 #' @export
 presets_loader_project <- function(
   id = "loader_project_name", varname = "project_name",
@@ -240,6 +255,7 @@ presets_loader_project <- function(
 }
 
 
+#' @rdname rave-ui-preset
 #' @export
 presets_loader_subject <- function(
   id = "loader_subject_code", varname = "subject_code",
@@ -318,7 +334,7 @@ presets_loader_subject <- function(
 }
 
 
-
+#' @rdname rave-ui-preset
 #' @export
 presets_loader_epoch <- function(
   id = "loader_epoch_name",
@@ -347,7 +363,7 @@ presets_loader_epoch <- function(
 
     ravedash::flex_group_box(
       title = "Epoch and Trial Duration",
-      ravedash::flex_item2(
+      shidashi::flex_item(
         size = 2,
         shiny::selectInput(
           inputId = id,
@@ -357,7 +373,7 @@ presets_loader_epoch <- function(
           multiple = FALSE
         )
       ),
-      ravedash::flex_item2(
+      shidashi::flex_item(
         shiny::numericInput(
           inputId = paste0(id, "_pre"),
           label = labels[[2]],
@@ -365,7 +381,7 @@ presets_loader_epoch <- function(
           value = pre
         )
       ),
-      ravedash::flex_item2(
+      shidashi::flex_item(
         shiny::numericInput(
           inputId = paste0(id, "_post"),
           label = labels[[3]],
@@ -373,8 +389,8 @@ presets_loader_epoch <- function(
           value = post
         )
       ),
-      ravedash::flex_new_line(),
-      ravedash::flex_item2(
+      shidashi::flex_break(),
+      shidashi::flex_item(
         shinyWidgets::prettyCheckbox(
           inputId = paste0(id, "_default"),
           label = "Set as the default",
@@ -445,6 +461,7 @@ presets_loader_epoch <- function(
 
 }
 
+#' @rdname rave-ui-preset
 #' @export
 presets_loader_reference <- function(
   id = "loader_reference_name",
@@ -460,7 +477,7 @@ presets_loader_reference <- function(
 
   comp$ui_func <- function(id, value, depends){
 
-    shiny::tagList(ravedash::flex_item2(
+    shiny::tagList(shidashi::flex_item(
       shiny::selectInput(
         inputId = id,
         label = label,
@@ -538,6 +555,7 @@ presets_loader_reference <- function(
 
 }
 
+#' @rdname rave-ui-preset
 #' @export
 presets_loader_electrodes <- function(
   id = "loader_electrode_text",
@@ -600,6 +618,7 @@ presets_loader_electrodes <- function(
 
 }
 
+#' @rdname rave-ui-preset
 #' @export
 presets_loader_3dviewer <- function(
   id = "loader_3d_viewer",

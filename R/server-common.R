@@ -1,3 +1,50 @@
+#' Default module server function
+#' @description Common shiny server function to enable modules that requires
+#' data loader panel.
+#' @param input,output,session shiny input, output, and session object
+#' @param check_data_loaded a function that takes zero to one argument and
+#' must return either \code{TRUE} if data has been loaded or \code{FALSE}
+#' if loader needs to be open to load data.
+#' @param ... ignored
+#' @return no value returned
+#' @examples
+#'
+#'
+#' # 'RAVE' module server function
+#' server <- function(input, output, session, ...){
+#'
+#'   pipeline_path <- "PATH to module pipeline"
+#'
+#'   module_server_common(
+#'     input, output, session,
+#'     function(first_time){
+#'
+#'       re <- tryCatch({
+#'         # Try to read data from pipeline results
+#'         repo <- raveio::pipeline_read(
+#'           'repository',
+#'           pipe_dir = pipeline_path
+#'         )
+#'
+#'         # Fire event to update footer message
+#'         ravedash::fire_rave_event('loader_message',
+#'                                   "Data loaded")
+#'
+#'         # Return TRUE indicating data has been loaded
+#'         TRUE
+#'       }, error = function(e){
+#'
+#'         # Fire event to remove footer message
+#'         ravedash::fire_rave_event('loader_message', NULL)
+#'
+#'         # Return FALSE indicating no data has been found
+#'         FALSE
+#'       })
+#'     }
+#'   )
+#'
+#' }
+#'
 #' @export
 module_server_common <- function(input, output, session, check_data_loaded, ...){
   ravedash::register_rave_session(session = session)
@@ -65,7 +112,7 @@ module_server_common <- function(input, output, session, check_data_loaded, ...)
     )
 
   shiny::observe({
-    toggle <- ravedash::get_rave_event("loader_toggle")
+    toggle <- ravedash::get_rave_event("toggle_loader")
     # active_module <- ravedash::watch_active_module()
     if(!ravedash::watch_loader_opened()){
       ravedash::open_loader()
@@ -74,7 +121,7 @@ module_server_common <- function(input, output, session, check_data_loaded, ...)
     }
 
   }) |>
-    shiny::bindEvent(ravedash::get_rave_event("loader_toggle"),
+    shiny::bindEvent(ravedash::get_rave_event("toggle_loader"),
                      ignoreInit = FALSE, ignoreNULL = TRUE)
 
   output$loader_short_message <- shiny::renderText({
@@ -87,12 +134,12 @@ module_server_common <- function(input, output, session, check_data_loaded, ...)
     loader_open <- ravedash::watch_loader_opened()
     if(loader_open){
       local_reactives$open_loader <- Sys.time()
-      ravedash::add_html_class(".module_main_ui", "soft-hidden")
-      ravedash::remove_html_class(".module_loader_ui", "soft-hidden")
+      shidashi::add_class(".module_main_ui", "soft-hidden")
+      shidashi::remove_class(".module_loader_ui", "soft-hidden")
     } else {
       local_reactives$open_loader <- FALSE
-      ravedash::add_html_class(".module_loader_ui", "soft-hidden")
-      ravedash::remove_html_class(".module_main_ui", "soft-hidden")
+      shidashi::add_class(".module_loader_ui", "soft-hidden")
+      shidashi::remove_class(".module_main_ui", "soft-hidden")
     }
   }) |>
     shiny::bindEvent(
@@ -100,4 +147,6 @@ module_server_common <- function(input, output, session, check_data_loaded, ...)
       ignoreInit = FALSE,
       ignoreNULL = FALSE
     )
+
+  invisible()
 }

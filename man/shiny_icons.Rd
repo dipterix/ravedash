@@ -5,12 +5,16 @@
 \alias{shiny_icons}
 \title{Shiny icons}
 \format{
-An object of class \code{list} of length 20.
+An object of class \code{ravedash_shiny_icons} of length 0.
 }
 \usage{
 shiny_icons
 }
 \description{
 Shiny icons
+}
+\details{
+The goal of create this list is to keep 'shiny' icons (which are
+essentially 'font-awesome' icons) up-to-date.
 }
 \keyword{datasets}

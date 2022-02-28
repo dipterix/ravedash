@@ -1,29 +1,218 @@
 # icons
 #' @title Shiny icons
+#' @details The goal of create this list is to keep 'shiny' icons (which are
+#' essentially 'font-awesome' icons) up-to-date.
 #' @export
-shiny_icons <- list(
-  bars = shiny::icon("bars"),
-  grid = shiny::icon("th"),
-  keyboard = shiny::icon("keyboard"),
-  help = shiny::icon('question-circle'),
-  sync = shiny::icon('sync'),
-  expand = shiny::icon('expand'),
-  tasks = shiny::icon('tasks'),
-  angle_right = shiny::icon('angle-right'),
-  arrow_right = shiny::icon('arrow-right'),
-  external_link = shiny::icon('external-link-alt'),
-  plus = shiny::icon('plus'),
-  minus = shiny::icon('minus'),
-  download = shiny::icon("download"),
-  save = shiny::icon("save"),
-  trash = shiny::icon("trash"),
-  export = shiny::icon("file-export"),
-  puzzle = shiny::icon("puzzle-piece"),
-  user_md = shiny::icon("user-md"),
-  image = shiny::icon("file-image"),
-  magic = shiny::icon("magic")
-)
+shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
 
+.shiny_icons_methods <- local({
+  li <- NULL
+
+  ensure_li <- function(){
+    if(is.null(li)){
+      li <<- list(
+        bars = shiny::icon("bars"),
+        grid = shiny::icon("th"),
+        keyboard = shiny::icon("keyboard"),
+        help = shiny::icon('question-circle'),
+        sync = shiny::icon('sync'),
+        expand = shiny::icon('expand'),
+        tasks = shiny::icon('tasks'),
+        angle_right = shiny::icon('angle-right'),
+        arrow_right = shiny::icon('arrow-right'),
+        external_link = shiny::icon('external-link-alt'),
+        plus = shiny::icon('plus'),
+        minus = shiny::icon('minus'),
+        download = shiny::icon("download"),
+        save = shiny::icon("save"),
+        trash = shiny::icon("trash"),
+        export = shiny::icon("file-export"),
+        puzzle = shiny::icon("puzzle-piece"),
+        user_md = shiny::icon("user-md"),
+        image = shiny::icon("file-image"),
+        magic = shiny::icon("magic")
+      )
+    }
+    li
+  }
+
+  get_icon <- function(name){
+    ensure_li()
+    re <- li[[name]]
+    if(is.null(re)){
+      warning("Icon `", name, "` not found, please file an issue to the 'RAVE' team to support your icon")
+      re <- shiny::icon(name)
+    }
+    re
+  }
+
+  get_name <- function(){
+    ensure_li()
+    names(li)
+  }
+
+  set_name <- function(name, icon){
+    if(name %in% get_name()){
+      stop("Icon with name `", name, "` has been registered. Please consider other names")
+    }
+    li[[name]] <<- shidashi::as_icon(icon)
+  }
+
+  list(
+    get_icon = get_icon,
+    get_name = get_name,
+    set_name = set_name,
+    ensure_li = ensure_li
+  )
+
+})
+
+#' @export
+names.ravedash_shiny_icons <- function(x){
+  .shiny_icons_methods$get_name()
+}
+
+#' @export
+`$.ravedash_shiny_icons` <- function(x, name){
+  .shiny_icons_methods$get_icon(name)
+}
+
+#' @export
+`[[.ravedash_shiny_icons` <- `$.ravedash_shiny_icons`
+
+#' @export
+`[.ravedash_shiny_icons` <- function(x, ...){
+  stop("Please use shiny_icons[[...]] or shiny_icons$name instead.")
+}
+
+
+#' @export
+`$<-.ravedash_shiny_icons` <- function(x, name, value){
+  stop("Cannot set shiny_icons")
+}
+
+#' @export
+`[[<-.ravedash_shiny_icons` <- `$<-.ravedash_shiny_icons`
+
+#' @export
+`[<-.ravedash_shiny_icons` <- `$<-.ravedash_shiny_icons`
+
+#' @name rave-runtime-events
+#' @title 'RAVE' run-time events
+#' @description A set of preset behaviors used by 'RAVE' modules
+#' @param session shiny session, usually automatically determined
+#' @param .rave_id internally used to store unique session identification
+#' @param key event key to fire or to monitor
+#' @param value event value
+#' @param global whether to notify other sessions (experimental and not
+#' recommended)
+#' @param force whether to force firing the event even the \code{value} hasn't
+#' changed
+#' @param default default value if not found
+#' @details These goal of these event functions is to  simplify the dashboard
+#' logic without understanding the details or passing global variables around.
+#' Everything starts with \code{register_rave_session}. This function registers
+#' a unique identification to session, and adds bunch of registry to
+#' monitor the changes of themes, built-in, and custom events. If you have
+#' called \code{\link{module_server_common}}, then \code{register_rave_session}
+#' has already been called.
+#' \describe{
+#' \item{\code{register_rave_session}}{make initial registries, must be called,
+#' returns a list of registries}
+#' \item{\code{fire_rave_event}}{send signals to make changes to a event;
+#' returns nothing}
+#' \item{\code{get_rave_event}}{watch and get the event values; must run in
+#' shiny reactive context}
+#' \item{\code{open_loader}}{fire an event with a special key
+#' \code{'open_loader'} to open the data-loading panel; returns nothing}
+#' \item{\code{close_loader}}{reset an event with a special key
+#' \code{'open_loader'} to close the data-loading panel if possible;
+#' returns nothing}
+#' \item{\code{watch_loader_opened}}{watch in shiny reactive context whether
+#' the loader is opened; returns a logical value, but raise errors when
+#' reactive context is missing}
+#' \item{\code{watch_data_loaded}}{watch a special event with key
+#' \code{'data_loaded'}; returns a logical value of whether new data has been
+#' loaded, or raise errors when reactive context is missing}
+#' \item{\code{current_shiny_theme}}{watch and returns a list of theme
+#' parameters, for example, light or dark theme}
+#' }
+#' @section Built-in Events:
+#' The following event keys are built-in. Please do not fire them using
+#' \code{fire_rave_event} or the 'RAVE' application might will crash
+#' \describe{
+#' \item{\code{'simplify_toggle'}}{toggle visibility of 'HTML' elements with
+#' class \code{'rave-option'}}
+#' \item{\code{'run_analysis'}}{notifies the module to run pipeline}
+#' \item{\code{'save_pipeline'}, \code{'load_pipeline'}}{notifies the module to
+#' save or load pipeline}
+#' \item{\code{'data_loaded'}}{notifies the module that new data has been
+#' loaded}
+#' \item{\code{'open_loader'}, \code{'toggle_loader'}}{notifies the internal
+#' server code to show or hide the data loading panel}
+#' \item{\code{'active_module'}}{internally used to store current active
+#' module information}
+#' }
+#' @return See 'Details'
+#'
+#' @examples
+#'
+#'
+#' library(shiny)
+#' library(ravedash)
+#'
+#' ui <- fluidPage(
+#'   actionButton("btn", "Fire event"),
+#'   actionButton("btn2", "Toggle loader")
+#' )
+#'
+#' server <- function(input, output, session) {
+#'   # Create event registries
+#'   register_rave_session()
+#'
+#'   shiny::bindEvent(
+#'     shiny::observe({
+#'       fire_rave_event("my_event_key", Sys.time())
+#'     }),
+#'     input$btn,
+#'     ignoreInit = TRUE,
+#'     ignoreNULL = TRUE
+#'   )
+#'   shiny::bindEvent(
+#'     shiny::observe({
+#'       cat("An event fired with value:", get_rave_event("my_event_key"), "\n")
+#'     }),
+#'     get_rave_event("my_event_key"),
+#'     ignoreNULL = TRUE
+#'   )
+#'
+#'   shiny::bindEvent(
+#'     shiny::observe({
+#'       if(watch_loader_opened()){
+#'         close_loader()
+#'       } else {
+#'         open_loader()
+#'       }
+#'     }),
+#'     input$btn2,
+#'     ignoreInit = TRUE,
+#'     ignoreNULL = TRUE
+#'   )
+#'
+#'   shiny::bindEvent(
+#'     shiny::observe({
+#'       cat("Loader is", ifelse(watch_loader_opened(), "opened", "closed"), "\n")
+#'     }),
+#'     watch_loader_opened(),
+#'     ignoreNULL = TRUE
+#'   )
+#'
+#' }
+#'
+#' if(interactive()){
+#'   shinyApp(ui, server)
+#' }
+#'
 #' @export
 register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .rave_id){
   if(is.null(session)){
@@ -76,6 +265,7 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
   )
 }
 
+#' @rdname rave-runtime-events
 #' @export
 fire_rave_event <- function(key, value, global = FALSE, force = FALSE, session = shiny::getDefaultReactiveDomain()){
   force(key)
@@ -116,6 +306,7 @@ fire_rave_event <- function(key, value, global = FALSE, force = FALSE, session =
   invisible()
 }
 
+#' @rdname rave-runtime-events
 #' @export
 get_rave_event <- function(key, session = shiny::getDefaultReactiveDomain()){
   force(key)
@@ -124,16 +315,19 @@ get_rave_event <- function(key, session = shiny::getDefaultReactiveDomain()){
   return(tool$rave_event[[key]])
 }
 
+#' @rdname rave-runtime-events
 #' @export
 open_loader <- function(session = shiny::getDefaultReactiveDomain()){
   fire_rave_event('open_loader', Sys.time())
 }
 
+#' @rdname rave-runtime-events
 #' @export
 close_loader <- function(session = shiny::getDefaultReactiveDomain()){
   fire_rave_event('open_loader', NULL)
 }
 
+#' @rdname rave-runtime-events
 #' @export
 watch_loader_opened <- function(session = shiny::getDefaultReactiveDomain()){
   tool <- register_rave_session(session)
@@ -141,6 +335,7 @@ watch_loader_opened <- function(session = shiny::getDefaultReactiveDomain()){
   structure(!is.null(res), timestamp = res)
 }
 
+#' @rdname rave-runtime-events
 #' @export
 watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()){
   tool <- register_rave_session(session)
@@ -148,6 +343,7 @@ watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()){
   structure(length(res) && !isFALSE(res), timestamp = res)
 }
 
+#' @rdname rave-runtime-events
 #' @export
 current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDomain()){
   if(dipsaus::shiny_is_running()) {
@@ -166,8 +362,45 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
   }
 }
 
+#' A hovering footer at bottom-right
+#' @description The footer provides buttons to open/close the loader panel,
+#' show brief message of data loaded, and links to jump to input cards
+#' @param module_id 'RAVE' module ID
+#' @return 'HTML' tags
+#'
+#' @examples
+#'
+#' library(shiny)
+#' # dummy variables for the example
+#' data_loaded <- TRUE
+#'
+#' # UI code
+#' ravedash_footer("my_module")
+#'
+#' # server code to set message
+#' server <- function(input, output, session){
+#'
+#'   module_server_common(input, output, session, function(){
+#'
+#'     # check if data has been loaded
+#'     if(data_loaded) {
+#'
+#'       # if yes, then set the footer message
+#'       fire_rave_event("loader_message",
+#'                       "my_project/subject - Epoch: Auditory")
+#'       return(TRUE)
+#'     } else {
+#'
+#'       # No data found, unset the footer message
+#'       fire_rave_event("loader_message", NULL)
+#'       return(FALSE)
+#'     }
+#'
+#'   })
+#' }
+#'
 #' @export
-footer_crumb <- function(module_id = NULL){
+ravedash_footer <- function(module_id = NULL){
   ns <- shiny::NS(module_id)
   shiny::div(
     class = "back-to-top",
@@ -184,7 +417,7 @@ footer_crumb <- function(module_id = NULL){
         class="btn btn-default border-right-1 btn-go-top shiny-text-output rave-button",
         `data-toggle` = "tooltip",
         title = "Click to toggle the data loader",
-        `rave-action` = '{"type": "loader_toggle"}'
+        `rave-action` = '{"type": "toggle_loader"}'
       ),
       shiny::tags$button(
         type="button",
@@ -221,58 +454,18 @@ get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
   return(NULL)
 }
 
+
+#' Button to trigger analysis
+#' @description A button that triggers \code{'run_analysis'} event;
+#' see also \code{\link{get_rave_event}}
+#' @param label label to display
+#' @param icon icon before the label
+#' @param type used to calculate \code{class}
+#' @param width,btn_type,class,... passed to 'HTML' \code{button} tag
+#' @return A 'HTML' button tag
 #' @export
-logger_threshold <- function(
-  level = c("info", "warning", "error", "fatal", "debug", "trace"),
-  module_id, ...){
-
-  level <- match.arg(level)
-
-  if(missing(module_id)){
-    module <- get_active_module_info()
-    if(is.list(module)){
-      namespace <- module$id
-    } else {
-      namespace <- "ravedash"
-    }
-  } else {
-    namespace <- module_id
-  }
-
-  loglevel <- switch (
-    level,
-    'info' = logger::INFO,
-    "warning" = logger::WARN,
-    "error" = logger::ERROR,
-    "fatal" = logger::FATAL,
-    "debug" = logger::DEBUG,
-    {
-      logger::TRACE
-    }
-  )
-  logger::log_threshold(level = loglevel, namespace = namespace, ...)
-}
-
-#' @export
-add_html_class <- function(selector, class,
-                           session = shiny::getDefaultReactiveDomain()){
-  session$sendCustomMessage("shidashi.add_class", list(
-    selector = selector,
-    class = class
-  ))
-}
-
-#' @export
-remove_html_class <- function(selector, class,
-                              session = shiny::getDefaultReactiveDomain()){
-  session$sendCustomMessage("shidashi.remove_class", list(
-    selector = selector,
-    class = class
-  ))
-}
-
-#' @export
-run_analysis_button <- function(label = "Run analysis (Ctrl+Enter)", icon = NULL, width = NULL, type = "primary",
+run_analysis_button <- function(label = "Run analysis (Ctrl+Enter)",
+                                icon = NULL, width = NULL, type = "primary",
                                 btn_type = "button", class = "", ...){
   if (length(type) > 1) {
     type <- type[[1]]
@@ -293,95 +486,7 @@ run_analysis_button <- function(label = "Run analysis (Ctrl+Enter)", icon = NULL
     style = style,
     type = btn_type,
     "rave-action" = '{"type": "run_analysis"}',
-    list(shidashi::as_icon(icon), label)
+    list(shidashi::as_icon(icon), label),
+    ...
   )
 }
-
-
-
-#' @export
-logger <- local({
-  last_time <- NULL
-  function(..., level = c("info", "warning", "error", "fatal", "debug", "trace"),
-           calc_delta = 'auto', .envir = parent.frame()){
-    level <- match.arg(level)
-    module <- get_active_module_info()
-    if(is.list(module)){
-      namespace <- module$id
-    } else {
-      namespace <- "ravedash"
-    }
-
-    if(identical(calc_delta, "auto") && level %in% c("debug", "trace")){
-      calc_delta <- TRUE
-    }
-    calc_delta <- isTRUE(calc_delta)
-
-
-    now <- Sys.time()
-    if(calc_delta){
-      if(is.null(last_time)){
-        delta <- 0
-      } else {
-        delta <- dipsaus::time_delta(last_time, now)
-      }
-      last_time <<- now
-      if(delta < 0.3){
-        delta_color <- "crayon::silver"
-      } else if(delta < 0.5){
-        delta_color <- "crayon::cyan"
-      } else if (delta < 1){
-        delta_color <- "crayon::green"
-      } else if (delta < 5){
-        delta_color <- "crayon::yellow"
-      } else {
-        delta_color <- "crayon::red"
-      }
-      delta <- sprintf("(+%.2fs)", delta)
-    } else {
-      delta_color <- "crayon::silver"
-      delta <- ""
-      last_time <<- NULL
-    }
-
-    logger::log_formatter(logger::formatter_glue, namespace = namespace)
-    # logger::log_formatter(logger::formatter_glue, namespace = "ravedash")
-
-    loglevel <- switch (
-      level,
-      'info' = logger::INFO,
-      "warning" = logger::WARN,
-      "error" = logger::ERROR,
-      "fatal" = logger::FATAL,
-      "debug" = logger::DEBUG,
-      {
-        logger::TRACE
-      }
-    )
-
-    level_str <- attr(loglevel, "level")
-
-    if(dipsaus::package_installed("crayon") && crayon::has_color()){
-
-      if(calc_delta){
-        layout <- logger::layout_glue_generator(format = sprintf("{crayon::bold(logger::colorize_by_log_level(msg = level, level = levelr))} {crayon::silver(paste0(format(time, \"%%Y-%%m-%%d %%H:%%M:%%S\"), ifelse(ns == 'ravedash', '', paste0(' ', ns))))} {%s('%s')} {logger::colorize_by_log_level(msg = msg, level = levelr)}", delta_color, delta))
-      } else {
-        layout <- logger::layout_glue_generator(format = "{crayon::bold(logger::colorize_by_log_level(msg = level, level = levelr))} {crayon::silver(paste0(format(time, \"%Y-%m-%d %H:%M:%S\"), ifelse(ns == 'ravedash', '', paste0(' ', ns))))} {logger::colorize_by_log_level(msg = msg, level = levelr)}")
-      }
-
-
-    } else {
-      if(calc_delta){
-        layout <- logger::layout_glue_generator(format = sprintf("{level} [{paste0(format(time, \"%%Y-%%m-%%d %%H:%%M:%%S\"), ifelse(ns == 'ravedash', '', paste0(' ', ns)), ' %s')}] {msg}", delta))
-      } else {
-        layout <- logger::layout_glue_generator(format = "{level} [{paste0(format(time, \"%Y-%m-%d %H:%M:%S\"), ifelse(ns == 'ravedash', '', paste0(' ', ns)))}] {msg}")
-      }
-
-    }
-    logger::log_layout(layout = layout, namespace = namespace)
-
-    logger::log_level(level = loglevel, namespace = namespace, raveio::glue(..., .envir = .envir))
-
-  }
-})
-

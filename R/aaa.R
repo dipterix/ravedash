@@ -75,6 +75,25 @@ R_user_dir <- function (package, which = c("data", "config", "cache"))
   file.path(path, "R", package)
 }
 
+
+#' Get an element with condition that it must be from a list or vector
+#' @param lhs the element of candidate
+#' @param rhs the constraint
+#' @return Returns an element of length one that will be from \code{rhs}
+#' @examples
+#'
+#' # C is from LETTERS, therefore returns `C`
+#' "C" %OF% LETTERS
+#'
+#'
+#' # `lhs` is not from `rhs`, hence return the first element of LETTERS
+#' '9' %OF% LETTERS
+#' NULL %OF% LETTERS
+#'
+#' # When there are multiple elements from `lhs`, select the first that
+#' # matches the constraint
+#' c('9', "D", "V") %OF% LETTERS
+#'
 #' @export
 `%OF%` <- function(lhs, rhs){
   if(length(rhs)){ de <- rhs[[1]] } else { de <- rhs }

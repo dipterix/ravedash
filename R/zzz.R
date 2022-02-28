@@ -3,12 +3,11 @@
   assign('.sessions', value = fastmap::fastmap(), envir = ns)
   assign('.shiny_components', value = fastmap::fastmap(), envir = ns)
   try({
-    dipsaus::capture_expr({
-      dipsaus::registerInputBinding(
-        fname = "pickerInput", pkg = "shinyWidgets",
-        shiny_binding = "shinyWidgets.pickerInput",
-        update_function = "shinyWidgets::updatePickerInput")
-    })
+    dipsaus::registerInputBinding(
+      fname = "pickerInput", pkg = "shinyWidgets",
+      shiny_binding = "shinyWidgets.pickerInput",
+      update_function = "shinyWidgets::updatePickerInput",
+      quiet = TRUE)
   }, silent = TRUE)
 }
 

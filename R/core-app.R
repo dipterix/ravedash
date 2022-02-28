@@ -37,6 +37,47 @@ ensure_template <- function(path, use_cache = TRUE){
   normalizePath(path)
 }
 
+#' @name rave-session
+#' @title Create, register, list, and remove 'RAVE' sessions
+#' @param update logical, whether to update to latest 'RAVE' template
+#' @param session_id session identification string; use \code{list_session}
+#' to list all existing sessions
+#' @param path root path to store the sessions; default is the
+#' \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}
+#' @return
+#' \describe{
+#' \item{\code{new_session}}{returns a session object with character
+#' \code{'session_id'} and a function \code{'launch_app'} to launch the
+#' application from this session}
+#' \item{\code{use_session}}{returns a session object, the same as
+#' \code{new_session} under the condition that corresponding session exists,
+#' or raise an error if the session is missing}
+#' \item{\code{list_session}}{returns a list of all existing session objects
+#' under the session root}
+#' \item{\code{remove_session}}{returns a logical whether the corresponding
+#' session has been found and removed}
+#' }
+#'
+#' @examples
+#'
+#' if(interactive()){
+#'
+#'   sess <- new_session()
+#'   sess$launch_app()
+#'
+#'   all_sessions <- list_session()
+#'   print(all_sessions)
+#'
+#'   # Use existing session
+#'   session_id <- all_sessions[[1]]$session_id
+#'   sess <- use_session(session_id)
+#'   sess$launch_app()
+#'
+#'   # Remove session
+#'   remove_session(session_id)
+#'   list_session()
+#' }
+#'
 #' @export
 new_session <- function(update = FALSE) {
 
@@ -96,6 +137,7 @@ new_session <- function(update = FALSE) {
 
 }
 
+#' @rdname rave-session
 #' @export
 use_session <- function(session_id) {
   cache_path <- session_root()
@@ -139,6 +181,7 @@ use_session <- function(session_id) {
 
 }
 
+#' @rdname rave-session
 #' @export
 remove_session <- function(session_id){
   if(grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", session_id)){
@@ -151,6 +194,7 @@ remove_session <- function(session_id){
   return(invisible(FALSE))
 }
 
+#' @rdname rave-session
 #' @export
 list_session <- function(path = session_root()){
   dirs <- list.dirs(path = path, full.names = FALSE, recursive = FALSE)
