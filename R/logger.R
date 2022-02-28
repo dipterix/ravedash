@@ -333,6 +333,8 @@ appender_ravedash <- function (
       registered_namespaces <<- c(registered_namespaces, namespace)
       logger::log_formatter(logger::formatter_paste, namespace = namespace)
       logger::log_layout(layout = rave_logger_layout, namespace = namespace)
+      logger::log_threshold(level = logger::TRACE,
+                            namespace = namespace, index = 1)
     }
 
     if(use_glue) {
