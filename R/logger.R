@@ -2,8 +2,7 @@
 #' @title Logger system used by 'RAVE'
 #' @description Keep track of messages printed by modules
 #' @param ...,.envir,.sep passed to \code{\link[raveio]{glue}}, if
-#' \code{use_glue} is true; in \code{log_threshold}, \code{...} are
-#' passed to \code{\link[logger]{log_threshold}}
+#' \code{use_glue} is true
 #' @param use_glue whether to use \code{\link[raveio]{glue}} to combine
 #' \code{...}; default is false
 #' @param calc_delta whether to calculate time difference between current
@@ -23,6 +22,10 @@
 #' @param max_bytes maximum file size for each logger partitions
 #' @param max_files maximum number of partition files to hold the log; old
 #' files will be deleted.
+#' @param type which type of logging should be set; default is \code{'console'},
+#' if file log is enabled through \code{set_logger_path}, \code{type} could be
+#' \code{'file'} or \code{'both'}. Default log level is \code{'info'} on
+#' console and \code{'debug'} on file.
 #' @return The message without time-stamps
 #'
 #' @examples
@@ -235,6 +238,19 @@ appender_ravedash <- function (
 
   }
 
+  get_levelr <- function(level){
+    switch (
+      level,
+      'info' = logger::INFO,
+      "warning" = logger::WARN,
+      "error" = logger::ERROR,
+      "fatal" = logger::FATAL,
+      "debug" = logger::DEBUG,
+      {
+        logger::TRACE
+      }
+    )
+  }
 
   logger <- function(..., level = c("info", "warning", "error", "fatal", "debug", "trace"),
            calc_delta = 'auto', .envir = parent.frame(), .sep = "",
@@ -282,9 +298,13 @@ appender_ravedash <- function (
               namespace = .(namespace), index = 2
             )
           }))
+          logger::log_threshold(level = get_levelr(Sys.getenv("RAVE_LOGGER_FILELEVEL", unset = "debug")),
+                                namespace = namespace, index = 2)
         }
       }
     }
+
+
 
 
     if(identical(calc_delta, "auto") && level %in% c("debug")){
@@ -329,6 +349,11 @@ appender_ravedash <- function (
 
 
   set_root_path <- function(root_path, max_bytes, max_files){
+    if(missing(root_path)){
+      root_path <- getOption("ravedash.logger.root_path",
+                             Sys.getenv('RAVE_LOGGER_PATH', unset = ""))
+    }
+
     options("ravedash.logger.root_path" = NA)
     Sys.unsetenv("RAVE_LOGGER_PATH")
     valid_root <- FALSE
@@ -377,6 +402,8 @@ appender_ravedash <- function (
       }
     }
 
+    filelevel <- get_levelr(Sys.getenv("RAVE_LOGGER_FILELEVEL", unset = "debug"))
+
     for(namespace in registered_namespaces){
       if(valid_root) {
         path <- file.path(root_path, sprintf("%s.log", namespace))
@@ -394,6 +421,8 @@ appender_ravedash <- function (
           namespace = .(namespace), index = 2
         )
       })
+      logger::log_threshold(level = filelevel,
+                            namespace = namespace, index = 2)
 
       eval(expr)
 
@@ -420,9 +449,10 @@ set_logger_path <- .logger_functions$set_root_path
 #' @export
 logger_threshold <- function(
   level = c("info", "warning", "error", "fatal", "debug", "trace"),
-  module_id, ...){
+  module_id, type = c("console", "file", "both")){
 
   level <- match.arg(level)
+  type <- match.arg(type)
 
   if(missing(module_id) || !length(module_id)){
     module <- get_active_module_info()
@@ -446,5 +476,20 @@ logger_threshold <- function(
       logger::TRACE
     }
   )
-  logger::log_threshold(level = loglevel, namespace = namespace, ...)
+
+  if(type == "both") {
+    logger::log_threshold(level = loglevel, namespace = namespace, index = 1)
+    logger::log_threshold(level = loglevel, namespace = namespace, index = 2)
+    Sys.setenv("RAVE_LOGGER_FILELEVEL" = level)
+  } else if( type == 'file' ){
+    logger::log_threshold(level = loglevel, namespace = namespace, index = 2)
+    Sys.setenv("RAVE_LOGGER_FILELEVEL" = level)
+  } else {
+    logger::log_threshold(level = loglevel, namespace = namespace, index = 1)
+  }
+
+  set_logger_path()
+
+  invisible()
+
 }

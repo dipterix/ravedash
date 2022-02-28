@@ -21,13 +21,12 @@ set_logger_path(root_path, max_bytes, max_files)
 logger_threshold(
   level = c("info", "warning", "error", "fatal", "debug", "trace"),
   module_id,
-  ...
+  type = c("console", "file", "both")
 )
 }
 \arguments{
 \item{..., .envir, .sep}{passed to \code{\link[raveio]{glue}}, if
-\code{use_glue} is true; in \code{log_threshold}, \code{...} are
-passed to \code{\link[logger]{log_threshold}}}
+\code{use_glue} is true}
 
 \item{level}{the level of message, choices are \code{'info'} (default),
 \code{'warning'}, \code{'error'}, \code{'fatal'}, \code{'debug'},
@@ -55,6 +54,11 @@ files will be deleted.}
 
 \item{module_id}{'RAVE' module identification string, or name-space; default
 is \code{'ravedash'}}
+
+\item{type}{which type of logging should be set; default is \code{'console'},
+if file log is enabled through \code{set_logger_path}, \code{type} could be
+\code{'file'} or \code{'both'}. Default log level is \code{'info'} on
+console and \code{'debug'} on file.}
 }
 \value{
 The message without time-stamps
