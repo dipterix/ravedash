@@ -360,7 +360,7 @@ appender_ravedash <- function (
     Sys.unsetenv("RAVE_LOGGER_PATH")
     valid_root <- FALSE
 
-    if(length(root_path) == 1 && root_path != nullfile()){
+    if(isTRUE(length(root_path) == 1 && root_path != nullfile())){
       if(!(
         is.na(root_path) ||
         trimws(root_path) == "" ||
