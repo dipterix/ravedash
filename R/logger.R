@@ -17,6 +17,12 @@
 #' @param module_id 'RAVE' module identification string, or name-space; default
 #' is \code{'ravedash'}
 #' @param reset_timer whether to reset timer used by \code{calc_delta}
+#' @param root_path root directory if you want log messages to be saved to
+#' hard disks; if \code{root_path} is \code{NULL}, \code{""}, or
+#' \code{\link{nullfile}}, then logger path will be unset.
+#' @param max_bytes maximum file size for each logger partitions
+#' @param max_files maximum number of partition files to hold the log; old
+#' files will be deleted.
 #' @return The message without time-stamps
 #'
 #' @examples
@@ -44,10 +50,98 @@
 #' # Trace message will not display as it's lower than debug level
 #' logger('trace message', level = 'trace')
 #'
-#'
-#' @export
-logger <- local({
+NULL
+
+appender_ravedash <- function (
+  file, append = TRUE, max_bytes = Inf,
+  max_files = ifelse(is.finite(max_bytes), 10, 1))
+{
+  force(file)
+  force(append)
+  force(max_bytes)
+  max_files <- as.integer(max_files)
+  if(!isTRUE(max_files >= 1L)){
+    max_files <- 1L
+  }
+
+  if(file == nullfile()){
+    partition_path <- function(ii){
+      file
+    }
+
+    ensure_file <- function(){}
+  } else {
+    if(!endsWith(tolower(file), ".log")) {
+      file <- paste0(file, ".log")
+    }
+    partition_path <- function(ii){
+      if(ii == 0){
+        return(file)
+      }
+      sub(pattern = "\\.log$", x = file, replacement = sprintf(".%d.log", ii), ignore.case = TRUE)
+    }
+    ensure_file <- function(){
+      if(!file.exists(file)){
+        if(dir.exists(dirname(file))){
+          file.create(file)
+        }
+      }
+    }
+  }
+
+  ensure_file()
+
+
+
+
+  if(as.logical(dipsaus::package_installed("crayon"))){
+    remove_style <- function(x){
+      crayon::strip_style(x)
+    }
+  } else {
+    remove_style <- function(x) { x }
+  }
+
+
+  if(is.finite(max_bytes) && file != nullfile()) {
+    structure(function(lines) {
+      n_bytes <- ifelse(file.exists(file), file.info(file)$size, 0)
+      if( n_bytes >= max_bytes ){
+        # file size is too large, purge or create new
+        for (ii in max_files:1) {
+          partition <- partition_path(ii)
+          if(ii == max_files){
+            unlink(partition, recursive = FALSE, force = TRUE)
+          }
+          previous_partition <- partition_path(ii - 1L)
+          if(file.exists(previous_partition)){
+            file.rename(previous_partition, partition)
+          }
+        }
+        ensure_file()
+      }
+
+      if(file.exists(file)){
+        cat(remove_style(lines), sep = "\n", file = file, append = append)
+      }
+
+    }, generator = deparse(match.call()))
+
+  } else if(file == nullfile()){
+    structure(function(lines) { }, generator = deparse(match.call()))
+  } else {
+    structure(function(lines) {
+      if(file.exists(file)){
+        cat(remove_style(lines), sep = "\n", file = file, append = append)
+      }
+    }, generator = deparse(match.call()))
+  }
+}
+
+.logger_functions <- local({
   last_time <- NULL
+
+  registered_namespaces <- NULL
 
   show_time_diff <- FALSE
   use_crayon_ <- NA
@@ -142,7 +236,7 @@ logger <- local({
   }
 
 
-  function(..., level = c("info", "warning", "error", "fatal", "debug", "trace"),
+  logger <- function(..., level = c("info", "warning", "error", "fatal", "debug", "trace"),
            calc_delta = 'auto', .envir = parent.frame(), .sep = "",
            use_glue = FALSE, reset_timer = FALSE){
     level <- match.arg(level)
@@ -153,6 +247,46 @@ logger <- local({
       namespace <- "ravedash"
     }
 
+
+    # get file appender
+    has_file_appender <- tryCatch({
+      call <- logger::log_appender(namespace = namespace, index = 2)
+      identical(as.character(call[[1]]), 'appender_ravedash')
+    }, error = function(e){ FALSE })
+
+    if(!has_file_appender){
+      root_path <- getOption("ravedash.logger.root_path",
+                             Sys.getenv('RAVE_LOGGER_PATH', unset = ""))
+      if(!is.na(root_path) && root_path != "" && root_path != nullfile() && root_path != "NA"){
+        if(root_path == "." || dir.exists(root_path)){
+          path <- file.path(root_path, sprintf("%s.log", namespace))
+
+          max_files <- as.integer(getOption(
+            "ravedash.logger.max_files",
+            Sys.getenv('RAVE_LOGGER_FILE_LIMIT', unset = 3)
+          ))
+
+          max_bytes <-
+            as.integer(getOption(
+              "ravedash.logger.max_bytes",
+              Sys.getenv('RAVE_LOGGER_BYTE_LIMIT', unset = 52428800)
+            ))
+
+          eval(bquote({
+            logger::log_appender(
+              appender = appender_ravedash(
+                file = .(path), append = TRUE,
+                max_bytes = .(max_bytes),
+                max_files = .(max_files)
+              ),
+              namespace = .(namespace), index = 2
+            )
+          }))
+        }
+      }
+    }
+
+
     if(identical(calc_delta, "auto") && level %in% c("debug")){
       calc_delta <- TRUE
     }
@@ -161,8 +295,6 @@ logger <- local({
     if(reset_timer){
       last_time <<- NULL
     }
-
-    logger::log_formatter(logger::formatter_paste, namespace = namespace)
 
     loglevel <- switch (
       level,
@@ -176,7 +308,12 @@ logger <- local({
       }
     )
 
-    logger::log_layout(layout = rave_logger_layout, namespace = namespace)
+    registered <- namespace %in% registered_namespaces
+    if(!registered){
+      registered_namespaces <<- c(registered_namespaces, namespace)
+      logger::log_formatter(logger::formatter_paste, namespace = namespace)
+      logger::log_layout(layout = rave_logger_layout, namespace = namespace)
+    }
 
     if(use_glue) {
       msg <- raveio::glue(..., .envir = .envir, .sep = .sep)
@@ -189,7 +326,95 @@ logger <- local({
     invisible(msg)
 
   }
+
+
+  set_root_path <- function(root_path, max_bytes, max_files){
+    options("ravedash.logger.root_path" = NA)
+    Sys.unsetenv("RAVE_LOGGER_PATH")
+    valid_root <- FALSE
+
+    if(length(root_path) == 1 && root_path != nullfile()){
+      if(!(
+        is.na(root_path) ||
+        trimws(root_path) == "" ||
+        root_path == "NA" ||
+        root_path == nullfile()
+      )){
+        dir.create(root_path, recursive = TRUE, showWarnings = FALSE)
+        root_path <- normalizePath(root_path, mustWork = TRUE)
+        valid_root <- TRUE
+        options("ravedash.logger.root_path" = root_path)
+        Sys.setenv("RAVE_LOGGER_PATH" = root_path)
+      }
+    }
+
+    if(missing(max_bytes)){
+      max_bytes <-
+        as.integer(getOption(
+          "ravedash.logger.max_bytes",
+          Sys.getenv('RAVE_LOGGER_BYTE_LIMIT', unset = 52428800)
+        ))
+    } else {
+      max_bytes <- as.integer(max_bytes)
+      stopifnot(max_bytes >= 10240)
+      if(valid_root){
+        options("ravedash.logger.max_bytes" = max_bytes)
+        Sys.setenv("RAVE_LOGGER_BYTE_LIMIT" = max_bytes)
+      }
+
+    }
+    if(missing(max_files)){
+      max_files <- as.integer(getOption(
+        "ravedash.logger.max_files",
+        Sys.getenv('RAVE_LOGGER_FILE_LIMIT', unset = 3)
+      ))
+    } else {
+      max_files <- as.integer(max_files)
+      stopifnot(max_files >= 1)
+      if(valid_root){
+        options("ravedash.logger.max_files" = max_files)
+        Sys.setenv("RAVE_LOGGER_FILE_LIMIT" = max_files)
+      }
+    }
+
+    for(namespace in registered_namespaces){
+      if(valid_root) {
+        path <- file.path(root_path, sprintf("%s.log", namespace))
+      } else {
+        path <- nullfile()
+      }
+
+      expr <- bquote({
+        logger::log_appender(
+          appender = appender_ravedash(
+            file = .(path), append = TRUE,
+            max_bytes = .(max_bytes),
+            max_files = .(max_files)
+          ),
+          namespace = .(namespace), index = 2
+        )
+      })
+
+      eval(expr)
+
+    }
+  }
+
+
+  list(
+    logger = logger,
+    set_root_path = set_root_path
+  )
 })
+
+#' @rdname logger
+#' @export
+logger <- .logger_functions$logger
+
+#' @rdname logger
+#' @export
+set_logger_path <- .logger_functions$set_root_path
+
 
 #' @rdname logger
 #' @export

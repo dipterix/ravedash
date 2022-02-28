@@ -2,6 +2,7 @@
 % Please edit documentation in R/logger.R
 \name{logger}
 \alias{logger}
+\alias{set_logger_path}
 \alias{logger_threshold}
 \title{Logger system used by 'RAVE'}
 \usage{
@@ -14,6 +15,8 @@ logger(
   use_glue = FALSE,
   reset_timer = FALSE
 )
+
+set_logger_path(root_path, max_bytes, max_files)
 
 logger_threshold(
   level = c("info", "warning", "error", "fatal", "debug", "trace"),
@@ -40,6 +43,15 @@ This behavior can be changed by altering \code{calc_delta} by a logical
 \code{...}; default is false}
 
 \item{reset_timer}{whether to reset timer used by \code{calc_delta}}
+
+\item{root_path}{root directory if you want log messages to be saved to
+hard disks; if \code{root_path} is \code{NULL}, \code{""}, or
+\code{\link{nullfile}}, then logger path will be unset.}
+
+\item{max_bytes}{maximum file size for each logger partitions}
+
+\item{max_files}{maximum number of partition files to hold the log; old
+files will be deleted.}
 
 \item{module_id}{'RAVE' module identification string, or name-space; default
 is \code{'ravedash'}}
@@ -74,6 +86,5 @@ logger('debug message', level = 'debug')
 
 # Trace message will not display as it's lower than debug level
 logger('trace message', level = 'trace')
-
 
 }
