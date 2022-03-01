@@ -142,7 +142,7 @@ input_card <- function(title, ...,
       )
     )
   }
-  shidashi::card(title = title, ..., tools = all_tools, class_body = class_body, class_foot = class_foot, footer = footer)
+  shidashi::card(title = title, ..., tools = all_tools, class_body = class_body, class_foot = class_foot, footer = footer, class_header = class_header)
 }
 
 
