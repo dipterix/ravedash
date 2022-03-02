@@ -73,7 +73,8 @@ set_card_url_scheme <- function(module_id, root, sep = "/"){
 
 #' @rdname card_url
 #' @export
-card_href <- function(title, type = "input", module_id = NULL) {
+card_href <- function(title, type = "input",
+                      module_id = NULL) {
   if(length(title) >= 2){
     title <- title[[1]]
   }
@@ -83,6 +84,13 @@ card_href <- function(title, type = "input", module_id = NULL) {
   title <- tolower(gsub("[^a-zA-Z0-9]", "", title))
 
   if(!length(module_id)){
+    session <- shiny::getDefaultReactiveDomain()
+    if(length(session)){
+      module_id <- session$ns(NULL)
+    }
+  }
+
+  if(!length(module_id) || module_id == "" || module_id == "mock-session") {
     module <- get_active_module_info()
     if(is.list(module)){
       module_id <- module$id
@@ -90,7 +98,6 @@ card_href <- function(title, type = "input", module_id = NULL) {
       module_id <- "<placeholder for module ID>"
     }
   }
-
 
   urls <- getOption("ravedash.urls", dipsaus::fastmap2())
   url_scheme <- urls$`@get`(module_id, missing = list(
@@ -117,7 +124,8 @@ input_card <- function(title, ...,
                        toggle_advanced = FALSE){
 
   if(identical(href, "auto")){
-    href <- card_href(title, type = "input")
+    href <- card_href(title, type = "input",
+                      module_id = get0('module_id', ifnotfound = NULL, envir = parent.frame()))
   }
 
   if(href %in% c("", "#", "/")) {
