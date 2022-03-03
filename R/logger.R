@@ -141,19 +141,36 @@ appender_ravedash <- function (
   }
 }
 
+
+abbr_module_id <- function(module_id, ...){
+  paste(sapply(unlist(strsplit(module_id, "_")), abbreviate, minlength = 2), collapse = "_")
+}
+
 .logger_functions <- local({
-  last_time <- NULL
+  crayon_ns <- NULL
+  logger_data <- NULL
 
-  registered_namespaces <- NULL
+  ensure_logger_data <- function(){
+    if(!inherits(logger_data, "fastmap2")){
+      logger_data <<- dipsaus::list_to_fastmap2(list(
+        last_time = NULL,
+        registered_namespaces = NULL,
+        show_time_diff = FALSE,
+        use_crayon_ = NA,
+        session_id = ""
+      ))
+    }
+  }
 
-  show_time_diff <- FALSE
-  use_crayon_ <- NA
 
   use_crayon <- function(){
-    if(is.na(use_crayon_)){
-      use_crayon_ <<- as.logical(dipsaus::package_installed("crayon"))
+    if(is.na(logger_data$use_crayon_)){
+      logger_data$use_crayon_ <- as.logical(dipsaus::package_installed("crayon"))
     }
-    use_crayon_ && crayon::has_color()
+    if(is.null(crayon_ns)){
+      crayon_ns <<- asNamespace("crayon")
+    }
+    logger_data$use_crayon_ && crayon::has_color()
   }
 
   bold <- function(...){
@@ -176,8 +193,7 @@ appender_ravedash <- function (
       msg <- format(msg, fmt)
     }
     if(use_crayon()){
-      ns <- asNamespace("crayon")
-      msg <- ns[[color]](msg)
+      msg <- crayon_ns[[color]](msg)
     }
     msg
   }
@@ -198,45 +214,63 @@ appender_ravedash <- function (
     format_color(msg = sprintf("(+%.2fs)", delta), color = delta_color)
   }
 
-  rave_logger_layout <- function (level, msg, namespace = NA_character_,
-                                  .logcall = sys.call(),
-                                  .topcall = sys.call(-1),
-                                  .topenv = parent.frame()) {
+  rave_logger_layout_generator <- function(time_format = "%Y-%m-%d %H:%M:%S", session_len = 50, abbrev = FALSE){
+    ensure_logger_data()
+    force(time_format)
+    force(session_len)
+    force(abbrev)
+    function (level, msg, namespace = NA_character_,
+              .logcall = sys.call(),
+              .topcall = sys.call(-1),
+              .topenv = parent.frame()) {
 
-    var <- logger::get_logger_meta_variables(
-      log_level = level,
-      namespace = namespace,
-      .logcall = .logcall,
-      .topcall = .topcall,
-      .topenv = .topenv
-    )
+      var <- logger::get_logger_meta_variables(
+        log_level = level,
+        namespace = namespace,
+        .logcall = .logcall,
+        .topcall = .topcall,
+        .topenv = .topenv
+      )
 
-    now <- var$time
-    delta <- NULL
-    if(show_time_diff){
-      if(is.null(last_time)){
-        delta <- 0
-      } else {
-        delta <- dipsaus::time_delta(last_time, now)
+      now <- var$time
+      delta <- NULL
+      if(logger_data$show_time_diff){
+        if(is.null(logger_data$last_time)){
+          delta <- 0
+        } else {
+          delta <- dipsaus::time_delta(logger_data$last_time, now)
+        }
+        logger_data$last_time <- now
       }
-      last_time <<- now
+
+      if(logger_data$session_id != ""){
+        session_id <- logger_data$session_id
+        nc <- nchar(session_id)
+        if(nc > session_len){
+          session_id <- substr(session_id, start = nc + 1 - session_len, stop = nc)
+        }
+        var$pid <- sprintf("%s:%s", var$pid, session_id)
+      }
+      ns <- trimws(var$ns)
+      if(!is.na(ns) && !ns %in% c("", "global", "ravedash", "NA") ){
+        if(abbrev) {
+          ns <- abbr_module_id(ns)
+        }
+        ns_delta <- c(format_color(sprintf("[%s:%s]", var$pid, ns)), get_delta(delta))
+      } else {
+        ns_delta <- c(format_color(sprintf("[%s]", var$pid)), get_delta(delta))
+      }
+
+      paste(c(
+        bold(colorize(msg = var$level, level = var$levelr)),
+        format_color(var$time, time_format),
+        ns_delta,
+        colorize(msg = paste(msg, collapse = " "), level = var$levelr)
+      ), sep = " ", collapse = " ")
+
     }
-
-    ns <- trimws(var$ns)
-    if(!is.na(ns) && !ns %in% c("", "global", "ravedash") ){
-      ns_delta <- c(format_color(ns), get_delta(delta))
-    } else {
-      ns_delta <- get_delta(delta)
-    }
-
-    paste(c(
-      bold(colorize(msg = var$level, level = var$levelr)),
-      format_color(var$time, "%Y-%m-%d %H:%M:%S"),
-      ns_delta,
-      colorize(msg = paste(msg, collapse = " "), level = var$levelr)
-    ), sep = " ", collapse = " ")
-
   }
+
 
   get_levelr <- function(level){
     switch (
@@ -256,11 +290,24 @@ appender_ravedash <- function (
            calc_delta = 'auto', .envir = parent.frame(), .sep = "",
            use_glue = FALSE, reset_timer = FALSE){
     level <- match.arg(level)
+
+    ensure_logger_data()
+
     module <- get_active_module_info()
     if(is.list(module)){
       namespace <- module$id
+      rave_id <- paste(module$rave_id, collapse = "")
+      if(is.na(rave_id)){
+        rave_id <- ""
+      }
     } else {
       namespace <- "ravedash"
+      rave_id <- ""
+    }
+
+    if(reset_timer || !identical(rave_id, logger_data$session_id)){
+      logger_data$last_time <- NULL
+      logger_data$session_id <- rave_id
     }
 
 
@@ -307,14 +354,10 @@ appender_ravedash <- function (
 
 
 
-    if(identical(calc_delta, "auto") && level %in% c("debug")){
+    if(identical(calc_delta, "auto") && level %in% c("debug", "trace")){
       calc_delta <- TRUE
     }
-    show_time_diff <<- isTRUE(as.logical(calc_delta))
-
-    if(reset_timer){
-      last_time <<- NULL
-    }
+    logger_data$show_time_diff <- isTRUE(as.logical(calc_delta))
 
     loglevel <- switch (
       level,
@@ -328,13 +371,19 @@ appender_ravedash <- function (
       }
     )
 
-    registered <- namespace %in% registered_namespaces
+    registered <- namespace %in% logger_data$registered_namespaces
     if(!registered){
-      registered_namespaces <<- c(registered_namespaces, namespace)
+      logger_data$registered_namespaces <- c(logger_data$registered_namespaces, namespace)
       logger::log_formatter(logger::formatter_paste, namespace = namespace)
-      logger::log_layout(layout = rave_logger_layout, namespace = namespace)
+      logger::log_layout(layout = rave_logger_layout_generator(
+        time_format = "%H:%M:%S", session_len = 4, abbrev = TRUE
+      ), namespace = namespace, index = 1)
+      logger::log_layout(layout = rave_logger_layout_generator(),
+                         namespace = namespace, index = 2)
       logger::log_threshold(level = logger::TRACE,
                             namespace = namespace, index = 1)
+      logger::log_appender(appender = logger::appender_console, namespace = namespace, index = 1)
+      logger::log_appender(appender = logger::appender_file(nullfile()), namespace = namespace, index = 2)
     }
 
     if(use_glue) {
@@ -342,6 +391,7 @@ appender_ravedash <- function (
     } else {
       msg <- paste(..., collapse = .sep, sep = .sep)
     }
+
 
     logger::log_level(level = loglevel, namespace = namespace, msg)
 
@@ -406,7 +456,7 @@ appender_ravedash <- function (
 
     filelevel <- get_levelr(Sys.getenv("RAVE_LOGGER_FILELEVEL", unset = "debug"))
 
-    for(namespace in registered_namespaces){
+    for(namespace in logger_data$registered_namespaces){
       if(valid_root) {
         path <- file.path(root_path, sprintf("%s.log", namespace))
       } else {

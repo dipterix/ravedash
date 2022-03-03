@@ -4,16 +4,23 @@
 \alias{module_server_common}
 \title{Default module server function}
 \usage{
-module_server_common(input, output, session, check_data_loaded, ...)
+module_server_common(
+  module_id,
+  check_data_loaded,
+  ...,
+  session = shiny::getDefaultReactiveDomain()
+)
 }
 \arguments{
-\item{input, output, session}{shiny input, output, and session object}
+\item{module_id}{'RAVE' module ID}
 
 \item{check_data_loaded}{a function that takes zero to one argument and
 must return either \code{TRUE} if data has been loaded or \code{FALSE}
 if loader needs to be open to load data.}
 
 \item{...}{ignored}
+
+\item{session}{shiny session}
 }
 \value{
 A list of server utility functions; see 'Examples' below.
@@ -26,12 +33,9 @@ data loader panel.
 
 # Debug in non-reactive session: create fake session
 fake_session <- shiny::MockShinySession$new()
-fake_input <- fake_session$input
-fake_output <- fake_session$output
 
 # register common-server function
-module_server_common(input = fake_input,
-                     output = fake_output,
+module_server_common(module_id = "mock-session",
                      session = fake_session)
 server_tools <- get_default_handlers(fake_session)
 
@@ -43,6 +47,9 @@ server_tools$run_analysis_onchange
 
 server_tools$run_analysis_flag
 
+server_tools$module_is_active
+
+server_tools$simplify_view
 
 # 'RAVE' module server function
 server <- function(input, output, session, ...){
@@ -50,8 +57,8 @@ server <- function(input, output, session, ...){
   pipeline_path <- "PATH to module pipeline"
 
   module_server_common(
-    input, output, session,
-    function(first_time){
+    module_id = session$ns(NULL),
+    check_data_loaded = function(first_time){
 
       re <- tryCatch({
         # Try to read data from pipeline results
@@ -74,7 +81,7 @@ server <- function(input, output, session, ...){
         # Return FALSE indicating no data has been found
         FALSE
       })
-    }
+    }, session = session
   )
 
 }

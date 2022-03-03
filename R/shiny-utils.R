@@ -467,6 +467,10 @@ get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
       info <- shiny::isolate({
         rave_events$active_module
       })
+      # make sure module_id is inside!!!
+      if(!'id' %in% names(info)){ return(NULL) }
+      rave_id <- session$cache$get("rave_id", missing = "")
+      info$rave_id <- rave_id
       return(info)
     }
   }
