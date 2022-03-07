@@ -393,6 +393,13 @@ abbr_module_id <- function(module_id, ...){
     }
 
 
+    if(loglevel < logger::ERROR){
+      msg <- c(msg, utils::capture.output({
+        eval(quote({lobstr::cst()}), envir = parent.frame())
+      }))
+      msg <- paste(msg, collapse = "\n")
+    }
+
     logger::log_level(level = loglevel, namespace = namespace, msg)
 
     invisible(msg)
@@ -545,3 +552,16 @@ logger_threshold <- function(
   invisible()
 
 }
+
+
+#' @rdname logger
+#' @export
+logger_error_condition <- function(cond, details = TRUE, level = "error"){
+  tback <- paste(utils::capture.output(traceback(cond)), collapse = "\n")
+  if(is.null(cond$call)){
+    logger("Error: ", cond$message, "\nTraceback:\n", tback, level = level)
+  } else {
+    logger("Error in ", cond$call, ": ", cond$message, "\nTraceback:\n", tback, level = level)
+  }
+}
+

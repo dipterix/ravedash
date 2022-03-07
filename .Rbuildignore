@@ -1,3 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^adhoc$
+^_rs_job\.R$
+^ui\.R$
