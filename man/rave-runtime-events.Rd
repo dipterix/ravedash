@@ -13,7 +13,10 @@
 \alias{current_shiny_theme}
 \title{'RAVE' run-time events}
 \usage{
-register_rave_session(session = shiny::getDefaultReactiveDomain(), .rave_id)
+register_rave_session(
+  session = shiny::getDefaultReactiveDomain(),
+  .rave_id = NULL
+)
 
 get_default_handlers(session = shiny::getDefaultReactiveDomain())
 

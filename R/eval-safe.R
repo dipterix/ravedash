@@ -1,6 +1,13 @@
 
-safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {}){
+safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {}, log_error = "error"){
   expr_ = substitute(expr)
+
+  parent_frame <- parent.frame()
+  options(rlang_trace_top_env = parent_frame)
+  current_env <- getOption('rlang_trace_top_env', NULL)
+  on.exit({
+    options(rlang_trace_top_env = current_env)
+  })
 
   tryCatch({
     force(expr)
@@ -9,8 +16,6 @@ safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {})
       onFailure(e)
     }
 
-    logger_error_condition(e)
-    logger(c("Wrapped expressions:", deparse(expr_)), .sep = "\n", level = "error")
     if(dipsaus::shiny_is_running()) {
       try({
         shidashi::show_notification(
@@ -23,6 +28,9 @@ safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {})
         )
       }, silent = TRUE)
     }
+
+    logger_error_condition(e)
+    logger(c("Wrapped expressions:", deparse(expr_)), .sep = "\n", level = log_error)
 
 
   }, finally = finally)

@@ -2,6 +2,8 @@
 #' @importFrom dipsaus %?<-%
 NULL
 
+gray_label_color <- "#c8c9ca"
+
 stopifnot2 <- function (..., msg = "Condition not satisfied") {
   if (!all(c(...))) {
     stop(msg)

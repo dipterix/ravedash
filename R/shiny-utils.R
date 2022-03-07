@@ -214,7 +214,7 @@ names.ravedash_shiny_icons <- function(x){
 #' }
 #'
 #' @export
-register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .rave_id){
+register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .rave_id = NULL){
   if(is.null(session)){
     session <- shiny::MockShinySession$new()
   }
@@ -229,7 +229,7 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
   }
 
   if(!root_session$cache$exists('rave_id')){
-    if(!missing(.rave_id)){
+    if(!missing(.rave_id) && length(.rave_id)){
       rave_id <- paste(unlist(.rave_id), collapse = "")
       rave_id <- gsub("[^a-zA-Z0-9]", "", rave_id)
       if(nchar(rave_id) == 0){
@@ -459,6 +459,14 @@ ravedash_footer <- function(module_id = NULL){
         `data-toggle` = "tooltip",
         title = "Click to toggle the data loader",
         `rave-action` = '{"type": "toggle_loader"}'
+      ),
+      shiny::tags$button(
+        type="button",
+        class="btn btn-default border-right-1 border-left-1 rave-button",
+        `data-toggle` = "tooltip",
+        title = "Keyboard shortcut: CTRL+Enter / Command+Return (OSX)",
+        `rave-action` = '{"type": "run_analysis"}',
+        "Run Analysis"
       ),
       shiny::tags$button(
         type="button",

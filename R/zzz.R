@@ -10,6 +10,7 @@
       quiet = TRUE)
   }, silent = TRUE)
 
+  options("ravedash.urls" = dipsaus::fastmap2())
 
 }
 

@@ -392,11 +392,9 @@ abbr_module_id <- function(module_id, ...){
       msg <- paste(..., collapse = .sep, sep = .sep)
     }
 
-
     if(loglevel < logger::ERROR){
-      msg <- c(msg, utils::capture.output({
-        eval(quote({lobstr::cst()}), envir = parent.frame())
-      }))
+      trace_back <- rlang::trace_back(globalenv())
+      msg <- c(msg, format(trace_back, simplify = "none"))
       msg <- paste(msg, collapse = "\n")
     }
 
