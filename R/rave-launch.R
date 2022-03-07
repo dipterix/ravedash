@@ -8,6 +8,8 @@
 #' @export
 debug_modules <- function(module_root = rstudioapi::getActiveProject(), host = '127.0.0.1', port = 17283, jupyter = TRUE, ...){
 
+  options("rave.run.if_false" = FALSE)
+
   if(jupyter){
     jupyter_port <- raveio::raveio_getopt("jupyter_port", default = 17284)
     jupyter_wd <- raveio::raveio_getopt('data_dir')

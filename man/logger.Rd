@@ -4,6 +4,7 @@
 \alias{logger}
 \alias{set_logger_path}
 \alias{logger_threshold}
+\alias{logger_error_condition}
 \title{Logger system used by 'RAVE'}
 \usage{
 logger(
@@ -23,6 +24,8 @@ logger_threshold(
   module_id,
   type = c("console", "file", "both")
 )
+
+logger_error_condition(cond, details = TRUE, level = "error")
 }
 \arguments{
 \item{..., .envir, .sep}{passed to \code{\link[raveio]{glue}}, if

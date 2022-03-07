@@ -8,7 +8,8 @@ module_server_common(
   module_id,
   check_data_loaded,
   ...,
-  session = shiny::getDefaultReactiveDomain()
+  session = shiny::getDefaultReactiveDomain(),
+  parse_env = NULL
 )
 }
 \arguments{

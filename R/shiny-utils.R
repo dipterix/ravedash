@@ -284,9 +284,18 @@ get_default_handlers <- function(session = shiny::getDefaultReactiveDomain()){
 
 #' @rdname rave-runtime-events
 #' @export
-fire_rave_event <- function(key, value, global = FALSE, force = FALSE, session = shiny::getDefaultReactiveDomain()){
+fire_rave_event <- function(key, value, global = FALSE, force = FALSE,
+                            session = shiny::getDefaultReactiveDomain(),
+                            .internal_ok = FALSE){
   force(key)
+
+  if(!.internal_ok && key %in% c("active_module")){
+    logger("`fire_rave_event`: key 'active_module' is reserved. Do not manually set this key.", level = "error")
+    return(invisible())
+  }
+
   force(value)
+
   tool <- register_rave_session(session)
 
   logger("Firing RAVE-event: ", key, level = "trace")
@@ -359,7 +368,20 @@ watch_loader_opened <- function(session = shiny::getDefaultReactiveDomain()){
 watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()){
   tool <- register_rave_session(session)
   res <- tool$rave_event$data_loaded
-  structure(length(res) && !isFALSE(res), timestamp = res)
+
+  # 1. load from pipeline settings only
+  # 2. combinations of subject default and pipeline settings
+
+  if(length(res) && is.list(res)){
+    return(structure(
+      TRUE,
+      timestamp = res$timestamp,
+      force = isTRUE(res$force)
+    ))
+  }
+  structure(length(res) && !isFALSE(res),
+            timestamp = res,
+            force = FALSE)
 }
 
 #' @rdname rave-runtime-events

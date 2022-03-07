@@ -66,7 +66,7 @@
 #' }
 #'
 #' @export
-module_server_common <- function(module_id, check_data_loaded, ..., session = shiny::getDefaultReactiveDomain()){
+module_server_common <- function(module_id, check_data_loaded, ..., session = shiny::getDefaultReactiveDomain(), parse_env = NULL){
 
   if(!length(session)){
     if(dipsaus::shiny_is_running()){
@@ -91,7 +91,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     output <- session$output
   }
 
-  if(missing(check_data_loaded)) {
+  if(missing(check_data_loaded) || !is.function(check_data_loaded)) {
     logger("`module_server_common`: `check_data_loaded` is missing. Data loader is disabled", level = "debug")
     check_data_loaded <- function(){ return(TRUE) }
   }
@@ -123,7 +123,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
 
   # parse, load module
-  shiny::observe({
+  observe({
     rave_action <- root_session$input[["@rave_action@"]]
 
     if(!is.list(rave_action) || !length(rave_action$type)) { return() }
@@ -146,9 +146,9 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     local_reactives$rave_action
   }), millis = 50)
 
-  shiny::observe({
+  observe({
     rave_action <- get_rave_action()
-    ravedash::fire_rave_event(key = rave_action$type, value = rave_action)
+    fire_rave_event(key = rave_action$type, value = rave_action, .internal_ok = TRUE)
     if(rave_action$parent_frame) {
       ravedash::logger("[{rave_action$type}] A JavaScript rave-action fired from parent frame.",
                        level = "trace", use_glue = TRUE)
@@ -161,7 +161,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       get_rave_action(),
       ignoreNULL = TRUE, ignoreInit = FALSE)
 
-  handler_on_data_changed <- shiny::observe({
+  handler_on_data_changed <- observe({
     # Check whether is there any missing data for this module
     check_results <- FALSE
     tryCatch({
@@ -220,7 +220,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       ignoreInit = FALSE, ignoreNULL = FALSE
     )
 
-  shiny::observe({
+  observe({
     toggle <- ravedash::get_rave_event("toggle_loader")
     # active_module <- ravedash::watch_active_module()
     if(!ravedash::watch_loader_opened()){
@@ -238,7 +238,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     msg
   })
 
-  handler_open_loader <- shiny::observe({
+  handler_open_loader <- observe({
     # Listen to a global event on whether data has changed
     loader_open <- ravedash::watch_loader_opened()
     if(loader_open){
@@ -266,11 +266,11 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       auto_recalculate(local_reactives$auto_recalculate_back_up)
       return(NULL)
     }
-    logger("Triggering run_analysis_flag() with 300ms debounce...", level = "trace")
+    logger("Triggering a deferred signal to run_analysis_flag()", level = "trace")
     get_rave_event("run_analysis")
   }), millis = 300, priority = 99)
 
-  shiny::observe({
+  observe({
     logger("run_analysis_flag() triggered!", level = "trace")
     local_data$changed_inputs <- NULL
   }) |>
@@ -312,7 +312,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   })
 
   shiny::bindEvent(
-    shiny::observe({
+    observe({
       watch_ids <- local_reactives$watch_ids
       if(!length(watch_ids)){ return(NULL) }
       inputs <- sensitive_input()
@@ -363,7 +363,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     local_reactives$watch_ids <- inputIds
   }
 
-  shiny::observe({
+  observe({
 
     v <- local_reactives$auto_recalculate
     vb <- local_reactives$auto_recalculate_back_up
@@ -402,7 +402,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       ignoreInit = TRUE
     )
 
-  shiny::observe({
+  observe({
     local_reactives$auto_recalculate <- max(
       local_reactives$auto_recalculate,
       local_reactives$auto_recalculate_back_up
@@ -416,7 +416,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       ignoreNULL = TRUE, ignoreInit = TRUE
     )
 
-  shiny::observe({
+  observe({
     simplified <- shiny::isolate(!isTRUE(local_reactives$view_simplified))
     local_reactives$view_simplified <- simplified
     if(simplified){
@@ -543,6 +543,104 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       'server_tools$module_is_active("another_module")   # whether another module is active'
     )
   )
+
+  # Add-on, register preset components
+  if(is.environment(parse_env) || is.list(parse_env)){
+    local({
+
+      nms <- names(parse_env)
+      for(nm in nms){
+        item <- parse_env[[nm]]
+        if(inherits(item, "RAVEShinyComponentContainer")){
+          logger("Found a RAVEShinyComponentContainer: ", nm, ". validating", level = "trace")
+          item$validate_server(session)
+          lapply(names(item$components), function(nm){
+            item$components[[nm]]$server_func(input, output, session)
+          })
+        }
+      }
+
+    })
+
+
+  }
+
+
+#   tryCatch({
+#     force(settings_file)
+#     pipeline_path <- raveio::pipeline_find(pipeline_name)
+#     pipeline_settings_path <- file.path(pipeline_path, settings_file)
+#
+#     pipeline_settings <- local({
+#       settings <- raveio::load_yaml(pipeline_settings_path)
+#       list(
+#         set = function(...){
+#           args <- list(...)
+#           argnames <- names(args)
+#           if(!length(argnames)){
+#             return(as.list(settings))
+#           }
+#           args <- args[argnames != ""]
+#           argnames <- names(args)
+#           if(!length(argnames)){
+#             return(as.list(settings))
+#           }
+#           for(nm in argnames){
+#             settings[[nm]] <<- args[[nm]]
+#           }
+#           raveio::save_yaml(x = settings, file = pipeline_settings_path)
+#           return(as.list(settings))
+#         },
+#         get = function(key, default = NA){
+#           if(missing(key)){
+#             return(as.list(settings))
+#           }
+#           if(!settings$`@has`(key)){
+#             return(default)
+#           }
+#           settings[[key]]
+#         }
+#       )
+#     })
+#     pipeline_set <- pipeline_settings$set
+#     pipeline_get <- function(key, missing = NULL, constraint){
+#       re <- pipeline_settings$get(key, missing)
+#       if(!missing(constraint)){
+#         re <- re %OF% constraint
+#       }
+#       re
+#     }
+#
+#     component_container <- ravedash:::RAVEShinyComponentContainer$new(
+#       module_id = module_id, pipeline_name = pipeline_name,
+#       settings_file = settings_file, pipeline_path = pipeline_path
+#     )
+#
+#     component_container$validate_server(session)
+#
+#     reactive_handlers$has_pipeline <- TRUE
+#     reactive_handlers$pipeline_name <- pipeline_name
+#     reactive_handlers$pipeline_path <- pipeline_path
+#     reactive_handlers$pipeline_get <- structure(
+#       pipeline_get, class = "ravedash_printable",
+#       docs = paste(
+#         sep = "\n",
+#         "Get variables from last executed pipeline. Usage:\n",
+#         "server_tools <- get_default_handlers()\n",
+#         "# get variable called `varname`",
+#         'server_tools$pipeline_get("varname", missing = NULL)\n',
+#         "# get variable with constraint",
+#         'server_tools$module_is_active("varname", constraint = c("A", "B", "C"))'
+#       )
+#     )
+#     reactive_handlers$pipeline_set <- pipeline_set
+#     reactive_handlers$component_container <- component_container
+#
+#
+#   }, error = function(e) {
+#     reactive_handlers$has_pipeline <- FALSE
+#     logger("Unable to register component container: \n", e$message, level = "warning")
+#   })
 
   invisible(reactive_handlers)
 }

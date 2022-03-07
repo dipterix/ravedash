@@ -22,7 +22,8 @@ fire_rave_event(
   value,
   global = FALSE,
   force = FALSE,
-  session = shiny::getDefaultReactiveDomain()
+  session = shiny::getDefaultReactiveDomain(),
+  .internal_ok = FALSE
 )
 
 get_rave_event(key, session = shiny::getDefaultReactiveDomain())
