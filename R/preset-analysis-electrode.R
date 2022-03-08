@@ -34,6 +34,26 @@ presets_analysis_electrode_selector2 <- function(
     repository
   }
 
+  get_subject <- function(){
+    repo <- get_repo()
+    if(inherits(repo, "rave_prepare_subject")) {
+      subject <- repo$subject
+      return(subject)
+    }
+    return(NULL)
+  }
+
+  get_default <- function(sub_id, missing = NULL, use_cache = TRUE, constraint = NULL) {
+    vname <- comp$get_sub_element_varnames(sub_id)
+    subject <- get_subject()
+    if(inherits(subject, "RAVESubject")) {
+      missing <- subject$get_default(vname,
+                                     default_if_missing = missing, simplify = TRUE)
+    }
+    comp$get_settings_value(use_cache = use_cache, default = missing,
+                            key = vname, constraint = constraint)
+  }
+
   # component_container$add_components(comp)
 
   comp$ui_func <- function(id, value, depends){
@@ -104,8 +124,8 @@ presets_analysis_electrode_selector2 <- function(
     }
 
     # get pipeline's default, or subject's default, or program default
-    reset_electrode_selectors <- function(...){
-      logger("Reset {id}", level = "trace", use_glue = TRUE)
+    reset <- function(...){
+      logger("Updating {id}", level = "trace", use_glue = TRUE)
       repo <- get_repo()
       if(is.null(repo)) { return() }
 
@@ -114,7 +134,8 @@ presets_analysis_electrode_selector2 <- function(
       electrode_table <- electrode_table[electrode_table$Electrode %in% electrodes, ]
       electrode_table_names <- names(electrode_table)
 
-      electrode_text <- dipsaus::parse_svec(comp$get_settings_value(default = NULL))
+      electrode_text <- dipsaus::parse_svec(get_default(sub_id = NULL, missing = NULL))
+      electrode_text <- electrode_text[electrode_text %in% repo$electrode_list]
       if(!length(electrode_text)){
         electrode_text <- electrodes[[1]]
       }
@@ -124,17 +145,13 @@ presets_analysis_electrode_selector2 <- function(
       # 1. settings.yaml (pipeline settings)
       # 2. subject's default
       # 3. guess default
-      electrode_category_selector <- comp$get_settings_value(
-        key = comp$get_sub_element_varnames(category_str),
-        default = repo$subject$get_default(
-          comp$get_sub_element_varnames(category_str),
-          default_if_missing = c('freesurferlabel', "FSLabel",
-                                 comp$get_sub_element_input(category_str))
-        ),
+      electrode_category_selector <- get_default(
+        sub_id = category_str, missing = c('freesurferlabel', "FSLabel",
+                                           comp$get_sub_element_input(category_str)),
         constraint = electrode_table_names
       )
 
-      ravedash::logger("Initializing `{id}__{category_str}`: {electrode_category_selector}", level = "trace", use_glue = TRUE)
+      ravedash::logger("Updating `{id}__{category_str}`, value: {electrode_category_selector} {length(electrode_table_names)}", level = "trace", use_glue = TRUE)
       shiny::updateSelectInput(
         session = session,
         inputId = comp$get_sub_element_id(category_str,
@@ -142,10 +159,11 @@ presets_analysis_electrode_selector2 <- function(
         choices = electrode_table_names,
         selected = electrode_category_selector
       )
-      ravedash::logger("Initializing `{id}`: {electrode_text}", level = "trace", use_glue = TRUE)
+      electrode_list_text <- dipsaus::deparse_svec(repo$electrode_list, collapse = ", ")
+      ravedash::logger("Updating `{id}`, value: {electrode_text}, label: Select electrode by number (currently loaded: {electrode_list_text})", level = "trace", use_glue = TRUE)
       shiny::updateTextInput(
         session = session, inputId = comp$get_sub_element_id(with_namespace = FALSE),
-        label = sprintf("Select electrode by number (currently loaded: %s)", dipsaus::deparse_svec(repo$electrode_list)),
+        label = sprintf("Select electrode by number (currently loaded: %s)", electrode_list_text),
         value = electrode_text
       )
 
@@ -204,7 +222,7 @@ presets_analysis_electrode_selector2 <- function(
             new_value <- dipsaus::deparse_svec(electrodes)
             if(!identical(new_value, comp$current_value)){
               val <- dipsaus::deparse_svec(electrodes)
-              ravedash::logger("Updating `{id}` - {val}", level = "trace", use_glue = TRUE)
+              ravedash::logger("Updating `{id}`, value: {val}", level = "trace", use_glue = TRUE)
               shiny::updateTextInput(
                 session = session, inputId = id,
                 value = val
@@ -272,21 +290,37 @@ presets_analysis_electrode_selector2 <- function(
         return()
       }
       # ssss
-      electrodes <- dipsaus::parse_svec(comp$get_settings_value(default = comp$current_value))
+      electrodes <- dipsaus::parse_svec(get_default(NULL, missing = ""))
       electrodes <- electrodes[electrodes %in% repository$electrode_list]
       if(!length(electrodes)){
         electrodes <- repository$electrode_list[[1]]
       }
       category <- comp$get_sub_element_input(category_str)
+      electrode_table_names <- names(repository$electrode_table)
+      if(!length(category) || !isTRUE(category %in% electrode_table_names)) {
+        category <- get_default(
+          sub_id = category_str, missing = c('freesurferlabel', "FSLabel"),
+          constraint = electrode_table_names
+        )
+        ravedash::logger("Updating `{id}__{category_str}`, value: {category} ({length(electrode_table_names)})",
+                         level = "trace", use_glue = TRUE)
+        shiny::updateSelectInput(
+          session = session,
+          inputId = comp$get_sub_element_id(category_str,
+                                            with_namespace = FALSE),
+          choices = electrode_table_names,
+          selected = category
+        )
+      }
 
       choices <- character(0L)
-      if(length(category) && isTRUE(category %in% names(repository$electrode_table))) {
+      if(length(category) && isTRUE(category %in% electrode_table_names)) {
         choices <- repository$electrode_table[[category]]
         if(!length(choices)){ choices <- character(0L) }
       }
 
       # selected <- choices[repository$electrode_table$Electrode %in% electrodes]
-      ravedash::logger("Initializing choices of `{id}__{category_choices_str}`", level = "trace", use_glue = TRUE)
+      ravedash::logger("Updating choices of `{id}__{category_choices_str}` ({length(choices)})", level = "trace", use_glue = TRUE)
       shiny::updateSelectInput(
         session = session,
         inputId = comp$get_sub_element_id(
@@ -300,9 +334,20 @@ presets_analysis_electrode_selector2 <- function(
       if(identical(v, comp$current_value)){
         v <- sprintf("%s ", v)
       }
+      # ravedash::logger("Updating `{id}`, value: {v}", level = "trace", use_glue = TRUE)
+      # shiny::updateTextInput(
+      #   session = session,
+      #   inputId = id,
+      #   value = v
+      # )
+
+      electrode_list_text <- dipsaus::deparse_svec(repository$electrode_list, collapse = ", ")
+      ravedash::logger("Updating `{id}`, value: {v}, label: Select electrode by number (currently loaded: {electrode_list_text})", level = "trace", use_glue = TRUE)
       shiny::updateTextInput(
         session = session,
         inputId = id,
+        label = sprintf("Select electrode by number (currently loaded: %s)",
+                        electrode_list_text),
         value = v
       )
     }
@@ -318,7 +363,7 @@ presets_analysis_electrode_selector2 <- function(
       )
 
     observe({
-      reset_electrode_selectors()
+      reset()
     }) |>
       shiny::bindEvent(
         comp$get_sub_element_input(reset_str),
@@ -331,7 +376,7 @@ presets_analysis_electrode_selector2 <- function(
       dipsaus::deparse_svec(dipsaus::parse_svec(comp$current_value))
     })
 
-    comp$set_tool("reset_electrode_selectors", reset_electrode_selectors, server_needed = TRUE)
+    comp$set_tool("reset", reset, server_needed = TRUE)
     comp$set_tool("initialize_with_new_data", function(){
       shiny::isolate(initialize_with_new_data_reactive())
     }, server_needed = TRUE)

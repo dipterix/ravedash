@@ -116,6 +116,7 @@ card_href <- function(title, type = "input",
 #' @rdname rave-input-output-card
 #' @export
 input_card <- function(title, ...,
+                       class = "",
                        class_header = "shidashi-anchor",
                        class_body = "padding-10",
                        class_foot = "padding-10",
@@ -150,13 +151,14 @@ input_card <- function(title, ...,
       )
     )
   }
-  shidashi::card(title = title, ..., tools = all_tools, class_body = class_body, class_foot = class_foot, footer = footer, class_header = class_header)
+  class <- dipsaus::combine_html_class(class, "ravedash-input-card")
+  shidashi::card(title = title, ..., class = class, tools = all_tools, class_body = class_body, class_foot = class_foot, footer = footer, class_header = class_header)
 }
 
 
 #' @rdname rave-input-output-card
 #' @export
-output_card <- function(title, ..., class_body = "padding-10",
+output_card <- function(title, ..., class = "", class_body = "padding-10",
                         class_foot = "padding-10", href = "auto", tools = NULL){
 
   if(identical(href, "auto")){
@@ -178,5 +180,6 @@ output_card <- function(title, ..., class_body = "padding-10",
     )
   }
 
-  shidashi::card(title = title, ..., tools = all_tools, class_body = class_body, class_foot = class_foot)
+  class <- dipsaus::combine_html_class(class, "ravedash-output-card")
+  shidashi::card(title = title, ..., class = class, tools = all_tools, class_body = class_body, class_foot = class_foot)
 }

@@ -233,9 +233,20 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     shiny::bindEvent(ravedash::get_rave_event("toggle_loader"),
                      ignoreInit = FALSE, ignoreNULL = TRUE)
 
-  output$loader_short_message <- shiny::renderText({
-    msg <- paste(ravedash::get_rave_event('loader_message'), collapse = "")
+  output[["__loader_short_message__"]] <- shiny::renderText({
+    msg <- trimws(paste(ravedash::get_rave_event('loader_message'), collapse = ""))
+    if(msg == "") {
+      msg <- "Toggle data selector"
+    }
     msg
+  })
+
+  output[["__recalculation_message__"]] <- shiny::renderText({
+    if(isTRUE(local_reactives$auto_recalculate > 0)) {
+      return("ON")
+    } else {
+      return("OFF")
+    }
   })
 
   handler_open_loader <- observe({
@@ -269,6 +280,21 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     logger("Triggering a deferred signal to run_analysis_flag()", level = "trace")
     get_rave_event("run_analysis")
   }), millis = 300, priority = 99)
+
+  observe({
+    v <- !isTRUE(local_reactives$auto_recalculate > 0)
+    auto_recalculate(v)
+    msg <- sprintf("Auto re-calculation is turned %s", ifelse(v, "ON", "OFF"))
+    shidashi::show_notification(
+      message = msg, title = "Info", type = 'success',
+      close = TRUE, autohide = TRUE
+    )
+  }) |>
+    shiny::bindEvent(
+      get_rave_event("toggle_auto_recalculation"),
+      ignoreInit = TRUE,
+      ignoreNULL = TRUE
+    )
 
   observe({
     logger("run_analysis_flag() triggered!", level = "trace")

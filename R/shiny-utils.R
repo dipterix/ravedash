@@ -11,34 +11,36 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
   ensure_li <- function(){
     if(is.null(li)){
       li <<- list(
-        bars = shiny::icon("bars"),
-        grid = shiny::icon("th"),
-        keyboard = shiny::icon("keyboard"),
-        help = shiny::icon('question-circle'),
-        sync = shiny::icon('sync'),
-        expand = shiny::icon('expand'),
-        tasks = shiny::icon('tasks'),
-        angle_right = shiny::icon('angle-right'),
-        arrow_right = shiny::icon('arrow-right'),
-        external_link = shiny::icon('external-link-alt'),
-        plus = shiny::icon('plus'),
-        minus = shiny::icon('minus'),
-        download = shiny::icon("download"),
-        save = shiny::icon("save"),
-        trash = shiny::icon("trash"),
-        export = shiny::icon("file-export"),
-        puzzle = shiny::icon("puzzle-piece"),
-        user_md = shiny::icon("user-md"),
-        image = shiny::icon("file-image"),
-        magic = shiny::icon("magic")
+        bars = "bars",
+        grid = "th",
+        keyboard = "keyboard",
+        help = 'question-circle',
+        sync = 'sync',
+        expand = 'expand',
+        tasks = 'tasks',
+        angle_right = 'angle-right',
+        arrow_right = 'arrow-right',
+        external_link = 'external-link-alt',
+        plus = 'plus',
+        minus = 'minus',
+        download = "download",
+        save = "save",
+        trash = "trash",
+        export = "file-export",
+        puzzle = "puzzle-piece",
+        user_md = "user-md",
+        image = "file-image",
+        magic = "magic",
+        check = "check",
+        simplybuilt = "simplybuilt"
       )
     }
     li
   }
 
-  get_icon <- function(name){
+  get_icon <- function(name, class = NULL){
     ensure_li()
-    re <- li[[name]]
+    re <- shiny::icon(li[[name]], class = class)
     if(is.null(re)){
       warning("Icon `", name, "` not found, please file an issue to the 'RAVE' team to support your icon")
       re <- shiny::icon(name)
@@ -55,7 +57,10 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
     if(name %in% get_name()){
       stop("Icon with name `", name, "` has been registered. Please consider other names")
     }
-    li[[name]] <<- shidashi::as_icon(icon)
+    if(!is.character(icon)) {
+      stop("`set_name` icon must be characters")
+    }
+    li[[name]] <<- icon
   }
 
   list(
@@ -81,8 +86,8 @@ names.ravedash_shiny_icons <- function(x){
 `[[.ravedash_shiny_icons` <- `$.ravedash_shiny_icons`
 
 #' @export
-`[.ravedash_shiny_icons` <- function(x, ...){
-  stop("Please use shiny_icons[[...]] or shiny_icons$name instead.")
+`[.ravedash_shiny_icons` <- function(x, i, ...){
+  .shiny_icons_methods$get_icon(i, dipsaus::combine_html_class(c(...)))
 }
 
 
@@ -454,7 +459,7 @@ ravedash_footer <- function(module_id = NULL){
       # ),
       shiny::tags$button(
         type="button",
-        id = ns("loader_short_message"),
+        id = ns("__loader_short_message__"),
         class="btn btn-default border-right-1 btn-go-top shiny-text-output rave-button",
         `data-toggle` = "tooltip",
         title = "Click to toggle the data loader",
@@ -481,7 +486,92 @@ ravedash_footer <- function(module_id = NULL){
       ),
       shiny::div(
         class = "dropdown-menu dropdown-menu-right",
-        title = "Jump to:"
+        shiny::h6(
+          class="dropdown-header",
+          "Controllers"
+        ),
+        # shiny::a(
+        #   class = "dropdown-item rave-button",
+        #   href = "#",
+        #   `rave-action` = '{"type": "toggle_auto_recalculation"}',
+        #   shiny_icons$sync,
+        #   "Auto re-calculation: ", shiny::textOutput(
+        #     outputId = ns("__recalculation_message__"),
+        #     container = function(...){
+        #       shiny::span(style = "color: #007bff", ...)
+        #     })
+        # ),
+        shiny::div(
+          class = "px-3 py-1",
+          shiny::a(
+            class = "btn btn-default rave-button",
+            href = "#",
+            `rave-action` = '{"type": "toggle_auto_recalculation"}',
+            `data-toggle` = "tooltip",
+            title = "Toggle auto re-calculation",
+            shiny_icons["sync"],
+            shiny::textOutput(
+              outputId = ns("__recalculation_message__"),
+              container = function(..., class = NULL){
+                shiny::span(style = "color: #007bff", ...,
+                            class = dipsaus::combine_html_class(
+                              class, "pointer-events-none"
+                            ))
+              })
+          ),
+          shiny::a(
+            class = "btn btn-default shidashi-button",
+            href = "#",
+            `shidashi-action` = '{"method": "card", "args": [{"selector": ".ravedash-input-card", "method": "expand"}]}',
+            `data-toggle` = "tooltip",
+            title = "Expand all input cards",
+            shiny_icons['plus']
+          ),
+          shiny::a(
+            class = "btn btn-default shidashi-button",
+            href = "#",
+            `shidashi-action` = '{"method": "card", "args": [{"selector": ".ravedash-input-card", "method": "collapse"}]}',
+            `data-toggle` = "tooltip",
+            title = "Collapse all input cards",
+            shiny_icons['minus']
+          ),
+          shiny::a(
+            class = "btn btn-default rave-button",
+            href = "#",
+            `rave-action` = '{"type": "simplify_toggle"}',
+            shiny_icons['simplybuilt'],
+            `data-toggle` = "tooltip",
+            title = "Show more/fewer options"
+          )
+        ),
+        # shiny::a(
+        #   class = "dropdown-item shidashi-button",
+        #   href = "#",
+        #   `shidashi-action` = '{"method": "card", "args": [{"selector": ".ravedash-input-card", "method": "expand"}]}',
+        #   shiny_icons$plus,
+        #   "Expand all input cards"
+        # ),
+        # shiny::a(
+        #   class = "dropdown-item shidashi-button",
+        #   href = "#",
+        #   `shidashi-action` = '{"method": "card", "args": [{"selector": ".ravedash-input-card", "method": "collapse"}]}',
+        #   shiny_icons$minus,
+        #   "Collapse all input cards"
+        # ),
+        # shiny::a(
+        #   class = "dropdown-item rave-button",
+        #   href = "#",
+        #   `rave-action` = '{"type": "simplify_toggle"}',
+        #   shiny_icons$simplybuilt,
+        #   "Show more/fewer options"
+        # ),
+        shiny::div(
+          class = "dropdown-divider"
+        ),
+        shiny::h6(
+          class="dropdown-header",
+          "Quick Access"
+        )
       )
     )
   )

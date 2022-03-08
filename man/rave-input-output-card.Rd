@@ -9,6 +9,7 @@
 input_card(
   title,
   ...,
+  class = "",
   class_header = "shidashi-anchor",
   class_body = "padding-10",
   class_foot = "padding-10",
@@ -21,6 +22,7 @@ input_card(
 output_card(
   title,
   ...,
+  class = "",
   class_body = "padding-10",
   class_foot = "padding-10",
   href = "auto",

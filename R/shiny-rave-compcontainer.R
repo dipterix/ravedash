@@ -101,6 +101,29 @@ RAVEShinyComponentContainer <- R6::R6Class(
         self$components[[nm]]$collect_settings(map = map)
       }
       map
+    },
+
+    get_input_ids = function(ids){
+      if(missing(ids)){
+        ids <- names(self$components)
+      } else {
+        ids <- ids[ids %in% names(self$components)]
+      }
+      re <- lapply(ids, function(nm){
+        comp <- self$components[[nm]]
+        sub_ids <- c('', comp$sub_elements)
+        sub_ids <- sapply(sub_ids, function(sub_id){
+          if(sub_id == ''){ sub_id <- NULL }
+          comp$get_sub_element_id(sub_id, with_namespace = FALSE)
+        })
+        sub_ids
+      })
+      unique(unlist(re))
+    },
+
+    reset_data = function(){
+      self$data[['@reset']]()
+      self$cache[['@reset']]()
     }
 
   ),
