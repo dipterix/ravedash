@@ -495,7 +495,29 @@ abbr_module_id <- function(module_id, ...){
 
 #' @rdname logger
 #' @export
-logger <- .logger_functions$logger
+logger <- function(..., level = c("info", "warning", "error", "fatal", "debug", "trace"),
+                   calc_delta = 'auto', .envir = parent.frame(), .sep = "",
+                   use_glue = FALSE, reset_timer = FALSE) {
+  force(.envir)
+  level <- match.arg(level)
+  if(level == 'fatal'){
+    .logger_functions$logger(..., level = level, calc_delta = calc_delta,
+                             .envir = .envir, .sep = .sep, use_glue = use_glue,
+                             reset_timer = reset_timer)
+  } else {
+    call <- match.call()
+    tryCatch({
+      .logger_functions$logger(..., level = level, calc_delta = calc_delta,
+                               .envir = .envir, .sep = .sep, use_glue = use_glue,
+                               reset_timer = reset_timer)
+    }, error = function(e){
+      cat("Cannot log the following call: \n")
+      print(call)
+      cat("\nReason: ", e$message, "\n")
+    })
+  }
+
+}
 
 #' @rdname logger
 #' @export
@@ -555,7 +577,11 @@ logger_threshold <- function(
 #' @rdname logger
 #' @export
 logger_error_condition <- function(cond, details = TRUE, level = "error"){
-  tback <- paste(utils::capture.output(traceback(cond)), collapse = "\n")
+  tback <- tryCatch({
+    paste(utils::capture.output(traceback(cond)), collapse = "\n")
+  }, error = function(e){
+    "(cannot obtain traceback info)"
+  })
   if(is.null(cond$call)){
     logger("Error: ", cond$message, "\nTraceback:\n", tback, level = level)
   } else {

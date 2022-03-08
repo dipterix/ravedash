@@ -120,6 +120,9 @@ presets_baseline_choices <- function(
                                             constraint = baseline_along_choices)
       baseline_windows <- get_default(baseline_windows_str,
                                       missing = c(time_range[1], max(time_range[1], 0)))
+      baseline_windows <- lapply(baseline_windows, function(x){
+        unlist(x$window_interval)
+      })
       baseline_windows <- tryCatch({
         raveio::validate_time_window(baseline_windows)
       }, error = function(e){

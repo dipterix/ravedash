@@ -476,7 +476,7 @@ ravedash_footer <- function(module_id = NULL){
       shiny::tags$button(
         type="button",
         class="btn btn-default btn-go-top border-left-1 dropdown-toggle dropdown-toggle-split", href="#",
-        "data-toggle"="dropdown",
+        # "data-toggle"="dropdown",
         "aria-haspopup"="false",
         "aria-expanded"="false",
         shiny::span(
