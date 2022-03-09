@@ -26,29 +26,29 @@ presets_loader_electrodes <- function(
 
     get_subject <- loader_subject$get_tool("get_subject")
 
-    observe({
-      if(!loader_subject$sv$is_valid()){ return() }
-      subject <- get_subject()
-      if(is.null(subject)){ return() }
+    shiny::bindEvent(
+      observe({
+        if(!loader_subject$sv$is_valid()){ return() }
+        subject <- get_subject()
+        if(is.null(subject)){ return() }
 
-      # electrodes
-      # check if subject is last input
-      electrode_text <- dipsaus::deparse_svec(subject$electrodes)
-      if(isTRUE(loader_subject$get_settings_value(use_cache = TRUE) == subject$subject_code)) {
-        electrode_text <- comp$get_settings_value(default = electrode_text, use_cache = TRUE)
-      }
-      shiny::updateTextInput(
-        session = session,
-        inputId = id,
-        value = electrode_text
-      )
+        # electrodes
+        # check if subject is last input
+        electrode_text <- dipsaus::deparse_svec(subject$electrodes)
+        if(isTRUE(loader_subject$get_settings_value(use_cache = TRUE) == subject$subject_code)) {
+          electrode_text <- comp$get_settings_value(default = electrode_text, use_cache = TRUE)
+        }
+        shiny::updateTextInput(
+          session = session,
+          inputId = id,
+          value = electrode_text
+        )
 
-    }) |>
-      shiny::bindEvent(
-        loader_project$current_value,
-        loader_subject$current_value,
-        ignoreNULL = TRUE
-      )
+      }),
+      loader_project$current_value,
+      loader_subject$current_value,
+      ignoreNULL = TRUE
+    )
 
   }
 

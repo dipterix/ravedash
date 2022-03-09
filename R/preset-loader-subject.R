@@ -41,24 +41,24 @@ presets_loader_subject <- function(
 
     }
 
-    observe({
-      if(!loader_project$sv$is_valid()){ return() }
-      project_name <- input[[loader_project$id]]
-      project <- raveio::as_rave_project(project_name)
-      all_subjects <- project$subjects()
-      selected <- comp$get_settings_value(
-        default = input[[comp$id]],
-        constraint = all_subjects,
-        use_cache = TRUE
-      )
+    shiny::bindEvent(
+      observe({
+        if(!loader_project$sv$is_valid()){ return() }
+        project_name <- input[[loader_project$id]]
+        project <- raveio::as_rave_project(project_name)
+        all_subjects <- project$subjects()
+        selected <- comp$get_settings_value(
+          default = input[[comp$id]],
+          constraint = all_subjects,
+          use_cache = TRUE
+        )
 
-      shiny::updateSelectInput(session = session, inputId = comp$id,
-                               choices = all_subjects, selected = selected)
-    }) |>
-      shiny::bindEvent(
-        input[[loader_project$id]],
-        ignoreNULL = TRUE
-      )
+        shiny::updateSelectInput(session = session, inputId = comp$id,
+                                 choices = all_subjects, selected = selected)
+      }),
+      input[[loader_project$id]],
+      ignoreNULL = TRUE
+    )
 
     comp$set_tool("get_subject", value = get_subject, server_needed = TRUE)
 

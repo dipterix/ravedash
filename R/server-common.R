@@ -147,92 +147,96 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     local_reactives$rave_action
   }), millis = 50)
 
-  observe({
-    rave_action <- get_rave_action()
-    fire_rave_event(key = rave_action$type, value = rave_action, .internal_ok = TRUE)
-    if(rave_action$parent_frame) {
-      ravedash::logger("[{rave_action$type}] A JavaScript rave-action fired from parent frame.",
-                       level = "trace", use_glue = TRUE)
-    } else {
-      ravedash::logger("[{rave_action$type}] A JavaScript rave-action detected from local frame.",
-                       level = "trace", use_glue = TRUE)
-    }
-  }) |>
-    shiny::bindEvent(
-      get_rave_action(),
-      ignoreNULL = TRUE, ignoreInit = FALSE)
+  shiny::bindEvent(
+    observe({
+      rave_action <- get_rave_action()
+      fire_rave_event(key = rave_action$type, value = rave_action, .internal_ok = TRUE)
+      if(rave_action$parent_frame) {
+        ravedash::logger("[{rave_action$type}] A JavaScript rave-action fired from parent frame.",
+                         level = "trace", use_glue = TRUE)
+      } else {
+        ravedash::logger("[{rave_action$type}] A JavaScript rave-action detected from local frame.",
+                         level = "trace", use_glue = TRUE)
+      }
+    }),
+    get_rave_action(),
+    ignoreNULL = TRUE, ignoreInit = FALSE
+  )
 
-  handler_on_data_changed <- observe({
-    # Check whether is there any missing data for this module
-    check_results <- FALSE
-    tryCatch({
 
-      shiny::withLogErrors({
-        if(length(formals(check_data_loaded)) == 0){
-          check_results <- isTRUE(check_data_loaded())
-        } else {
-          check_results <- isTRUE(check_data_loaded(shiny::isolate(local_reactives$first_time)))
-        }
+  handler_on_data_changed <- shiny::bindEvent(
+    observe({
+      # Check whether is there any missing data for this module
+      check_results <- FALSE
+      tryCatch({
 
-        local_reactives$first_time <- FALSE
-        if( check_results ){
-          ravedash::logger("Checking whether data has been loaded: YES")
-        } else {
-          ravedash::logger("Checking whether data has been loaded: NO")
-        }
-      })
-    }, error = function(e){
-      ravedash::logger("Found an error while checking data...", level = "warning")
-      ravedash::logger(paste(e$message, sep = "\n", collapse = "\n"), level = "error")
-      msg <- paste(utils::capture.output({
-        if(length(e$call)){
-          cat("Error in ", deparse1(e$call), ": ", sep = "")
-        } else {
-          cat("Error: ")
-        }
-        cat(e$message, "\nTraceback:\n")
-        traceback(e)
-      }), collapse = "\n")
-      shidashi::show_notification(
-        title = "Error found!", autohide = FALSE, close = TRUE, type = 'danger',
-        message = shiny::div(
-          "Found an error while trying to check this module. The debug message is displayed below.",
-          shiny::hr(),
-          shiny::pre(msg)
+        shiny::withLogErrors({
+          if(length(formals(check_data_loaded)) == 0){
+            check_results <- isTRUE(check_data_loaded())
+          } else {
+            check_results <- isTRUE(check_data_loaded(shiny::isolate(local_reactives$first_time)))
+          }
+
+          local_reactives$first_time <- FALSE
+          if( check_results ){
+            ravedash::logger("Checking whether data has been loaded: YES")
+          } else {
+            ravedash::logger("Checking whether data has been loaded: NO")
+          }
+        })
+      }, error = function(e){
+        ravedash::logger("Found an error while checking data...", level = "warning")
+        ravedash::logger(paste(e$message, sep = "\n", collapse = "\n"), level = "error")
+        msg <- paste(utils::capture.output({
+          if(length(e$call)){
+            cat("Error in ", deparse1(e$call), ": ", sep = "")
+          } else {
+            cat("Error: ")
+          }
+          cat(e$message, "\nTraceback:\n")
+          traceback(e)
+        }), collapse = "\n")
+        shidashi::show_notification(
+          title = "Error found!", autohide = FALSE, close = TRUE, type = 'danger',
+          message = shiny::div(
+            "Found an error while trying to check this module. The debug message is displayed below.",
+            shiny::hr(),
+            shiny::pre(msg)
+          )
         )
-      )
-    })
+      })
 
-    # print(check_results)
-    local_reactives$check_results <- check_results
-    if(isTRUE(check_results)){
-      shidashi::clear_notifications()
-      ravedash::logger("Skip loader interface", level = "debug")
-      ravedash::close_loader()
-      ravedash::fire_rave_event('data_loaded', Sys.time())
-    } else {
-      ravedash::logger("Opening loader interface")
-      ravedash::open_loader()
-      ravedash::fire_rave_event('data_loaded', FALSE)
-    }
-  }) |>
-    shiny::bindEvent(
-      ravedash::get_rave_event("data_changed"),
-      ignoreInit = FALSE, ignoreNULL = FALSE
-    )
+      # print(check_results)
+      local_reactives$check_results <- check_results
+      if(isTRUE(check_results)){
+        shidashi::clear_notifications()
+        ravedash::logger("Skip loader interface", level = "debug")
+        ravedash::close_loader()
+        ravedash::fire_rave_event('data_loaded', Sys.time())
+      } else {
+        ravedash::logger("Opening loader interface")
+        ravedash::open_loader()
+        ravedash::fire_rave_event('data_loaded', FALSE)
+      }
+    }),
+    ravedash::get_rave_event("data_changed"),
+    ignoreInit = FALSE, ignoreNULL = FALSE
+  )
 
-  observe({
-    toggle <- ravedash::get_rave_event("toggle_loader")
-    # active_module <- ravedash::watch_active_module()
-    if(!ravedash::watch_loader_opened()){
-      ravedash::open_loader()
-    } else if(isTRUE(local_reactives$check_results)){
-      ravedash::close_loader()
-    }
+  shiny::bindEvent(
+    observe({
+      toggle <- ravedash::get_rave_event("toggle_loader")
+      # active_module <- ravedash::watch_active_module()
+      if(!ravedash::watch_loader_opened()){
+        ravedash::open_loader()
+      } else if(isTRUE(local_reactives$check_results)){
+        ravedash::close_loader()
+      }
 
-  }) |>
-    shiny::bindEvent(ravedash::get_rave_event("toggle_loader"),
-                     ignoreInit = FALSE, ignoreNULL = TRUE)
+    }),
+    ravedash::get_rave_event("toggle_loader"),
+    ignoreInit = FALSE, ignoreNULL = TRUE
+  )
 
   output[["__loader_short_message__"]] <- shiny::renderText({
     msg <- trimws(paste(ravedash::get_rave_event('loader_message'), collapse = ""))
@@ -250,24 +254,24 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     }
   })
 
-  handler_open_loader <- observe({
-    # Listen to a global event on whether data has changed
-    loader_open <- ravedash::watch_loader_opened()
-    if(loader_open){
-      local_reactives$open_loader <- Sys.time()
-      shidashi::add_class(".module_main_ui", "soft-hidden")
-      shidashi::remove_class(".module_loader_ui", "soft-hidden")
-    } else {
-      local_reactives$open_loader <- FALSE
-      shidashi::add_class(".module_loader_ui", "soft-hidden")
-      shidashi::remove_class(".module_main_ui", "soft-hidden")
-    }
-  }) |>
-    shiny::bindEvent(
-      ravedash::watch_loader_opened(),
-      ignoreInit = FALSE,
-      ignoreNULL = FALSE
-    )
+  handler_open_loader <- shiny::bindEvent(
+    observe({
+      # Listen to a global event on whether data has changed
+      loader_open <- ravedash::watch_loader_opened()
+      if(loader_open){
+        local_reactives$open_loader <- Sys.time()
+        shidashi::add_class(".module_main_ui", "soft-hidden")
+        shidashi::remove_class(".module_loader_ui", "soft-hidden")
+      } else {
+        local_reactives$open_loader <- FALSE
+        shidashi::add_class(".module_loader_ui", "soft-hidden")
+        shidashi::remove_class(".module_main_ui", "soft-hidden")
+      }
+    }),
+    ravedash::watch_loader_opened(),
+    ignoreInit = FALSE,
+    ignoreNULL = FALSE
+  )
 
 
   run_analysis_flag <- shiny::debounce(shiny::reactive({
@@ -282,30 +286,30 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     get_rave_event("run_analysis")
   }), millis = 300, priority = 99)
 
-  observe({
-    v <- !isTRUE(local_reactives$auto_recalculate > 0)
-    auto_recalculate(v)
-    msg <- sprintf("Auto re-calculation is turned %s", ifelse(v, "ON", "OFF"))
-    shidashi::show_notification(
-      message = msg, title = "Info", type = 'success',
-      close = TRUE, autohide = TRUE
-    )
-  }) |>
-    shiny::bindEvent(
-      get_rave_event("toggle_auto_recalculation"),
-      ignoreInit = TRUE,
-      ignoreNULL = TRUE
-    )
+  shiny::bindEvent(
+    observe({
+      v <- !isTRUE(local_reactives$auto_recalculate > 0)
+      auto_recalculate(v)
+      msg <- sprintf("Auto re-calculation is turned %s", ifelse(v, "ON", "OFF"))
+      shidashi::show_notification(
+        message = msg, title = "Info", type = 'success',
+        close = TRUE, autohide = TRUE
+      )
+    }),
+    get_rave_event("toggle_auto_recalculation"),
+    ignoreInit = TRUE,
+    ignoreNULL = TRUE
+  )
 
-  observe({
-    logger("run_analysis_flag() triggered!", level = "trace")
-    local_data$changed_inputs <- NULL
-  }) |>
-    shiny::bindEvent(
-      run_analysis_flag(),
-      ignoreInit = TRUE,
-      ignoreNULL = TRUE
-    )
+  shiny::bindEvent(
+    observe({
+      logger("run_analysis_flag() triggered!", level = "trace")
+      local_data$changed_inputs <- NULL
+    }),
+    run_analysis_flag(),
+    ignoreInit = TRUE,
+    ignoreNULL = TRUE
+  )
 
   run_analysis <- function() {
 
@@ -390,71 +394,72 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     local_reactives$watch_ids <- inputIds
   }
 
-  observe({
+  shiny::bindEvent(
+    observe({
 
-    v <- local_reactives$auto_recalculate
-    vb <- local_reactives$auto_recalculate_back_up
-    if(v <= 0 && vb <= 0){ return() }
+      v <- local_reactives$auto_recalculate
+      vb <- local_reactives$auto_recalculate_back_up
+      if(v <= 0 && vb <= 0){ return() }
 
-    if(v > 0){
-      module_id <- session$ns(NULL)
-      module <- shiny::isolate(get_rave_event("active_module"))
-      if(
-        !length(module_id) || module_id == "" ||
-        !is.list(module) || !isTRUE(module$id == module_id)
-      ){
-        local_reactives$auto_recalculate_back_up <- local_reactives$auto_recalculate
-        local_reactives$auto_recalculate <- 0L
-        shidashi::show_notification(message = shiny::div(
-          shiny::p("Auto re-calculation is temporarily disabled because you have switched to another module."),
-          dipsaus::actionButtonStyled(session$ns("_reenable_autocalculation_"), "Click here to re-activate")
-        ), title = "Auto re-calculation disabled", type = "info", close = TRUE, autohide = FALSE,
-        class = "ravedash-reenable_autocalculation-notif")
-        return()
+      if(v > 0){
+        module_id <- session$ns(NULL)
+        module <- shiny::isolate(get_rave_event("active_module"))
+        if(
+          !length(module_id) || module_id == "" ||
+          !is.list(module) || !isTRUE(module$id == module_id)
+        ){
+          local_reactives$auto_recalculate_back_up <- local_reactives$auto_recalculate
+          local_reactives$auto_recalculate <- 0L
+          shidashi::show_notification(message = shiny::div(
+            shiny::p("Auto re-calculation is temporarily disabled because you have switched to another module."),
+            dipsaus::actionButtonStyled(session$ns("_reenable_autocalculation_"), "Click here to re-activate")
+          ), title = "Auto re-calculation disabled", type = "info", close = TRUE, autohide = FALSE,
+          class = "ravedash-reenable_autocalculation-notif")
+          return()
+        }
+
+        local_reactives$auto_recalculate <- v - 1
+        local_reactives$auto_recalculate_back_up <- 0L
+        shidashi::clear_notifications(class = "ravedash-reenable_autocalculation-notif")
+        logger("Auto-recalculation triggered", level = "trace")
+        run_analysis()
+
       }
 
-      local_reactives$auto_recalculate <- v - 1
+    }),
+    watch_input_changed(),
+    local_reactives$renew_auto_recalculate,
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE
+  )
+  shiny::bindEvent(
+    observe({
+      local_reactives$auto_recalculate <- max(
+        local_reactives$auto_recalculate,
+        local_reactives$auto_recalculate_back_up
+      )
       local_reactives$auto_recalculate_back_up <- 0L
+      local_reactives$renew_auto_recalculate <- Sys.time()
       shidashi::clear_notifications(class = "ravedash-reenable_autocalculation-notif")
-      logger("Auto-recalculation triggered", level = "trace")
-      run_analysis()
+    }),
+    input[["_reenable_autocalculation_"]],
+    ignoreNULL = TRUE, ignoreInit = TRUE
+  )
 
-    }
+  shiny::bindEvent(
+    observe({
+      simplified <- shiny::isolate(!isTRUE(local_reactives$view_simplified))
+      local_reactives$view_simplified <- simplified
+      if(simplified){
+        shidashi::add_class(".rave-optional", "soft-hidden")
+      } else {
+        shidashi::remove_class(".rave-optional", "soft-hidden")
+      }
 
-  }) |>
-    shiny::bindEvent(
-      watch_input_changed(),
-      local_reactives$renew_auto_recalculate,
-      ignoreNULL = TRUE,
-      ignoreInit = TRUE
-    )
-
-  observe({
-    local_reactives$auto_recalculate <- max(
-      local_reactives$auto_recalculate,
-      local_reactives$auto_recalculate_back_up
-    )
-    local_reactives$auto_recalculate_back_up <- 0L
-    local_reactives$renew_auto_recalculate <- Sys.time()
-    shidashi::clear_notifications(class = "ravedash-reenable_autocalculation-notif")
-  }) |>
-    shiny::bindEvent(
-      input[["_reenable_autocalculation_"]],
-      ignoreNULL = TRUE, ignoreInit = TRUE
-    )
-
-  observe({
-    simplified <- shiny::isolate(!isTRUE(local_reactives$view_simplified))
-    local_reactives$view_simplified <- simplified
-    if(simplified){
-      shidashi::add_class(".rave-optional", "soft-hidden")
-    } else {
-      shidashi::remove_class(".rave-optional", "soft-hidden")
-    }
-
-  }) |>
-    shiny::bindEvent(ravedash::get_rave_event("simplify_toggle"),
-                     ignoreInit = FALSE, ignoreNULL = TRUE)
+    }),
+    ravedash::get_rave_event("simplify_toggle"),
+    ignoreInit = FALSE, ignoreNULL = TRUE
+  )
 
   simplify_view <- function(action = c("toggle", "yes", "no")) {
     action <- match.arg(action)

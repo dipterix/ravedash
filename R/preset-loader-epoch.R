@@ -87,44 +87,44 @@ presets_loader_epoch <- function(
       raveio::validate_time_window(as.vector(rbind(pre, post)))
     }
 
-    observe({
-      open_loader <- watch_loader_opened(session = session)
-      if(!open_loader){ return() }
-      if(!loader_subject$sv$is_valid()){ return() }
-      subject <- get_subject()
-      epoch_choices <- subject$epoch_names
+    shiny::bindEvent(
+      observe({
+        open_loader <- watch_loader_opened(session = session)
+        if(!open_loader){ return() }
+        if(!loader_subject$sv$is_valid()){ return() }
+        subject <- get_subject()
+        epoch_choices <- subject$epoch_names
 
-      default_epochname <- subject$get_default(id)
-      if(length(default_epochname)){
-        default_epochname <- default_epochname[[1]]
-        shinyWidgets::updatePrettyCheckbox(
-          session, inputId = comp$get_sub_element_id("default", FALSE),
-          label = sprintf("Set as the default (current: %s)", default_epochname)
-        )
-      } else {
-        shinyWidgets::updatePrettyCheckbox(
-          session, inputId = comp$get_sub_element_id("default", FALSE),
-          label = "Set as the default"
-        )
-      }
-      epoch_name <- comp$get_settings_value(
-        default = default_epochname,
-        constraint = epoch_choices,
-        use_cache = TRUE)
+        default_epochname <- subject$get_default(id)
+        if(length(default_epochname)){
+          default_epochname <- default_epochname[[1]]
+          shinyWidgets::updatePrettyCheckbox(
+            session, inputId = comp$get_sub_element_id("default", FALSE),
+            label = sprintf("Set as the default (current: %s)", default_epochname)
+          )
+        } else {
+          shinyWidgets::updatePrettyCheckbox(
+            session, inputId = comp$get_sub_element_id("default", FALSE),
+            label = "Set as the default"
+          )
+        }
+        epoch_name <- comp$get_settings_value(
+          default = default_epochname,
+          constraint = epoch_choices,
+          use_cache = TRUE)
 
-      shiny::updateSelectInput(
-        session = session,
-        inputId = id,
-        choices = epoch_choices,
-        selected = epoch_name
-      )
-    }) |>
-      shiny::bindEvent(
-        loader_project$current_value,
-        loader_subject$current_value,
-        watch_loader_opened(session = session),
-        ignoreNULL = TRUE
-      )
+        shiny::updateSelectInput(
+          session = session,
+          inputId = id,
+          choices = epoch_choices,
+          selected = epoch_name
+        )
+      }),
+      loader_project$current_value,
+      loader_subject$current_value,
+      watch_loader_opened(session = session),
+      ignoreNULL = TRUE
+    )
 
   }
 

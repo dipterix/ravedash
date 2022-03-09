@@ -29,106 +29,108 @@ presets_loader_3dviewer <- function(
 
     get_subject <- loader_subject$get_tool("get_subject")
 
-    electrode_table <- shiny::reactive({
-      if(!loader_subject$sv$is_valid()){ return() }
-      subject <- get_subject()
+    electrode_table <- shiny::bindEvent(
+      shiny::reactive({
+        if(!loader_subject$sv$is_valid()){ return() }
+        subject <- get_subject()
 
-      subject_code <- subject$subject_code
-      project_name <- subject$project_name
-      electrodes_text <- loader_electrodes$current_value
-      reference_name <- loader_reference$current_value
+        subject_code <- subject$subject_code
+        project_name <- subject$project_name
+        electrodes_text <- loader_electrodes$current_value
+        reference_name <- loader_reference$current_value
 
-      brain <- comp$container$get_cache("loader_subject_brain", default = NULL)
-      if(!inherits(brain, "rave-brain") ||
-         !identical(brain$subject_code, subject_code)){
-        logger("Re-generate loader's brain", level = 'trace')
-        brain <- raveio::rave_brain(subject, surfaces = 'pial')
-      } else {
-        logger("Using cached loader's brain", level = 'trace')
-      }
-      comp$container$set_cache(key = "loader_subject_brain",
-                               value = brain, expire_after = 100)
-      # TODO: brain is null
-      if(is.null(brain)){ return() }
+        brain <- comp$container$get_cache("loader_subject_brain", default = NULL)
+        if(!inherits(brain, "rave-brain") ||
+           !identical(brain$subject_code, subject_code)){
+          logger("Re-generate loader's brain", level = 'trace')
+          brain <- raveio::rave_brain(subject, surfaces = 'pial')
+        } else {
+          logger("Using cached loader's brain", level = 'trace')
+        }
+        comp$container$set_cache(key = "loader_subject_brain",
+                                 value = brain, expire_after = 100)
+        # TODO: brain is null
+        if(is.null(brain)){ return() }
 
-      electrodes <- dipsaus::parse_svec(electrodes_text)
-      all_electrodes <- subject$electrodes
-      valid_electrodes <- subject$valid_electrodes(reference_name = reference_name)
-      val <- rep("Not Loading", length(all_electrodes))
-      val[all_electrodes %in% electrodes] <- "Excluded"
-      val[all_electrodes %in% electrodes & all_electrodes %in% valid_electrodes] <- "Loading"
-      val <- factor(val, levels = c("Loading", "Excluded", "Not Loading"))
-      tbl <- data.frame(
-        Subject = subject$subject_code,
-        Electrode = subject$electrodes,
-        Value = val
-      )
-
-      tbl
-
-    }) |>
-      shiny::bindEvent(
-        loader_project$current_value,
-        loader_subject$current_value,
-        loader_electrodes$current_value,
-        loader_reference$current_value,
-        ignoreNULL = TRUE, ignoreInit = TRUE
-      )
-
-    viewer <- shiny::reactive({
-
-      shiny::invalidateLater(500)
-
-      tbl <- electrode_table()
-      if(!is.data.frame(tbl)){ return() }
-      brain <- comp$container$get_cache("loader_subject_brain", default = NULL)
-      if(!inherits(brain, "rave-brain")){ return() }
-
-      brain$set_electrode_values(tbl)
-
-      theme <- shidashi::get_theme(tools$theme_event)
-      logger("Re-generate loader's viewer", level = 'trace')
-      wg <- brain$plot(
-        volumes = FALSE,
-        start_zoom = 1,
-        atlases = FALSE,
-        side_canvas = FALSE,
-        control_display = FALSE,
-        # show_modal = TRUE,
-        background = theme$background,
-        palettes = list(Value = c("navy", "red", "gray80")),
-        controllers = list(
-          "Background Color" = theme$background,
-          "Show Time" = FALSE
+        electrodes <- dipsaus::parse_svec(electrodes_text)
+        all_electrodes <- subject$electrodes
+        valid_electrodes <- subject$valid_electrodes(reference_name = reference_name)
+        val <- rep("Not Loading", length(all_electrodes))
+        val[all_electrodes %in% electrodes] <- "Excluded"
+        val[all_electrodes %in% electrodes & all_electrodes %in% valid_electrodes] <- "Loading"
+        val <- factor(val, levels = c("Loading", "Excluded", "Not Loading"))
+        tbl <- data.frame(
+          Subject = subject$subject_code,
+          Electrode = subject$electrodes,
+          Value = val
         )
-      )
-      # comp$container$set_cache("loader_subject_brain_instance", wg, expire_after = Inf)
-      wg
 
-    }) |>
-      # shiny::debounce(millis = 500) |>
-      shiny::bindCache(
-        shidashi::get_theme(tools$theme_event),
-        electrode_table(),
-        cache = "session"
-      ) |>
+        tbl
+
+      }),
+      loader_project$current_value,
+      loader_subject$current_value,
+      loader_electrodes$current_value,
+      loader_reference$current_value,
+      ignoreNULL = TRUE, ignoreInit = TRUE
+    )
+
+    viewer <-
       shiny::bindEvent(
+        shiny::bindCache(
+
+          shiny::reactive({
+
+            shiny::invalidateLater(500)
+
+            tbl <- electrode_table()
+            if(!is.data.frame(tbl)){ return() }
+            brain <- comp$container$get_cache("loader_subject_brain", default = NULL)
+            if(!inherits(brain, "rave-brain")){ return() }
+
+            brain$set_electrode_values(tbl)
+
+            theme <- shidashi::get_theme(tools$theme_event)
+            logger("Re-generate loader's viewer", level = 'trace')
+            wg <- brain$plot(
+              volumes = FALSE,
+              start_zoom = 1,
+              atlases = FALSE,
+              side_canvas = FALSE,
+              control_display = FALSE,
+              # show_modal = TRUE,
+              background = theme$background,
+              palettes = list(Value = c("navy", "red", "gray80")),
+              controllers = list(
+                "Background Color" = theme$background,
+                "Show Time" = FALSE
+              )
+            )
+            # comp$container$set_cache("loader_subject_brain_instance", wg, expire_after = Inf)
+            wg
+
+          }),
+          shidashi::get_theme(tools$theme_event),
+          electrode_table(),
+          cache = "session"
+        ),
+
         shidashi::get_theme(tools$theme_event),
         electrode_table(),
         ignoreNULL = TRUE
       )
 
 
-    output$loader_3d_viewer <- threeBrain::renderBrain({
-      wg <- viewer()
-      shiny::validate(shiny::need(!is.null(wg), message = ""))
+    output$loader_3d_viewer <- shiny::bindEvent(
+      threeBrain::renderBrain({
+        wg <- viewer()
+        shiny::validate(shiny::need(!is.null(wg), message = ""))
 
-      return(wg)
+        return(wg)
 
-    }) |>
-      shiny::bindEvent(
-        viewer(), ignoreNULL = FALSE, ignoreInit = FALSE
-      )
+      }),
+      viewer(), ignoreNULL = FALSE, ignoreInit = FALSE
+    )
 
   }
 

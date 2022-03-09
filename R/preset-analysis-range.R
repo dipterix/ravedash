@@ -169,27 +169,28 @@ presets_analysis_ranges <- function(
 
     # sync analysis ranges
     base_id <- comp$get_sub_element_id(with_namespace = FALSE)
-    observe({
-      analysis_lock <- which(analysis_lock_choices %in% comp$get_sub_element_input(analysis_lock_str))
-      if(!length(analysis_lock) || analysis_lock == 1){ return() }
-      if(analysis_lock == 2){
-        value <- comp$current_value[[1]]$frequency
-        lapply(seq_len(max_components), function(ii){
-          shiny::updateSliderInput(
-            session = session, inputId = sprintf("%s_frequency_%d", base_id, ii),
-            value = value
-          )
-        })
-      } else if(analysis_lock == 3){
-        value <- comp$current_value[[1]]$time
-        lapply(seq_len(max_components), function(ii){
-          shiny::updateSliderInput(
-            session = session, inputId = sprintf("%s_time_%d", base_id, ii),
-            value = value
-          )
-        })
-      }
-    }) |> shiny::bindEvent(
+    shiny::bindEvent(
+      observe({
+        analysis_lock <- which(analysis_lock_choices %in% comp$get_sub_element_input(analysis_lock_str))
+        if(!length(analysis_lock) || analysis_lock == 1){ return() }
+        if(analysis_lock == 2){
+          value <- comp$current_value[[1]]$frequency
+          lapply(seq_len(max_components), function(ii){
+            shiny::updateSliderInput(
+              session = session, inputId = sprintf("%s_frequency_%d", base_id, ii),
+              value = value
+            )
+          })
+        } else if(analysis_lock == 3){
+          value <- comp$current_value[[1]]$time
+          lapply(seq_len(max_components), function(ii){
+            shiny::updateSliderInput(
+              session = session, inputId = sprintf("%s_time_%d", base_id, ii),
+              value = value
+            )
+          })
+        }
+      }),
       ravedash::watch_data_loaded(),
       comp$get_sub_element_input(analysis_lock_str),
       ignoreNULL = TRUE, ignoreInit = TRUE

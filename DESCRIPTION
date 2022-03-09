@@ -13,9 +13,9 @@ LazyData: true
 Language: en-US
 Imports: 
     dipsaus (>= 0.2.0),
-    lobstr (>= 1.1.1),
     logger (>= 0.2.2),
     raveio (>= 0.0.5.9000),
+    rlang (>= 1.0.2),
     rpymat (>= 0.1.2),
     shidashi (>= 0.1.0.9000),
     shiny (>= 1.7.1),
@@ -24,7 +24,7 @@ Imports:
 Suggests: 
     fastmap (>= 1.1.0),
     crayon (>= 1.4.2)
-Remotes: 
+Remotes:  
     dipterix/shidashi,
     beauchamplab/raveio,
     rstudio/shiny,
@@ -35,6 +35,6 @@ Remotes:
     dipterix/threeBrain,
     r-lib/crayon,
     dipterix/rpymat,
-    r-lib/lobstr
+    r-lib/rlang
 RoxygenNote: 7.1.2
 URL: http://dipterix.org/ravedash/

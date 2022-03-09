@@ -353,23 +353,23 @@ presets_analysis_electrode_selector2 <- function(
       )
     }
 
-    observe({
-      initialize_with_new_data_reactive()
-    }) |>
-      shiny::bindEvent(
-        comp$get_sub_element_input(category_str),
-        # local_reactives$refresh,
-        ignoreNULL = TRUE,
-        ignoreInit = TRUE
-      )
+    shiny::bindEvent(
+      observe({
+        initialize_with_new_data_reactive()
+      }),
+      comp$get_sub_element_input(category_str),
+      # local_reactives$refresh,
+      ignoreNULL = TRUE,
+      ignoreInit = TRUE
+    )
 
-    observe({
-      reset()
-    }) |>
-      shiny::bindEvent(
-        comp$get_sub_element_input(reset_str),
-        ignoreNULL = TRUE, ignoreInit = TRUE
-      )
+    shiny::bindEvent(
+      observe({
+        reset()
+      }),
+      comp$get_sub_element_input(reset_str),
+      ignoreNULL = TRUE, ignoreInit = TRUE
+    )
     output[[comp$get_sub_element_id(
       selected_electrode_text_str,
       with_namespace = FALSE
