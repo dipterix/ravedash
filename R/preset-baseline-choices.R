@@ -1,3 +1,4 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_baseline_choices <- function(
   id = "baseline_choices", varname = "baseline",
@@ -130,10 +131,10 @@ presets_baseline_choices <- function(
       })
 
       # update
-      updateSelectInput(session = session,
+      shiny::updateSelectInput(session = session,
                         inputId = comp$get_sub_element_id(unit_of_analysis_str, FALSE),
                         selected = unit_of_analysis)
-      updateSelectInput(session = session,
+      shiny::updateSelectInput(session = session,
                         inputId = comp$get_sub_element_id(global_baseline_choice_str, FALSE),
                         selected = global_baseline_choice)
       dipsaus::updateCompoundInput2(

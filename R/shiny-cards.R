@@ -5,6 +5,7 @@
 #' @param href hyper reference link of the card
 #' @param ... additional elements to be included in the card, see
 #' \code{\link[shidashi]{card}}
+#' @param class the 'HTML' class for card
 #' @param class_header the 'HTML' class for card header; default is
 #' \code{'shidashi-anchor'}, which will generate shortcuts at the page footers
 #' @param class_body the 'HTML' class for card body; default is

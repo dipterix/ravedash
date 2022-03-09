@@ -56,6 +56,8 @@ recommended)}
 \item{force}{whether to force firing the event even the \code{value} hasn't
 changed}
 
+\item{.internal_ok}{internally used}
+
 \item{default}{default value if not found}
 }
 \value{

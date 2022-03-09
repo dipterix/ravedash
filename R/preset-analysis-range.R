@@ -1,3 +1,4 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_analysis_ranges <- function(
   id = "analysis_ranges", varname = "analysis_ranges",

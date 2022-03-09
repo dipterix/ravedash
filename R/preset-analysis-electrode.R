@@ -1,3 +1,4 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_analysis_electrode_selector2 <- function(
   id = "electrode_text", varname = "analysis_electrodes",

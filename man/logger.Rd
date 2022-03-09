@@ -25,7 +25,7 @@ logger_threshold(
   type = c("console", "file", "both")
 )
 
-logger_error_condition(cond, details = TRUE, level = "error")
+logger_error_condition(cond, level = "error")
 }
 \arguments{
 \item{..., .envir, .sep}{passed to \code{\link[raveio]{glue}}, if
@@ -62,6 +62,8 @@ is \code{'ravedash'}}
 if file log is enabled through \code{set_logger_path}, \code{type} could be
 \code{'file'} or \code{'both'}. Default log level is \code{'info'} on
 console and \code{'debug'} on file.}
+
+\item{cond}{condition to log}
 }
 \value{
 The message without time-stamps

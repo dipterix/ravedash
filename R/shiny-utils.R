@@ -114,6 +114,7 @@ names.ravedash_shiny_icons <- function(x){
 #' @param force whether to force firing the event even the \code{value} hasn't
 #' changed
 #' @param default default value if not found
+#' @param .internal_ok internally used
 #' @details These goal of these event functions is to  simplify the dashboard
 #' logic without understanding the details or passing global variables around.
 #' Everything starts with \code{register_rave_session}. This function registers

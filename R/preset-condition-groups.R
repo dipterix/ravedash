@@ -1,3 +1,4 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_condition_groups <- function(
   id = "condition_groups", varname = "condition_groups",

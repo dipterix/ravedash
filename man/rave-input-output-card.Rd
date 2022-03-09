@@ -35,6 +35,8 @@ output_card(
 \item{...}{additional elements to be included in the card, see
 \code{\link[shidashi]{card}}}
 
+\item{class}{the 'HTML' class for card}
+
 \item{class_header}{the 'HTML' class for card header; default is
 \code{'shidashi-anchor'}, which will generate shortcuts at the page footers}
 

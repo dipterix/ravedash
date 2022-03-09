@@ -62,6 +62,20 @@ observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL,
   )
 }
 
+#' Safe-wrapper of 'shiny' \code{\link[shiny]{observe}} function
+#' @description Safely wrap expression \code{x} such that shiny application does
+#' no hang when when the expression raises error.
+#' @param x,env,quoted,priority,domain,... passed to \code{\link[shiny]{observe}}
+#' @return 'shiny' observer instance
+#'
+#' @examples
+#'
+#' values <- shiny::reactiveValues(A=1)
+#'
+#' obsB <- safe_observe({
+#'   print(values$A + 1)
+#' })
+#'
 #' @export
 safe_observe <- observe
 

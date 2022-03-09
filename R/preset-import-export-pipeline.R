@@ -1,3 +1,4 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_import_export_subject_pipeline <- function(
   id = "im_ex_pipeline",

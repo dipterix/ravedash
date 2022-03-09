@@ -22,6 +22,8 @@ if loader needs to be open to load data.}
 \item{...}{ignored}
 
 \item{session}{shiny session}
+
+\item{parse_env}{environment used to parse module}
 }
 \value{
 A list of server utility functions; see 'Examples' below.

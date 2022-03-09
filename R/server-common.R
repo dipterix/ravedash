@@ -6,6 +6,7 @@
 #' @param check_data_loaded a function that takes zero to one argument and
 #' must return either \code{TRUE} if data has been loaded or \code{FALSE}
 #' if loader needs to be open to load data.
+#' @param parse_env environment used to parse module
 #' @param ... ignored
 #' @return A list of server utility functions; see 'Examples' below.
 #' @examples

@@ -26,6 +26,7 @@
 #' if file log is enabled through \code{set_logger_path}, \code{type} could be
 #' \code{'file'} or \code{'both'}. Default log level is \code{'info'} on
 #' console and \code{'debug'} on file.
+#' @param cond condition to log
 #' @return The message without time-stamps
 #'
 #' @examples
@@ -576,7 +577,7 @@ logger_threshold <- function(
 
 #' @rdname logger
 #' @export
-logger_error_condition <- function(cond, details = TRUE, level = "error"){
+logger_error_condition <- function(cond, level = "error"){
   tback <- tryCatch({
     paste(utils::capture.output(traceback(cond)), collapse = "\n")
   }, error = function(e){

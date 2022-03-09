@@ -1,19 +1,6 @@
 
-#' @name rave-ui-preset
-#' @param id input or output ID of the element; this ID will be prepended with
-#' module namespace
-#' @param varname,varnames variable name(s) in the module's settings file
-#' @param label,labels readable label(s) of the element
-#' @param height height of the element
-#' @param loader_project_id the ID of \code{presets_loader_project} if
-#' different to the default
-#' @param loader_subject_id the ID of \code{presets_loader_subject} if
-#' different to the default
-#' @param loader_reference_id the ID of \code{presets_loader_reference} if
-#' different to the default
-#' @param loader_electrodes_id the ID of \code{presets_loader_electrodes} if
-#' different to the default
-#' @title Preset reusable 'RAVE' front-end elements
+
+#' @rdname rave-ui-preset
 #' @export
 presets_loader_project <- function(
   id = "loader_project_name", varname = "project_name",
