@@ -386,7 +386,7 @@ presets_import_export_subject_pipeline <- function(
                 "import_varnames",
                 with_namespace = TRUE
               ), label = NULL,
-              choices = nms, multiple = TRUE, selected = character(),
+              choices = sort(nms), multiple = TRUE, selected = character(),
               options = list(
                 "live-search" = TRUE,
                 "actions-box" = TRUE
