@@ -410,8 +410,7 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 }
 
 #' A hovering footer at bottom-right
-#' @description The footer provides buttons to open/close the loader panel,
-#' show brief message of data loaded, and links to jump to input cards
+#' @description Internally used. Do not call explicitly
 #' @param module_id 'RAVE' module ID
 #' @return 'HTML' tags
 #'

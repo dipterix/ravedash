@@ -512,7 +512,6 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       sep = "\n",
       "Show, hide, or toggle display of elements with `rave-optional` HTML class. Usage:\n",
       "# Obtain the server utility functions",
-      "module_server_common(input, output, session)",
       "server_tools <- get_default_handlers()\n",
       "server_tools$simplify_view()       # Toggle optional view",
       "server_tools$simplify_view('yes')  # Show optional view",
@@ -526,7 +525,6 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       sep = "\n",
       "Flag to run analysis pipeline. Usage:\n",
       "# Obtain the server utility functions",
-      "module_server_common(input, output, session)",
       "server_tools <- get_default_handlers()\n",
       "shiny::bindEvent(",
       "  shiny::observe({",
@@ -544,7 +542,6 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       sep = "\n",
       "Function to set input IDs to watch. These inputs will trigger auto re-calculate. Usage:\n",
       "# Obtain the server utility functions",
-      "module_server_common(input, output, session)",
       "server_tools <- get_default_handlers()\n",
       'server_tools$run_analysis_onchange(c("inputId_1", "inputId_2", ...))'
     )
@@ -555,7 +552,6 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       sep = "\n",
       "Function to turn auto-recalculation on and off. Usage:\n",
       "# Obtain the server utility functions",
-      "module_server_common(input, output, session)",
       "server_tools <- get_default_handlers()\n",
       'server_tools$auto_recalculate(TRUE)    # Turn on forever',
       'server_tools$auto_recalculate(FALSE)   # Turn off forever',
@@ -569,7 +565,6 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       sep = "\n",
       "Shiny reactive to tell if the module is active or hidden. Usage:\n",
       "# Obtain the server utility functions",
-      "module_server_common(input, output, session)",
       "server_tools <- get_default_handlers()\n",
       'server_tools$module_is_active()                   # current module',
       'server_tools$module_is_active("another_module")   # whether another module is active'

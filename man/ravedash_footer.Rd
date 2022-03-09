@@ -13,8 +13,7 @@ ravedash_footer(module_id = NULL)
 'HTML' tags
 }
 \description{
-The footer provides buttons to open/close the loader panel,
-show brief message of data loaded, and links to jump to input cards
+Internally used. Do not call explicitly
 }
 \examples{
 
