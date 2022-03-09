@@ -91,7 +91,6 @@ if loader needs to be open to load data.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Function to turn auto-recalculation on and off. Usage:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Obtain the server utility functions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> module_server_common(input, output, session)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools &lt;- get_default_handlers()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools$auto_recalculate(TRUE)    # Turn on forever</span>
@@ -102,7 +101,6 @@ if loader needs to be open to load data.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Function to set input IDs to watch. These inputs will trigger auto re-calculate. Usage:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Obtain the server utility functions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> module_server_common(input, output, session)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools &lt;- get_default_handlers()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools$run_analysis_onchange(c("inputId_1", "inputId_2", ...))</span>
@@ -111,7 +109,6 @@ if loader needs to be open to load data.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flag to run analysis pipeline. Usage:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Obtain the server utility functions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> module_server_common(input, output, session)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools &lt;- get_default_handlers()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> shiny::bindEvent(</span>
@@ -126,7 +123,6 @@ if loader needs to be open to load data.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Shiny reactive to tell if the module is active or hidden. Usage:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Obtain the server utility functions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> module_server_common(input, output, session)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools &lt;- get_default_handlers()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools$module_is_active()                   # current module</span>
@@ -136,7 +132,6 @@ if loader needs to be open to load data.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Show, hide, or toggle display of elements with `rave-optional` HTML class. Usage:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Obtain the server utility functions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> module_server_common(input, output, session)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools &lt;- get_default_handlers()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> server_tools$simplify_view()       # Toggle optional view</span>
