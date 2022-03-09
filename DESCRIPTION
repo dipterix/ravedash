@@ -24,7 +24,7 @@ Imports:
 Suggests: 
     fastmap (>= 1.1.0),
     crayon (>= 1.4.2)
-Remotes:  
+Remotes: 
     dipterix/shidashi,
     beauchamplab/raveio,
     rstudio/shiny,
@@ -37,3 +37,4 @@ Remotes:
     dipterix/rpymat,
     r-lib/lobstr
 RoxygenNote: 7.1.2
+URL: http://dipterix.org/ravedash/

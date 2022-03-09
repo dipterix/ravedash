@@ -3,3 +3,7 @@
 ^adhoc$
 ^_rs_job\.R$
 ^ui\.R$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
