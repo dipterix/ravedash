@@ -21,6 +21,7 @@ presets_import_export_subject_pipeline <- function(
   # `varname` is not useful
   comp <- RAVEShinyComponent$new(id = id, varname = id)
   comp$no_save <- TRUE
+  comp$repository_name <- pipeline_repository
   comp$depends <- c(loader_project_id, loader_subject_id)
 
   # component_container$add_components(comp)
@@ -221,6 +222,8 @@ presets_import_export_subject_pipeline <- function(
           #   dirs <- sort(dirs, decreasing = TRUE)
           # }
 
+          # print(subject_code)
+
           shidashi::show_notification(
             title = "Load pipeline",
             type = "info",
@@ -280,7 +283,7 @@ presets_import_export_subject_pipeline <- function(
           project <- raveio::as_rave_project(project_name, strict = FALSE)
         }
 
-        print(subject_code)
+        # print(subject_code)
         if(!isTRUE(!project$has_subject(subject_code))) {
           shiny::updateSelectInput(
             session = session,

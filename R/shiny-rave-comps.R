@@ -54,6 +54,8 @@ RAVEShinyComponent <- R6::R6Class(
     sub_elements = character(0L),
     ready_to_collect = NULL,
 
+    repository_name = character(0L),
+
     initialize = function(id, varname = id){
       self$id = id
       self$varname = varname
@@ -68,6 +70,54 @@ RAVEShinyComponent <- R6::R6Class(
       }
       self$validators$add(rule)
     },
+
+    get_repository = function(){
+      if(length(self$repository_name) != 1){
+        stop("A RAVE preset component cannot call its `get_repository` method unless `repository_name` is set.")
+      }
+      if(!inherits(self$container, "RAVEShinyComponentContainer")){
+        stop("`get_repository` requires the preset to be registered to a component container.")
+      }
+      pipeline_repository <- self$repository_name
+      if(!self$container$data[['@has']](pipeline_repository)) {
+        repository <- raveio::pipeline_read(
+          var_names = pipeline_repository,
+          pipe_dir = self$container$pipeline_path
+        )
+        self$container$data[[pipeline_repository]] <- repository
+      } else {
+        repository <- self$container$data[[pipeline_repository]]
+      }
+      if(!inherits(repository, "rave_repository")) {
+        return(NULL)
+      }
+      repository
+    },
+
+    get_subject = function(){
+      repo <- self$get_repository()
+      if(inherits(repo, "rave_prepare_subject")) {
+        subject <- repo$subject
+        return(subject)
+      }
+      return(NULL)
+    },
+
+    get_default = function(sub_id = NULL, missing = NULL, use_cache = TRUE, constraint = NULL) {
+      vname <- self$get_sub_element_varnames(sub_id)
+      try({
+        subject <- get_subject()
+        if(inherits(subject, "RAVESubject")) {
+          missing <- subject$get_default(
+            vname, default_if_missing = missing, simplify = TRUE)
+        }
+      }, silent = TRUE)
+
+
+      self$get_settings_value(use_cache = use_cache, default = missing,
+                              key = vname, constraint = constraint)
+    },
+
 
     get_settings_value = function(default = NULL, constraint = NULL,
                                   use_cache = FALSE, key = NULL){

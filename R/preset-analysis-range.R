@@ -9,6 +9,7 @@ presets_analysis_ranges <- function(
   max_components <- as.integer(max_components)
   if(max_components < 1L){ max_components <- 1L }
   comp = RAVEShinyComponent$new(id = id, varname = varname)
+  comp$repository_name <- pipeline_repository
 
   # component_container$add_components(comp)
   analysis_lock_str <- "lock"

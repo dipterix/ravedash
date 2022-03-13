@@ -15,6 +15,7 @@ presets_baseline_choices <- function(
 
   comp = RAVEShinyComponent$new(id = id, varname = varname)
   comp$no_save <- ""
+  comp$repository_name <- pipeline_repository
 
   unit_of_analysis_str <- "unit_of_analysis"
   global_baseline_choice_str <- "global_baseline_choice"

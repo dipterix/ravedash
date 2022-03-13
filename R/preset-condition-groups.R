@@ -6,6 +6,7 @@ presets_condition_groups <- function(
   pipeline_repository = "repository"
 ) {
   comp = RAVEShinyComponent$new(id = id, varname = varname)
+  comp$repository_name <- pipeline_repository
 
   # component_container$add_components(comp)
 

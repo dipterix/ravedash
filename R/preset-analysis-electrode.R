@@ -9,6 +9,7 @@ presets_analysis_electrode_selector2 <- function(
 ) {
   comp = RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
+  comp$repository_name <- pipeline_repository
 
   category_str <- "category"                 # electrode_category_selector
   category_choices_str <- "category_choices" # "electrode_category_selector_choices"
