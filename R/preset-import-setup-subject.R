@@ -16,6 +16,10 @@ presets_import_setup_native <- function(
   comp$ui_func <- function(id, value, depends){
 
     all_projects <- c(get_projects(TRUE), "[New Project]")
+    raw_root <- raveio::raveio_getopt("raw_data_dir")
+    all_subjects <- list.files(raw_root, pattern = "^[^\\/ ]+$", full.names = FALSE, recursive = FALSE, all.files = FALSE)
+    all_subjects <- all_subjects[grepl("^[a-zA-Z0-9]", all_subjects)]
+    all_subjects <- all_subjects[dir.exists(file.path(raw_root, all_subjects))]
 
     ravedash::input_card(
       title = label,
@@ -35,12 +39,18 @@ presets_import_setup_native <- function(
         ),
         shiny::column(
           width = 6L,
-          shiny::textInput(
+          shiny::selectInput(
             inputId = comp$get_sub_element_id("subject_code", with_namespace = TRUE),
             label = "Subject code",
-            placeholder = "Letters, digits, dash (-), and/or underscore (_)",
-            value = comp$get_default("subject_code", missing = "")
+            choices = all_subjects,
+            selected = comp$get_default("subject_code", missing = character())
           )
+          # shiny::textInput(
+          #   inputId = comp$get_sub_element_id("subject_code", with_namespace = TRUE),
+          #   label = "Subject code",
+          #   placeholder = "Letters, digits, dash (-), and/or underscore (_)",
+          #   value = comp$get_default("subject_code", missing = "")
+          # )
         )
       ),
       # shiny::radioButtons(
