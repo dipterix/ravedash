@@ -31,7 +31,12 @@ RAVEShinyComponent <- R6::R6Class(
           }
         }
         lapply(self$validators$as_list(), function(v){
-          sv$add_rule(inputId = self$id, rule = v, session. = session)
+          if(is.function(v$rule)){
+            sv$add_rule(
+              inputId = self$get_sub_element_id(
+                sub_id = v$sub_id, with_namespace = FALSE),
+              rule = v$rule, session. = session)
+          }
         })
         sv$enable()
       }
@@ -64,11 +69,14 @@ RAVEShinyComponent <- R6::R6Class(
       private$.tools <- dipsaus::fastmap2()
     },
 
-    add_rule = function(rule){
+    add_rule = function(rule, sub_id = NULL){
       if(!is.function(rule) || length(formals(rule)) != 1){
         stop("`rule` must be a function that takes one parameters: `value`, i.e., the input value")
       }
-      self$validators$add(rule)
+      self$validators$add(list(
+        rule = rule,
+        sub_id = sub_id
+      ))
     },
 
     get_repository = function(){
