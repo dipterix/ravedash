@@ -426,19 +426,6 @@ presets_import_setup_blocks <- function(
 
       preproc$save()
 
-      preproc$subject$set_default(
-        namespace = comp$container$module_id,
-        key = "stringent", value = isTRUE(preproc$data$stringent)
-      )
-      preproc$subject$set_default(
-        namespace = comp$container$module_id,
-        key = "blocks", value = new_blocks
-      )
-      preproc$subject$set_default(
-        namespace = comp$container$module_id,
-        key = "format", value = format
-      )
-
       settings <- raveio::load_yaml(comp$container$settings_path)
       comp$collect_settings(map = settings)
 
