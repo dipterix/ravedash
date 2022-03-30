@@ -1,3 +1,15 @@
+#' @export
+new_rave_shiny_component_container <- function(
+  module_id, pipeline_name,
+  pipeline_path = raveio::pipeline_find(pipeline_name),
+  settings_file = "settings.yaml"
+){
+  RAVEShinyComponentContainer$new(
+    module_id = module_id, pipeline_name = pipeline_name,
+    pipeline_path = pipeline_path, settings_file = settings_file
+  )
+}
+
 RAVEShinyComponentContainer <- R6::R6Class(
   classname = "RAVEShinyComponentContainer",
   portable = TRUE,

@@ -106,3 +106,48 @@ R_user_dir <- function (package, which = c("data", "config", "cache"))
   return(de)
 }
 
+
+
+#' @export
+be_patient_text <- function(){
+  sp <- c(
+    "Please be patient, running in progress...",
+    "Grab a cup of coffee, this might take a while...",
+    "Grab a cup of coffee, this might take a while... (Can I get the decaf one? Thanks)",
+    "Time to stand and stretch yourself...",
+    "Wait a second (maybe minutes)",
+    "I hate it when I have to let you wait, but I have no choice...",
+    "Do you see the progress bar? If so, stare at it.",
+    "Do you see the progress bar? Yeah, I know, it's pretty addictive to stare at it ;)",
+    "It's time to watch some videos, or listen to some music. I'll be ready when it's ready.",
+    "The last time when you ran this module is at last time. (Alright, I'll go back to work..."
+  )
+  prob = rev(seq_along(sp))
+  sample(
+    sp,
+    size = 1,
+    prob = prob / sum(prob)
+  )
+}
+
+#' @export
+finished_text <- function(){
+  sp <- c(
+    "Please proceed to the next step",
+    "It's done!",
+    "Yay, finished!",
+    "Finally!",
+    "See, I said I can finish it!",
+    "Oh, finally...",
+    "Have you finished your coffee? I have finished my work haha.",
+    "I guess you are happy with the progress bar disappearing? ;)",
+    "Time to get back to work!",
+    "The last time when you finished this module is just now!"
+  )
+  prob = rev(seq_along(sp))
+  sample(
+    sp,
+    size = 1,
+    prob = prob / sum(prob)
+  )
+}

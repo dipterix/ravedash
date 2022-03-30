@@ -108,7 +108,8 @@ presets_loader_subject(
   id = "loader_subject_code",
   varname = "subject_code",
   label = "Subject",
-  loader_project_id = "loader_project_name"
+  loader_project_id = "loader_project_name",
+  checks = c("notch", "wavelet")
 )
 }
 \arguments{

@@ -5,8 +5,10 @@
 presets_loader_subject <- function(
   id = "loader_subject_code", varname = "subject_code",
   label = "Subject",
-  loader_project_id = "loader_project_name"
+  loader_project_id = "loader_project_name",
+  checks = c("notch", "wavelet")
 ){
+  force(checks)
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- loader_project_id
 
@@ -89,9 +91,17 @@ presets_loader_subject <- function(
     if(!dir.exists(subject$path)){
       return("Subject directory is broken or missing.")
     }
-    if(!any(subject$preprocess_settings$has_wavelet)) {
-      return("Please run wavelet on this subject first.")
+    if("notch" %in% checks) {
+      if(!any(subject$preprocess_settings$notch_filtered)) {
+        return("Please run notch filter on this subject first.")
+      }
     }
+    if("wavelet" %in% checks) {
+      if(!any(subject$preprocess_settings$has_wavelet)) {
+        return("Please run wavelet on this subject first.")
+      }
+    }
+
     return(NULL)
   })
 
