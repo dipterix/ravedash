@@ -80,7 +80,9 @@ RAVEShinyComponentContainer <- R6::R6Class(
 
     initialize_with_new_data = function(){
       ravedash::logger("Initializing ", private$.module_id, " with new data", level = "trace")
-      self$data[["@reset"]]()
+
+      # # Do we need to reset data? or should we manually reset?
+      # self$data[["@reset"]]()
       lapply(names(self$components), function(id){
         try({
           tool <- self$components[[id]]$get_tool("initialize_with_new_data", missing_ok = TRUE)

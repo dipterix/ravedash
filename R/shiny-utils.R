@@ -19,7 +19,13 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
         expand = 'expand',
         tasks = 'tasks',
         angle_right = 'angle-right',
+        angle_left = 'angle-left',
+        angle_up = 'angle-up',
+        angle_down = 'angle-down',
         arrow_right = 'arrow-right',
+        arrow_left = 'arrow-left',
+        arrow_up = 'arrow-up',
+        arrow_down = 'arrow-down',
         external_link = 'external-link-alt',
         plus = 'plus',
         minus = 'minus',
@@ -32,7 +38,8 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
         image = "file-image",
         magic = "magic",
         check = "check",
-        simplybuilt = "simplybuilt"
+        simplybuilt = "simplybuilt",
+        table = "table"
       )
     }
     li

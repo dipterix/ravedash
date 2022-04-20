@@ -101,7 +101,8 @@ presets_loader_reference(
   varname = "reference_name",
   label = "Reference name",
   loader_project_id = "loader_project_name",
-  loader_subject_id = "loader_subject_code"
+  loader_subject_id = "loader_subject_code",
+  mode = c("default", "create")
 )
 
 presets_loader_subject(

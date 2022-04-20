@@ -582,6 +582,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
           logger("Found a RAVEShinyComponentContainer: ", nm, ". validating", level = "trace")
           item$validate_server(session)
           lapply(names(item$components), function(nm){
+            logger("Registering component: ", nm, "...", level = "trace")
             item$components[[nm]]$server_func(input, output, session)
           })
         }
