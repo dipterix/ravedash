@@ -4,7 +4,7 @@ column_md <- function(width, ..., class = ""){
     stop("column width must be between 1 and 12")
   }
   colClass <- paste0("col-md-", width)
-  colClass <- shidashi:::combine_class(colClass, class)
+  colClass <- dipsaus::combine_html_class(colClass, class)
   shiny::div(class = colClass, ...)
 }
 

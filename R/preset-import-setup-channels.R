@@ -6,7 +6,7 @@ presets_import_setup_channels <- function(
   import_blocks_id = "import_blocks"
 ){
 
-  comp <- ravedash:::RAVEShinyComponent$new(id = id)
+  comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- c(import_setup_id, import_blocks_id)
   comp$no_save <- c("", "msg", "actions", "snapshot",
                     "do_import")

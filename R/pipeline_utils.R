@@ -12,7 +12,7 @@ register_pipeline <- function(pipeline_name, settings_file = "settings.yaml",
 
 
   paths <- c("./modules", "./_pipelines")
-  default_paths <- c(".", file.path(raveio:::R_user_dir('raveio', 'data'), "pipelines"))
+  default_paths <- c(".", file.path(R_user_dir('raveio', 'data'), "pipelines"))
 
   paths <- c(paths[dir.exists(paths)], default_paths)
 

@@ -6,7 +6,7 @@ presets_import_setup_blocks <- function(
   max_items = 5
 ){
 
-  comp <- ravedash:::RAVEShinyComponent$new(id = id)
+  comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- import_setup_id
   comp$no_save <- c("", "msg", "actions", "format_details", "action_dbl_confirm",
                     "block_preview", "")

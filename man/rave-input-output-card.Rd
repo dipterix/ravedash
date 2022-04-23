@@ -16,7 +16,9 @@ input_card(
   href = "auto",
   tools = NULL,
   footer = NULL,
-  toggle_advanced = FALSE
+  append_tools = TRUE,
+  toggle_advanced = FALSE,
+  module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())
 )
 
 output_card(
@@ -26,7 +28,9 @@ output_card(
   class_body = "padding-10",
   class_foot = "padding-10",
   href = "auto",
-  tools = NULL
+  tools = NULL,
+  append_tools = TRUE,
+  module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())
 )
 }
 \arguments{
@@ -53,8 +57,13 @@ output_card(
 
 \item{footer}{footer elements}
 
+\item{append_tools}{whether to append \code{tools} to the default list;
+default is true}
+
 \item{toggle_advanced}{whether to show links in the footer to toggle
 elements with 'HTML' class \code{'rave-optional'}}
+
+\item{module_id}{the 'RAVE' module ID}
 }
 \value{
 'HTML' tags

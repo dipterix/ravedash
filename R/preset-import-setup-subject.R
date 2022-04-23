@@ -4,7 +4,7 @@ presets_import_setup_native <- function(
   label = "Select project & subject"
 ){
 
-  comp <- ravedash:::RAVEShinyComponent$new(id = id)
+  comp <- RAVEShinyComponent$new(id = id)
   comp$no_save <- c("", "format_details", "actions", "new_project_name",
                     "new_project_name_dismiss", "new_project_name_confirm")
 
@@ -110,7 +110,7 @@ presets_import_setup_native <- function(
                 placeholder = "Letters, digits, `-`, and `_`"
               )
             ),
-            footer = tagList(
+            footer = shiny::tagList(
               shiny::actionButton(
                 inputId = comp$get_sub_element_id("new_project_name_dismiss", TRUE),
                 label = "Dismiss"
