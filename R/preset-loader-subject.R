@@ -101,6 +101,11 @@ presets_loader_subject <- function(
         return("Please run wavelet on this subject first.")
       }
     }
+    if("3dviewer" %in% checks) {
+      if(is.na(subject$freesurfer_path)) {
+        return("Please generate or import surface/volume reconstruction first.")
+      }
+    }
 
     return(NULL)
   })
