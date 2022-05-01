@@ -423,6 +423,8 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' @description Internally used. Do not call explicitly
 #' @param module_id 'RAVE' module ID
 #' @param label run-analysis button label; default is \code{"Run Analysis"}
+#' @param auto_recalculation whether to show the automatic calculation button;
+#' default is true
 #' @return 'HTML' tags
 #'
 #' @examples
@@ -457,7 +459,8 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' }
 #'
 #' @export
-ravedash_footer <- function(module_id = NULL, label = "Run Analysis"){
+ravedash_footer <- function(module_id = NULL, label = "Run Analysis",
+                            auto_recalculation = TRUE){
   ns <- shiny::NS(module_id)
   shiny::div(
     class = "back-to-top",
@@ -514,22 +517,26 @@ ravedash_footer <- function(module_id = NULL, label = "Run Analysis"){
         # ),
         shiny::div(
           class = "px-3 py-1",
-          shiny::a(
-            class = "btn btn-default rave-button",
-            href = "#",
-            `rave-action` = '{"type": "toggle_auto_recalculation"}',
-            `data-toggle` = "tooltip",
-            title = "Toggle auto re-calculation",
-            shiny_icons["sync"],
-            shiny::textOutput(
-              outputId = ns("__recalculation_message__"),
-              container = function(..., class = NULL){
-                shiny::span(style = "color: #007bff", ...,
-                            class = dipsaus::combine_html_class(
-                              class, "pointer-events-none"
-                            ))
-              })
-          ),
+          local({
+            if(auto_recalculation) {
+              shiny::a(
+                class = "btn btn-default rave-button",
+                href = "#",
+                `rave-action` = '{"type": "toggle_auto_recalculation"}',
+                `data-toggle` = "tooltip",
+                title = "Toggle auto re-calculation",
+                shiny_icons["sync"],
+                shiny::textOutput(
+                  outputId = ns("__recalculation_message__"),
+                  container = function(..., class = NULL){
+                    shiny::span(style = "color: #007bff", ...,
+                                class = dipsaus::combine_html_class(
+                                  class, "pointer-events-none"
+                                ))
+                  })
+              )
+            } else { NULL }
+          }),
           shiny::a(
             class = "btn btn-default shidashi-button",
             href = "#",

@@ -4,12 +4,19 @@
 \alias{ravedash_footer}
 \title{A hovering footer at bottom-right}
 \usage{
-ravedash_footer(module_id = NULL, label = "Run Analysis")
+ravedash_footer(
+  module_id = NULL,
+  label = "Run Analysis",
+  auto_recalculation = TRUE
+)
 }
 \arguments{
 \item{module_id}{'RAVE' module ID}
 
 \item{label}{run-analysis button label; default is \code{"Run Analysis"}}
+
+\item{auto_recalculation}{whether to show the automatic calculation button;
+default is true}
 }
 \value{
 'HTML' tags
