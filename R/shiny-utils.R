@@ -422,6 +422,7 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' A hovering footer at bottom-right
 #' @description Internally used. Do not call explicitly
 #' @param module_id 'RAVE' module ID
+#' @param label run-analysis button label; default is \code{"Run Analysis"}
 #' @return 'HTML' tags
 #'
 #' @examples
@@ -456,7 +457,7 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' }
 #'
 #' @export
-ravedash_footer <- function(module_id = NULL){
+ravedash_footer <- function(module_id = NULL, label = "Run Analysis"){
   ns <- shiny::NS(module_id)
   shiny::div(
     class = "back-to-top",
@@ -481,7 +482,7 @@ ravedash_footer <- function(module_id = NULL){
         `data-toggle` = "tooltip",
         title = "Keyboard shortcut: CTRL+Enter / Command+Return (OSX)",
         `rave-action` = '{"type": "run_analysis"}',
-        "Run Analysis"
+        label
       ),
       shiny::tags$button(
         type="button",

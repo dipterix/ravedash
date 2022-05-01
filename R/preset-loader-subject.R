@@ -102,7 +102,8 @@ presets_loader_subject <- function(
       }
     }
     if("3dviewer" %in% checks) {
-      if(is.na(subject$freesurfer_path)) {
+      fspath <- subject$freesurfer_path
+      if(length(fspath) != 1 || is.na(fspath) || !isTRUE(dir.exists(fspath))) {
         return("Please generate or import surface/volume reconstruction first.")
       }
     }
