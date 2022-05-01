@@ -463,7 +463,7 @@ ravedash_footer <- function(module_id = NULL, label = "Run Analysis",
                             auto_recalculation = TRUE){
   ns <- shiny::NS(module_id)
   shiny::div(
-    class = "back-to-top",
+    class = "back-to-top ravedash-footer",
     shiny::div(
       class = "btn-group dropup",
       role="group",

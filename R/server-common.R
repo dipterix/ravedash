@@ -261,10 +261,12 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       if(loader_open){
         local_reactives$open_loader <- Sys.time()
         shidashi::add_class(".module_main_ui", "soft-hidden")
+        shidashi::add_class(".ravedash-footer", "soft-hidden")
         shidashi::remove_class(".module_loader_ui", "soft-hidden")
       } else {
         local_reactives$open_loader <- FALSE
         shidashi::add_class(".module_loader_ui", "soft-hidden")
+        shidashi::remove_class(".ravedash-footer", "soft-hidden")
         shidashi::remove_class(".module_main_ui", "soft-hidden")
       }
     }),
