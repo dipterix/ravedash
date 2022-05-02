@@ -281,7 +281,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       logger("Suppress run_analysis_flag() because the loader is opened", level = "trace")
       return(NULL)
     }
-    if(!isTRUE(watch_data_loaded())) {
+    if(!shiny::isolate(isTRUE(watch_data_loaded()))) {
       logger("Suppress run_analysis_flag() because no data has been loaded", level = "trace")
       return(NULL)
     }
