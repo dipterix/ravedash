@@ -289,6 +289,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
         local_reactives$auto_recalculate_back_up > 0 &&
         local_reactives$auto_recalculate <= 0
     ))) {
+      logger("Setting auto recalculation flag", level = "trace")
       auto_recalculate(local_reactives$auto_recalculate_back_up)
       return(NULL)
     }
@@ -517,7 +518,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
 
   reactive_handlers$simplify_view <- structure(
-    simplify_view, class = "ravedash_printable",
+    simplify_view, class = c("ravedash_printable", class(simplify_view)),
     docs = paste(
       sep = "\n",
       "Show, hide, or toggle display of elements with `rave-optional` HTML class. Usage:\n",
@@ -530,7 +531,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
 
   reactive_handlers$run_analysis_flag <- structure(
-    run_analysis_flag, class = "ravedash_printable",
+    run_analysis_flag, class = c("ravedash_printable", class(run_analysis_flag)),
     docs = paste(
       sep = "\n",
       "Flag to run analysis pipeline. Usage:\n",
@@ -547,7 +548,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
   # reactive_handlers$run_analysis <- run_analysis
   reactive_handlers$run_analysis_onchange <- structure(
-    run_analysis_onchange, class = "ravedash_printable",
+    run_analysis_onchange, class = c("ravedash_printable", class(run_analysis_onchange)),
     docs = paste(
       sep = "\n",
       "Function to set input IDs to watch. These inputs will trigger auto re-calculate. Usage:\n",
@@ -557,7 +558,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     )
   )
   reactive_handlers$auto_recalculate <- structure(
-    auto_recalculate, class = "ravedash_printable",
+    auto_recalculate, class = c("ravedash_printable", class(auto_recalculate)),
     docs = paste(
       sep = "\n",
       "Function to turn auto-recalculation on and off. Usage:\n",
@@ -570,7 +571,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
 
   reactive_handlers$module_is_active <- structure(
-    module_is_active, class = "ravedash_printable",
+    module_is_active, class = c("ravedash_printable", class(module_is_active)),
     docs = paste(
       sep = "\n",
       "Shiny reactive to tell if the module is active or hidden. Usage:\n",
