@@ -276,31 +276,41 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
 
 
-  run_analysis_flag <- shiny::debounce(shiny::reactive({
+  run_analysis_flag <- shiny::debounce(shiny::bindEvent(
+    shiny::reactive({
 
-    if(!shiny::isolate(is.null(tool$rave_event$open_loader))) {
-      logger("Suppress run_analysis_flag() because the loader is opened", level = "trace")
-      return(NULL)
-    }
-    # if(!shiny::isolate(isFALSE(watch_loader_opened()))) {
-    #   logger("Suppress run_analysis_flag() because the loader is opened", level = "trace")
-    #   return(NULL)
-    # }
-    # if(!shiny::isolate(isTRUE(watch_data_loaded()))) {
-    #   logger("Suppress run_analysis_flag() because no data has been loaded", level = "trace")
-    #   return(NULL)
-    # }
-    if(shiny::isolate(isTRUE(
+      thisval <- get_rave_event("run_analysis")
+
+      if(!shiny::isolate(is.null(tools$rave_event$open_loader))) {
+        logger("Suppress run_analysis_flag() because the loader is opened", level = "trace")
+        return(NULL)
+      }
+      # if(!shiny::isolate(isFALSE(watch_loader_opened()))) {
+      #   logger("Suppress run_analysis_flag() because the loader is opened", level = "trace")
+      #   return(NULL)
+      # }
+      if(!shiny::isolate(isTRUE(watch_data_loaded()))) {
+        logger("Suppress run_analysis_flag() because no data has been loaded", level = "trace")
+        return(NULL)
+      }
+      if(shiny::isolate(isTRUE(
         local_reactives$auto_recalculate_back_up > 0 &&
         local_reactives$auto_recalculate <= 0
-    ))) {
-      logger("Setting auto recalculation flag", level = "trace")
-      auto_recalculate(local_reactives$auto_recalculate_back_up)
-      return(NULL)
-    }
-    logger("Triggering a deferred signal to run_analysis_flag()", level = "trace")
-    get_rave_event("run_analysis")
-  }), millis = 300, priority = 99)
+      ))) {
+        logger("Setting auto recalculation flag", level = "trace")
+        auto_recalculate(local_reactives$auto_recalculate_back_up)
+        return(NULL)
+      }
+      logger("Triggering a deferred signal to run_analysis_flag()", level = "trace")
+
+      if(!is.null(thisval)) {
+        local_data$last_run_analysis <- thisval
+      }
+      return(local_data$last_run_analysis)
+    }),
+    get_rave_event("run_analysis"),
+    ignoreNULL = FALSE, ignoreInit = FALSE
+  ), millis = 300, priority = 99)
 
   shiny::bindEvent(
     observe({
