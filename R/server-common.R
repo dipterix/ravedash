@@ -277,14 +277,19 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
 
   run_analysis_flag <- shiny::debounce(shiny::reactive({
-    if(!shiny::isolate(isFALSE(watch_loader_opened()))) {
+
+    if(!shiny::isolate(is.null(tool$rave_event$open_loader))) {
       logger("Suppress run_analysis_flag() because the loader is opened", level = "trace")
       return(NULL)
     }
-    if(!shiny::isolate(isTRUE(watch_data_loaded()))) {
-      logger("Suppress run_analysis_flag() because no data has been loaded", level = "trace")
-      return(NULL)
-    }
+    # if(!shiny::isolate(isFALSE(watch_loader_opened()))) {
+    #   logger("Suppress run_analysis_flag() because the loader is opened", level = "trace")
+    #   return(NULL)
+    # }
+    # if(!shiny::isolate(isTRUE(watch_data_loaded()))) {
+    #   logger("Suppress run_analysis_flag() because no data has been loaded", level = "trace")
+    #   return(NULL)
+    # }
     if(shiny::isolate(isTRUE(
         local_reactives$auto_recalculate_back_up > 0 &&
         local_reactives$auto_recalculate <= 0
