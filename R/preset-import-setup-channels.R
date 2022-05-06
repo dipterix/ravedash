@@ -555,7 +555,7 @@ presets_import_setup_channels <- function(
           id
         ), map = settings)
 
-        settings$skip_validation <- FALSE
+        settings$skip_validation <- TRUE
         settings$force_import <- TRUE
         raveio::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
 
@@ -575,9 +575,14 @@ presets_import_setup_channels <- function(
           type = "smart"
         )
 
+        finalize <- function(){
+          dipsaus::close_alert2()
+          pipeline_set(skip_validation = FALSE)
+        }
+
         result$promise$then(
           onFulfilled = function(...){
-            dipsaus::close_alert2()
+            finalize()
             shiny::removeModal()
             dipsaus::shiny_alert2(
               title = "Success!",
@@ -589,8 +594,8 @@ presets_import_setup_channels <- function(
             )
           },
           onRejected = function(e) {
+            finalize()
             ravedash::logger_error_condition(e)
-            dipsaus::close_alert2()
             dipsaus::shiny_alert2(
               title = "Error",
               text = paste(c(
