@@ -6,9 +6,9 @@ presets_import_setup_channels <- function(
   import_blocks_id = "import_blocks"
 ){
 
-  comp <- RAVEShinyComponent$new(id = id)
+  comp <- ravedash:::RAVEShinyComponent$new(id = id)
   comp$depends <- c(import_setup_id, import_blocks_id)
-  comp$no_save <- c("", "msg", "actions", "snapshot",
+  comp$no_save <- c("", "msg", "actions", "actions_alt", "snapshot",
                     "do_import")
 
   all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4)]
@@ -77,6 +77,10 @@ presets_import_setup_channels <- function(
       footer = shiny::div(
         class = "float-right",
         dipsaus::actionButtonStyled(
+          comp$get_sub_element_id("actions_alt", with_namespace = TRUE),
+          label = "Skip validation & import", type = "default"
+        ),
+        dipsaus::actionButtonStyled(
           comp$get_sub_element_id("actions", with_namespace = TRUE),
           label = "Validate & import"
         )
@@ -114,6 +118,12 @@ presets_import_setup_channels <- function(
         inputId = comp$get_sub_element_id("actions", with_namespace = FALSE),
         disabled = TRUE
       )
+      dipsaus::updateActionButtonStyled(
+        session = session,
+        inputId = comp$get_sub_element_id("actions_alt", with_namespace = FALSE),
+        disabled = TRUE
+      )
+
       local_reactives$valid_setup <- FALSE
       local_reactives$info <- NULL
       shidashi::card2_open(id)
@@ -180,6 +190,11 @@ presets_import_setup_channels <- function(
         dipsaus::updateActionButtonStyled(
           session = session,
           inputId = comp$get_sub_element_id("actions", with_namespace = FALSE),
+          disabled = FALSE
+        )
+        dipsaus::updateActionButtonStyled(
+          session = session,
+          inputId = comp$get_sub_element_id("actions_alt", with_namespace = FALSE),
           disabled = FALSE
         )
         shidashi::card2_close(id)
@@ -317,197 +332,207 @@ presets_import_setup_channels <- function(
       ignoreInit = TRUE
     )
 
-    shiny::bindEvent(
-      ravedash::safe_observe({
+    check_before_import <- function(skip_validation = TRUE) {
+      shidashi::clear_notifications()
 
-        shidashi::clear_notifications()
-
-        tryCatch({
+      tryCatch({
 
 
-          info <- local_reactives$info
-          if(!is.list(info) || !isTRUE(info$valid)) {
-            stop("The inputs are invalid. Please check your inputs.")
-          }
-          preproc <- info$preproc
-          if(is.null(preproc)){
-            stop("The inputs are invalid. Please check your inputs.")
-          }
-          format <- info$current_format
-          blocks <- info$current_blocks
-          electrode_file <- comp$get_sub_element_input("electrode_file")
-          sample_rate <- comp$get_sub_element_input("sample_rate")
-          physical_unit <- comp$get_sub_element_input("unit")
-          electrodes <- dipsaus::parse_svec(comp$get_sub_element_input("electrodes"))
+        info <- local_reactives$info
+        if(!is.list(info) || !isTRUE(info$valid)) {
+          stop("The inputs are invalid. Please check your inputs.")
+        }
+        preproc <- info$preproc
+        if(is.null(preproc)){
+          stop("The inputs are invalid. Please check your inputs.")
+        }
+        format <- info$current_format
+        blocks <- info$current_blocks
+        electrode_file <- comp$get_sub_element_input("electrode_file")
+        sample_rate <- comp$get_sub_element_input("sample_rate")
+        physical_unit <- comp$get_sub_element_input("unit")
+        electrodes <- dipsaus::parse_svec(comp$get_sub_element_input("electrodes"))
 
-          if(!isTRUE(format %in% seq_along(all_formats))) {
-            stop("The format is invalid.")
-          }
-          if(!length(blocks)) {
-            stop("The session block has zero length.")
-          }
-          if(!isTRUE(sample_rate > 1)) {
-            stop("The sample rate must be positive.")
-          }
-          if(!length(electrodes)) {
-            stop("No electrode will be imported.")
-          }
+        if(!isTRUE(format %in% seq_along(all_formats))) {
+          stop("The format is invalid.")
+        }
+        if(!length(blocks)) {
+          stop("The session block has zero length.")
+        }
+        if(!isTRUE(sample_rate > 1)) {
+          stop("The sample rate must be positive.")
+        }
+        if(!length(electrodes)) {
+          stop("No electrode will be imported.")
+        }
 
-          preproc <- info$preproc
+        preproc <- info$preproc
 
-          any_imported <- any(preproc$data_imported)
+        any_imported <- any(preproc$data_imported)
 
-          # set blocks
-          # f1 <- tempfile()
-          # f2 <- tempfile()
-          # file.copy(preproc$path, f1, overwrite = TRUE)
-          # file.copy(preproc$backup_path, f2, overwrite = TRUE)
-          # on.exit({
-          #   file.copy(f1, preproc$path, overwrite = TRUE)
-          #   file.copy(f2, preproc$backup_path, overwrite = TRUE)
-          #   unlink(f1)
-          #   unlink(f2)
-          # })
-          # preproc$data$checklevel <- 0L
-          # lapply(preproc$electrodes, function(e){
-          #   preproc$data[[as.character(e)]]$data_imported <- FALSE
-          # })
-          # preproc$set_blocks(blocks)
-          # preproc$set_electrodes(electrodes, type = "LFP")
-          # preproc$set_sample_rates(sample_rate, type = "LFP")
-          # preproc$save()
+        # set blocks
+        # f1 <- tempfile()
+        # f2 <- tempfile()
+        # file.copy(preproc$path, f1, overwrite = TRUE)
+        # file.copy(preproc$backup_path, f2, overwrite = TRUE)
+        # on.exit({
+        #   file.copy(f1, preproc$path, overwrite = TRUE)
+        #   file.copy(f2, preproc$backup_path, overwrite = TRUE)
+        #   unlink(f1)
+        #   unlink(f2)
+        # })
+        # preproc$data$checklevel <- 0L
+        # lapply(preproc$electrodes, function(e){
+        #   preproc$data[[as.character(e)]]$data_imported <- FALSE
+        # })
+        # preproc$set_blocks(blocks)
+        # preproc$set_electrodes(electrodes, type = "LFP")
+        # preproc$set_sample_rates(sample_rate, type = "LFP")
+        # preproc$save()
 
-          # validation_result <- raveio::validate_raw_file(
-          #   subject_code = preproc$subject$subject_code,
-          #   blocks = blocks, electrodes = electrodes,
-          #   format = format
-          # )
+        # validation_result <- raveio::validate_raw_file(
+        #   subject_code = preproc$subject$subject_code,
+        #   blocks = blocks, electrodes = electrodes,
+        #   format = format
+        # )
 
-          settings <- raveio::load_yaml(comp$container$settings_path)
-          settings <- comp$container$collect_settings(c(
-            import_setup_id,
-            import_blocks_id,
-            id
-          ), map = settings)
-          settings$skip_validation <- FALSE
-          raveio::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
+        settings <- raveio::load_yaml(comp$container$settings_path)
+        settings <- comp$container$collect_settings(c(
+          import_setup_id,
+          import_blocks_id,
+          id
+        ), map = settings)
+        settings$skip_validation <- skip_validation
+        raveio::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
 
-          result <- raveio::pipeline_run(
-            names = "validation_result",
-            pipe_dir = comp$container$pipeline_path,
-            scheduler = "none",
-            type = "smart",
-            async = FALSE
-          )
+        result <- raveio::pipeline_run(
+          names = "validation_result",
+          pipe_dir = comp$container$pipeline_path,
+          scheduler = "none",
+          type = "smart",
+          async = FALSE
+        )
 
-          validation_result <- raveio::pipeline_read(
-            var_names = "validation_result",
-            pipe_dir = comp$container$pipeline_path
-          )
+        validation_result <- raveio::pipeline_read(
+          var_names = "validation_result",
+          pipe_dir = comp$container$pipeline_path
+        )
 
-          if(isFALSE(validation_result)) {
-            reasons <- attr(validation_result,"reason")
-            shidashi::show_notification(
-              title = "Validation failure",
-              type = "danger",
-              autohide = FALSE, close = TRUE,
-              message = shiny::div(
-                shiny::p(
-                  "Found the following issues in the data. Please correct them."
-                ),
-                shiny::tagList(
-                  lapply(names(reasons), function(nm){
-                    items <- reasons[[nm]]
-                    if(length(items)) {
-                      shiny::p(
-                        nm,
-                        shiny::tags$ul(
-                          lapply(items, shiny::tags$li)
-                        )
-                      )
-                    } else {
-                      shiny::p(nm)
-                    }
-
-                  })
-                )
-              )
-            )
-            return()
-          }
-
-          # format <- info$current_format
-          # blocks <- info$current_blocks
-          # electrode_file <- comp$get_sub_element_input("electrode_file")
-          # sample_rate <- comp$get_sub_element_input("sample_rate")
-          # physical_unit <- comp$get_sub_element_input("unit")
-          # electrodes <- dipsaus::parse_svec(comp$get_sub_element_input("electrodes"))
-
-          shiny::showModal(
-            shiny::modalDialog(
-              title = "Ready to import data",
-              easyClose = FALSE, size = "l",
-              footer = shiny::tagList(
-                shiny::modalButton("Cancel"),
-                dipsaus::actionButtonStyled(
-                  inputId = comp$get_sub_element_id("do_import", TRUE),
-                  label = "Import data"
-                )
-              ),
-              shiny::div(
-                "Please make sure the following information is correct before proceeding: ",
-                shiny::tags$ul(
-                  shiny::tags$li(
-                    "Subject: ", preproc$subject$subject_id
-                  ),
-                  shiny::tags$li(
-                    "Session blocks: ", paste(blocks, collapse = ", ")
-                  ),
-                  shiny::tags$li(
-                    sprintf("Session format: %s (%s)",
-                            all_formats[[format]],
-                            names(all_formats)[[format]])
-                  ),
-                  shiny::tags$li(
-                    "Electrode channels: ", dipsaus::deparse_svec(electrodes)
-                  ),
-                  shiny::tags$li(
-                    sprintf("Sample rate: %.4f Hz", sample_rate)
-                  ),
-                  shiny::tags$li(
-                    sprintf("Physical unit: %s", physical_unit)
-                  )
-                ),
-
-                {
-                  if(any_imported){
-                    "* The subject has been imported before. Proceed and you will need to re-process all other modules, including Wavelet."
-                  } else {
-                    NULL
-                  }
-                }
-
-              )
-            )
-          )
-
-        }, error = function(e){
+        if(isFALSE(validation_result)) {
+          reasons <- attr(validation_result,"reason")
           shidashi::show_notification(
             title = "Validation failure",
             type = "danger",
             autohide = FALSE, close = TRUE,
             message = shiny::div(
               shiny::p(
-                "Found the following issues. Please correct them."
+                "Found the following issues in the data. Please correct them."
               ),
-              shiny::p(
-                e$message
+              shiny::tagList(
+                lapply(names(reasons), function(nm){
+                  items <- reasons[[nm]]
+                  if(length(items)) {
+                    shiny::p(
+                      nm,
+                      shiny::tags$ul(
+                        lapply(items, shiny::tags$li)
+                      )
+                    )
+                  } else {
+                    shiny::p(nm)
+                  }
+
+                })
               )
             )
           )
-        })
+          return()
+        }
+
+        # format <- info$current_format
+        # blocks <- info$current_blocks
+        # electrode_file <- comp$get_sub_element_input("electrode_file")
+        # sample_rate <- comp$get_sub_element_input("sample_rate")
+        # physical_unit <- comp$get_sub_element_input("unit")
+        # electrodes <- dipsaus::parse_svec(comp$get_sub_element_input("electrodes"))
+
+        shiny::showModal(
+          shiny::modalDialog(
+            title = "Ready to import data",
+            easyClose = FALSE, size = "l",
+            footer = shiny::tagList(
+              shiny::modalButton("Cancel"),
+              dipsaus::actionButtonStyled(
+                inputId = comp$get_sub_element_id("do_import", TRUE),
+                label = "Import data"
+              )
+            ),
+            shiny::div(
+              "Please make sure the following information is correct before proceeding: ",
+              shiny::tags$ul(
+                shiny::tags$li(
+                  "Subject: ", preproc$subject$subject_id
+                ),
+                shiny::tags$li(
+                  "Session blocks: ", paste(blocks, collapse = ", ")
+                ),
+                shiny::tags$li(
+                  sprintf("Session format: %s (%s)",
+                          all_formats[[format]],
+                          names(all_formats)[[format]])
+                ),
+                shiny::tags$li(
+                  "Electrode channels: ", dipsaus::deparse_svec(electrodes)
+                ),
+                shiny::tags$li(
+                  sprintf("Sample rate: %.4f Hz", sample_rate)
+                ),
+                shiny::tags$li(
+                  sprintf("Physical unit: %s", physical_unit)
+                )
+              ),
+
+              {
+                if(any_imported){
+                  "* The subject has been imported before. Proceed and you will need to re-process all other modules, including Wavelet."
+                } else {
+                  NULL
+                }
+              }
+
+            )
+          )
+        )
+
+      }, error = function(e){
+        shidashi::show_notification(
+          title = "Validation failure",
+          type = "danger",
+          autohide = FALSE, close = TRUE,
+          message = shiny::div(
+            shiny::p(
+              "Found the following issues. Please correct them."
+            ),
+            shiny::p(
+              e$message
+            )
+          )
+        )
+      })
+    }
+
+    shiny::bindEvent(
+      ravedash::safe_observe({
+        check_before_import(skip_validation = FALSE)
       }),
       comp$get_sub_element_input("actions")
+    )
+
+    shiny::bindEvent(
+      ravedash::safe_observe({
+        check_before_import(skip_validation = TRUE)
+      }),
+      comp$get_sub_element_input("actions_alt")
     )
 
 
