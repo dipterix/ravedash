@@ -575,14 +575,9 @@ presets_import_setup_channels <- function(
           type = "smart"
         )
 
-        finalize <- function(){
-          dipsaus::close_alert2()
-          pipeline_set(skip_validation = FALSE)
-        }
-
         result$promise$then(
           onFulfilled = function(...){
-            finalize()
+            dipsaus::close_alert2()
             shiny::removeModal()
             dipsaus::shiny_alert2(
               title = "Success!",
@@ -594,7 +589,7 @@ presets_import_setup_channels <- function(
             )
           },
           onRejected = function(e) {
-            finalize()
+            dipsaus::close_alert2()
             ravedash::logger_error_condition(e)
             dipsaus::shiny_alert2(
               title = "Error",
