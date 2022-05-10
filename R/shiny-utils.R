@@ -42,7 +42,10 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
         table = "table",
         times = "times",
         code = "code",
-        terminal = "terminal"
+        terminal = "terminal",
+        filter = "filter",
+        tools = "tools",
+        wrench = "wrench"
       )
     }
     li
