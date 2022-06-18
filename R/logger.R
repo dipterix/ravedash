@@ -393,9 +393,19 @@ abbr_module_id <- function(module_id, ...){
       msg <- paste(..., collapse = .sep, sep = .sep)
     }
 
-    if(loglevel < logger::ERROR){
-      trace_back <- rlang::trace_back(globalenv())
-      msg <- c(msg, format(trace_back, simplify = "none"))
+    if(loglevel < logger::ERROR ||
+       (
+         loglevel == logger::ERROR &&
+         raveio::raveio_getopt("traceback_on_error", default = FALSE)
+       )){
+      if(system.file(package = "rlang") == '') {
+        msg <- utils::capture.output({
+          traceback()
+        })
+      } else {
+        trace_back <- rlang::trace_back(globalenv())
+        msg <- c(msg, format(trace_back, simplify = "none"))
+      }
       msg <- paste(msg, collapse = "\n")
     }
 

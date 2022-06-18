@@ -1,3 +1,4 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_import_setup_native <- function(
   id = "import_setup",

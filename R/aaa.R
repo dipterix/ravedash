@@ -1,5 +1,7 @@
 #' @importFrom shidashi render
 #' @importFrom dipsaus %?<-%
+#' @importFrom dipsaus %OF%
+#' @importFrom shinyvalidate InputValidator
 NULL
 
 gray_label_color <- "#c8c9ca"
@@ -78,50 +80,39 @@ R_user_dir <- function (package, which = c("data", "config", "cache"))
 }
 
 
-#' Get an element with condition that it must be from a list or vector
-#' @param lhs the element of candidate
-#' @param rhs the constraint
-#' @return Returns an element of length one that will be from \code{rhs}
+#' @export
+dipsaus::`%OF%`
+
+#' @name random-text
+#' @title Randomly choose from a list of text
+#' @param candidates character vectors, a list of candidates
+#' @return \code{be_patient_text} returns a text asking users to be patient;
+#' \code{finished_text} returns the text indicating the task has finished.
 #' @examples
 #'
-#' # C is from LETTERS, therefore returns `C`
-#' "C" %OF% LETTERS
+#' be_patient_text()
 #'
-#'
-#' # `lhs` is not from `rhs`, hence return the first element of LETTERS
-#' '9' %OF% LETTERS
-#' NULL %OF% LETTERS
-#'
-#' # When there are multiple elements from `lhs`, select the first that
-#' # matches the constraint
-#' c('9', "D", "V") %OF% LETTERS
+#' finished_text()
 #'
 #' @export
-`%OF%` <- function(lhs, rhs){
-  if(length(rhs)){ de <- rhs[[1]] } else { de <- rhs }
-  lhs <- lhs[!is.na(lhs)]
-  if(!length(lhs)){ return(de) }
-  sel <- lhs %in% rhs
-  if(any(sel)){ return(lhs[sel][[1]]) }
-  return(de)
-}
+be_patient_text <- function(candidates){
+  if(missing(candidates)) {
+    sp <- c(
+      "Please be patient, running in progress...",
+      "Grab a cup of coffee, this might take a while...",
+      "Grab a cup of coffee, this might take a while... (Can I get the decaf one? Thanks)",
+      "Time to stand and stretch yourself...",
+      "Wait a second (maybe minutes)",
+      "I hate it when I have to let you wait, but I have no choice...",
+      "Do you see the progress bar? If so, stare at it.",
+      "Do you see the progress bar? Yeah, I know, it's pretty addictive to stare at it ;)",
+      "It's time to watch some videos, or listen to some music. I'll be ready when it's ready.",
+      "The last time when you ran this module is at last time. (Alright, I'll go back to work..."
+    )
+  } else {
+    sp <- candidates
+  }
 
-
-
-#' @export
-be_patient_text <- function(){
-  sp <- c(
-    "Please be patient, running in progress...",
-    "Grab a cup of coffee, this might take a while...",
-    "Grab a cup of coffee, this might take a while... (Can I get the decaf one? Thanks)",
-    "Time to stand and stretch yourself...",
-    "Wait a second (maybe minutes)",
-    "I hate it when I have to let you wait, but I have no choice...",
-    "Do you see the progress bar? If so, stare at it.",
-    "Do you see the progress bar? Yeah, I know, it's pretty addictive to stare at it ;)",
-    "It's time to watch some videos, or listen to some music. I'll be ready when it's ready.",
-    "The last time when you ran this module is at last time. (Alright, I'll go back to work..."
-  )
   prob = rev(seq_along(sp))
   sample(
     sp,
@@ -130,20 +121,26 @@ be_patient_text <- function(){
   )
 }
 
+#' @rdname random-text
 #' @export
-finished_text <- function(){
-  sp <- c(
-    "Please proceed to the next step",
-    "It's done!",
-    "Yay, finished!",
-    "Finally!",
-    "See, I said I can finish it!",
-    "Oh, finally...",
-    "Have you finished your coffee? I have finished my work haha.",
-    "I guess you are happy with the progress bar disappearing? ;)",
-    "Time to get back to work!",
-    "The last time when you finished this module is just now!"
-  )
+finished_text <- function(candidates){
+  if(missing(candidates)) {
+    sp <- c(
+      "Please proceed to the next step",
+      "It's done!",
+      "Yay, finished!",
+      "Finally!",
+      "See, I said I can finish it!",
+      "Oh, finally...",
+      "Have you finished your coffee? I have finished my work haha.",
+      "I guess you are happy with the progress bar disappearing? ;)",
+      "Time to get back to work!",
+      "The last time when you finished this module is just now!"
+    )
+  } else {
+    sp <- candidates
+  }
+
   prob = rev(seq_along(sp))
   sample(
     sp,

@@ -1,12 +1,16 @@
 Package: ravedash
 Type: Package
-Title: Dashboard 
+Title: Dashboard System for Reproducible Visualization of 'iEEG'
 Version: 0.1.0
 Authors@R: c(
-    person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph"))
+    person("Zhengjia", "Wang", email = "zhengjia.wang@pennmedicine.upenn.edu", role = c("aut", "cre", "cph"))
     )
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Dashboard system to display the analysis results produced by 'RAVE'
+    (Magnotti J.F., Wang Z., Beauchamp M.S. (2020), R analysis 
+    and visualizations of 'iEEG' <doi:10.1016/j.neuroimage.2020.117341>). 
+    Provides infrastructure to integrate customized analysis pipelines into
+    dashboard modules, including file structures, front-end widgets, and 
+    event handlers.
 License: GPL-3
 Encoding: UTF-8
 Language: en-US
@@ -14,16 +18,17 @@ Imports:
     dipsaus (>= 0.2.0),
     logger (>= 0.2.2),
     raveio (>= 0.0.5.9000),
-    rlang (>= 1.0.2),
     rpymat (>= 0.1.2),
     shidashi (>= 0.1.0.9000),
     shiny (>= 1.7.1),
     shinyWidgets (>= 0.6.2),
-    threeBrain (>= 0.2.4)
+    threeBrain (>= 0.2.4),
+    shinyvalidate
 Suggests: 
     fastmap (>= 1.1.0),
+    rlang (>= 1.0.2),
     crayon (>= 1.4.2)
-Remotes:  
+Remotes: 
     dipterix/shidashi,
     beauchamplab/raveio,
     rstudio/shiny,
@@ -35,5 +40,5 @@ Remotes:
     r-lib/crayon,
     dipterix/rpymat,
     r-lib/rlang
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 URL: http://dipterix.org/ravedash/

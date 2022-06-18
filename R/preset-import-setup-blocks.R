@@ -1,9 +1,10 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_import_setup_blocks <- function(
   id = "import_blocks",
   label = "Format & session blocks",
   import_setup_id = "import_setup",
-  max_items = 5
+  max_components = 5
 ){
 
   comp <- RAVEShinyComponent$new(id = id)
@@ -390,8 +391,8 @@ presets_import_setup_blocks <- function(
 
       for(block in blocks) {
         fs <- list.files(file.path(dirs$raw_path, block), pattern = "\\.(h5|mat|edf|eeg|dat|vmrk|vhdr)$", recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
-        if(length(fs) > max_items) {
-          fs <- c(fs[seq_len(max_items - 1)], "...")
+        if(length(fs) > max_components) {
+          fs <- c(fs[seq_len(max_components - 1)], "...")
         }
         print(dipsaus::print_directory_tree(sprintf("%s (session folder)", block),
                                             root = root_str, dir_only = TRUE, child = fs))

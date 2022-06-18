@@ -7,32 +7,28 @@ session_root <- function(ensure = FALSE){
 }
 
 ensure_template <- function(path, use_cache = TRUE){
-  template_path <- file.path(R_user_dir("ravedash", 'data'), 'themes', 'rave-pipelines')
-  backup_path <- file.path(R_user_dir("ravedash", 'data'), 'backups')
-  backup_template_path <- file.path(backup_path, 'rave-pipelines')
 
-  if(!use_cache || !dir.exists(template_path)){
-    if(dir.exists(template_path)){
-      raveio::dir_create2(backup_path)
-      if(dir.exists(backup_template_path)){
-        unlink(backup_template_path, recursive = TRUE)
-      }
-      file.copy(template_path, backup_path, recursive = TRUE, overwrite = TRUE)
-      unlink(template_path, recursive = TRUE)
-    }
-    shidashi::use_template(path = template_path, user = 'dipterix', theme = 'rave-pipelines', branch = "master")
-    if(dir.exists(backup_template_path)){
-      unlink(backup_template_path, recursive = TRUE)
-      if(!length(list.files(backup_path))){
-        unlink(backup_path, recursive = TRUE)
-      }
-    }
+
+  template_path <- file.path(R_user_dir("raveio", 'data'), 'rave-pipelines')
+
+  if(!use_cache || !dir.exists(template_path)) {
+    raveio::pipeline_install_github('dipterix/rave-pipelines', to = "default")
   }
 
-  fs <- list.files(template_path, full.names = TRUE)
+  fs <- list.files(template_path, full.names = TRUE, recursive = FALSE)
   raveio::dir_create2(path)
   for(f in fs){
     file.copy(f, to = path, overwrite = TRUE, copy.date = TRUE, recursive = TRUE)
+  }
+  # remove <path>/modules
+  module_path <- file.path(path, "modules")
+  if(dir.exists(module_path)) {
+    unlink(module_path, recursive = TRUE)
+    raveio::dir_create2(module_path)
+  }
+  module_yaml_path <- file.path(path, "modules.yaml")
+  if(file.exists(module_yaml_path)) {
+    unlink(module_yaml_path)
   }
   normalizePath(path)
 }
@@ -127,11 +123,41 @@ new_session <- function(update = FALSE) {
     recursive = TRUE, copy.date = TRUE
   )
 
-  file.copy(
-    from = file.path(module_root_path, "modules.yaml"),
-    to = file.path(app_path, "modules.yaml"),
-    overwrite = TRUE, copy.date = TRUE
-  )
+  module_conf <- raveio::load_yaml(file.path(module_root_path, "modules.yaml"))
+  groups <- lapply(module_conf$modules, function(item){
+    if(length(item$group) == 1) {
+      order <- c(item$order, 99999L)
+      order <- min(order, na.rm = TRUE)
+      return(data.frame(
+        group = item$group,
+        order = order
+      ))
+    }
+  })
+  groups <- do.call("rbind", dipsaus::drop_nulls(groups))
+  groups <- lapply(split(groups, groups$group), function(item){
+    list(
+      name = item$group[[1]],
+      order = min(item$order),
+      open = FALSE
+    )
+  })
+  names(groups) <- sapply(groups, '[[', 'name')
+  module_conf$groups <- groups
+
+  if(!is.list(module_conf$divider)) {
+    module_conf$divider <- list()
+  }
+  module_conf$divider[["Preprocess"]] <- list(order = 0)
+  module_conf$divider[["Built-ins"]] <- list(order = 9.99)
+  module_conf$divider[["Add-ons"]] <- list(order = 99.99)
+
+  raveio::save_yaml(module_conf, file = file.path(app_path, "modules.yaml"))
+  # file.copy(
+  #   from = file.path(module_root_path, "modules.yaml"),
+  #   to = file.path(app_path, "modules.yaml"),
+  #   overwrite = TRUE, copy.date = TRUE
+  # )
 
   use_session(session_id)
 

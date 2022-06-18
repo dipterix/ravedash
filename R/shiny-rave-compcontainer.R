@@ -1,3 +1,32 @@
+#' Creates a container for preset components
+#' @param module_id 'RAVE' module ID
+#' @param pipeline_name the name of pipeline to run
+#' @param pipeline_path path of the pipeline
+#' @param settings_file the settings file of the pipeline, usually stores the
+#' pipeline input information; default is \code{"settings.yaml"}
+#' @return A \code{'RAVEShinyComponentContainer'} instance
+#'
+#' @examples
+#'
+#'
+#' f <- tempfile()
+#' dir.create(f, showWarnings = FALSE, recursive = TRUE)
+#' file.create(file.path(f, "settings.yaml"))
+#'
+#' container <- new_rave_shiny_component_container(
+#'   module_id = "module_power_phase_coherence",
+#'   pipeline_name = "power_phase_coherence_pipeline",
+#'   pipeline_path = f
+#' )
+#'
+#' loader_project <- presets_loader_project()
+#' loader_subject <- presets_loader_subject()
+#'
+#' container$add_components(
+#'   loader_project, loader_subject
+#' )
+#'
+#'
 #' @export
 new_rave_shiny_component_container <- function(
   module_id, pipeline_name,

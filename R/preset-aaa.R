@@ -12,6 +12,10 @@
 #' different to the default
 #' @param loader_electrodes_id the ID of \code{presets_loader_electrodes} if
 #' different to the default
+#' @param import_setup_id the ID of \code{presets_import_setup_native} if
+#' different to the default
+#' @param import_blocks_id the ID of \code{presets_import_setup_blocks} if
+#' different to the default
 #' @param pipeline_repository the pipeline name that represents the 'RAVE'
 #' repository from functions such as \code{\link[raveio]{prepare_subject_bare}},
 #' \code{\link[raveio]{prepare_subject_with_epoch}}, and
@@ -25,6 +29,10 @@
 #' \code{'exclude'} mode, \code{settings_entries} will be excluded from the
 #' pipeline settings; in \code{'include'} mode, only \code{settings_entries}
 #' can be imported.
+#' @param mode whether to create new reference, or simply to choose from
+#' existing references
+#' @param checks whether to check if subject has been applied with 'Notch'
+#' filters or 'Wavelet'; default is both.
 #' @title Preset reusable 'RAVE' front-end elements
 NULL
 

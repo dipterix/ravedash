@@ -1,3 +1,4 @@
+#' @rdname rave-ui-preset
 #' @export
 presets_import_setup_channels <- function(
   id = "import_channels",
@@ -6,7 +7,7 @@ presets_import_setup_channels <- function(
   import_blocks_id = "import_blocks"
 ){
 
-  comp <- ravedash:::RAVEShinyComponent$new(id = id)
+  comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- c(import_setup_id, import_blocks_id)
   comp$no_save <- c("", "msg", "actions", "actions_alt", "snapshot",
                     "do_import")

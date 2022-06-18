@@ -2,9 +2,11 @@
 % Please edit documentation in R/preset-aaa.R, R/preset-analysis-electrode.R,
 %   R/preset-analysis-range.R, R/preset-baseline-choices.R,
 %   R/preset-condition-groups.R, R/preset-import-export-pipeline.R,
-%   R/preset-loader-3dviewer.R, R/preset-loader-electrode.R,
-%   R/preset-loader-epoch.R, R/preset-loader-project.R,
-%   R/preset-loader-reference.R, R/preset-loader-subject.R
+%   R/preset-import-setup-blocks.R, R/preset-import-setup-channels.R,
+%   R/preset-import-setup-subject.R, R/preset-loader-3dviewer.R,
+%   R/preset-loader-electrode.R, R/preset-loader-epoch.R,
+%   R/preset-loader-project.R, R/preset-loader-reference.R,
+%   R/preset-loader-subject.R
 \name{rave-ui-preset}
 \alias{rave-ui-preset}
 \alias{presets_analysis_electrode_selector2}
@@ -12,6 +14,9 @@
 \alias{presets_baseline_choices}
 \alias{presets_condition_groups}
 \alias{presets_import_export_subject_pipeline}
+\alias{presets_import_setup_blocks}
+\alias{presets_import_setup_channels}
+\alias{presets_import_setup_native}
 \alias{presets_loader_3dviewer}
 \alias{presets_loader_electrodes}
 \alias{presets_loader_epoch}
@@ -63,6 +68,25 @@ presets_import_export_subject_pipeline(
   settings_entries = c("loaded_electrodes", "epoch_choice",
     "epoch_choice__trial_starts", "epoch_choice__trial_ends", "reference_name"),
   fork_mode = c("exclude", "include")
+)
+
+presets_import_setup_blocks(
+  id = "import_blocks",
+  label = "Format & session blocks",
+  import_setup_id = "import_setup",
+  max_components = 5
+)
+
+presets_import_setup_channels(
+  id = "import_channels",
+  label = "Channel information",
+  import_setup_id = "import_setup",
+  import_blocks_id = "import_blocks"
+)
+
+presets_import_setup_native(
+  id = "import_setup",
+  label = "Select project & subject"
 )
 
 presets_loader_3dviewer(
@@ -146,6 +170,12 @@ names to be included or excluded, depending on \code{fork_mode}}
 pipeline settings; in \code{'include'} mode, only \code{settings_entries}
 can be imported.}
 
+\item{import_setup_id}{the ID of \code{presets_import_setup_native} if
+different to the default}
+
+\item{import_blocks_id}{the ID of \code{presets_import_setup_blocks} if
+different to the default}
+
 \item{height}{height of the element}
 
 \item{loader_reference_id}{the ID of \code{presets_loader_reference} if
@@ -153,6 +183,12 @@ different to the default}
 
 \item{loader_electrodes_id}{the ID of \code{presets_loader_electrodes} if
 different to the default}
+
+\item{mode}{whether to create new reference, or simply to choose from
+existing references}
+
+\item{checks}{whether to check if subject has been applied with 'Notch'
+filters or 'Wavelet'; default is both.}
 }
 \description{
 Preset reusable 'RAVE' front-end elements
