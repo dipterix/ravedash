@@ -16,9 +16,6 @@
     <loc>http://dipterix.org/ravedash/reference/debug_modules.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/grapes-OF-grapes.html</loc>
-  </url>
-  <url>
     <loc>http://dipterix.org/ravedash/reference/group_box.html</loc>
   </url>
   <url>
@@ -29,6 +26,12 @@
   </url>
   <url>
     <loc>http://dipterix.org/ravedash/reference/module_server_common.html</loc>
+  </url>
+  <url>
+    <loc>http://dipterix.org/ravedash/reference/new_rave_shiny_component_container.html</loc>
+  </url>
+  <url>
+    <loc>http://dipterix.org/ravedash/reference/random-text.html</loc>
   </url>
   <url>
     <loc>http://dipterix.org/ravedash/reference/rave-input-output-card.html</loc>
@@ -44,6 +47,9 @@
   </url>
   <url>
     <loc>http://dipterix.org/ravedash/reference/ravedash_footer.html</loc>
+  </url>
+  <url>
+    <loc>http://dipterix.org/ravedash/reference/reexports.html</loc>
   </url>
   <url>
     <loc>http://dipterix.org/ravedash/reference/run_analysis_button.html</loc>

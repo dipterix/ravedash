@@ -87,6 +87,25 @@
   fork_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exclude"</span>, <span class="st">"include"</span><span class="op">)</span>
 <span class="op">)</span>
 
+<span class="fu">presets_import_setup_blocks</span><span class="op">(</span>
+  id <span class="op">=</span> <span class="st">"import_blocks"</span>,
+  label <span class="op">=</span> <span class="st">"Format &amp; session blocks"</span>,
+  import_setup_id <span class="op">=</span> <span class="st">"import_setup"</span>,
+  max_components <span class="op">=</span> <span class="fl">5</span>
+<span class="op">)</span>
+
+<span class="fu">presets_import_setup_channels</span><span class="op">(</span>
+  id <span class="op">=</span> <span class="st">"import_channels"</span>,
+  label <span class="op">=</span> <span class="st">"Channel information"</span>,
+  import_setup_id <span class="op">=</span> <span class="st">"import_setup"</span>,
+  import_blocks_id <span class="op">=</span> <span class="st">"import_blocks"</span>
+<span class="op">)</span>
+
+<span class="fu">presets_import_setup_native</span><span class="op">(</span>
+  id <span class="op">=</span> <span class="st">"import_setup"</span>,
+  label <span class="op">=</span> <span class="st">"Select project &amp; subject"</span>
+<span class="op">)</span>
+
 <span class="fu">presets_loader_3dviewer</span><span class="op">(</span>
   id <span class="op">=</span> <span class="st">"loader_3d_viewer"</span>,
   height <span class="op">=</span> <span class="st">"600px"</span>,
@@ -141,43 +160,90 @@
     <dl><dt>id</dt>
 <dd><p>input or output ID of the element; this ID will be prepended with
 module namespace</p></dd>
+
+
 <dt>varname</dt>
 <dd><p>variable name(s) in the module's settings file</p></dd>
+
+
 <dt>label</dt>
 <dd><p>readable label(s) of the element</p></dd>
+
+
 <dt>loader_project_id</dt>
 <dd><p>the ID of <code>presets_loader_project</code> if
 different to the default</p></dd>
+
+
 <dt>loader_subject_id</dt>
 <dd><p>the ID of <code>presets_loader_subject</code> if
 different to the default</p></dd>
+
+
 <dt>pipeline_repository</dt>
 <dd><p>the pipeline name that represents the 'RAVE'
 repository from functions such as <code><a href="https://beauchamplab.github.io/raveio/reference/rave-prepare.html" class="external-link">prepare_subject_bare</a></code>,
 <code><a href="https://beauchamplab.github.io/raveio/reference/rave-prepare.html" class="external-link">prepare_subject_with_epoch</a></code>, and
 <code><a href="https://beauchamplab.github.io/raveio/reference/rave-prepare.html" class="external-link">prepare_subject_power</a></code></p></dd>
+
+
 <dt>max_components</dt>
 <dd><p>maximum number of components for compound inputs</p></dd>
+
+
 <dt>baseline_choices</dt>
 <dd><p>the possible approaches to calculate baseline</p></dd>
+
+
 <dt>baseline_along_choices</dt>
 <dd><p>the units of baseline</p></dd>
+
+
 <dt>settings_entries</dt>
 <dd><p>used when importing pipelines, pipeline variable
 names to be included or excluded, depending on <code>fork_mode</code></p></dd>
+
+
 <dt>fork_mode</dt>
 <dd><p><code>'exclude'</code> (default) or <code>'include'</code>; in
 <code>'exclude'</code> mode, <code>settings_entries</code> will be excluded from the
 pipeline settings; in <code>'include'</code> mode, only <code>settings_entries</code>
 can be imported.</p></dd>
+
+
+<dt>import_setup_id</dt>
+<dd><p>the ID of <code>presets_import_setup_native</code> if
+different to the default</p></dd>
+
+
+<dt>import_blocks_id</dt>
+<dd><p>the ID of <code>presets_import_setup_blocks</code> if
+different to the default</p></dd>
+
+
 <dt>height</dt>
 <dd><p>height of the element</p></dd>
+
+
 <dt>loader_reference_id</dt>
 <dd><p>the ID of <code>presets_loader_reference</code> if
 different to the default</p></dd>
+
+
 <dt>loader_electrodes_id</dt>
 <dd><p>the ID of <code>presets_loader_electrodes</code> if
 different to the default</p></dd>
+
+
+<dt>mode</dt>
+<dd><p>whether to create new reference, or simply to choose from
+existing references</p></dd>
+
+
+<dt>checks</dt>
+<dd><p>whether to check if subject has been applied with 'Notch'
+filters or 'Wavelet'; default is both.</p></dd>
+
 </dl></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -189,7 +255,7 @@ different to the default</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

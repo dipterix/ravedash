@@ -68,44 +68,67 @@
     <dl><dt>..., .envir, .sep</dt>
 <dd><p>passed to <code><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></code>, if
 <code>use_glue</code> is true</p></dd>
+
+
 <dt>level</dt>
 <dd><p>the level of message, choices are <code>'info'</code> (default),
 <code>'warning'</code>, <code>'error'</code>, <code>'fatal'</code>, <code>'debug'</code>,
 <code>'trace'</code></p></dd>
+
+
 <dt>calc_delta</dt>
 <dd><p>whether to calculate time difference between current
 message and previous message; default is <code>'auto'</code>, which prints
 time difference when <code>level</code> is <code>'debug'</code>.
 This behavior can be changed by altering <code>calc_delta</code> by a logical
 <code>TRUE</code> to enable or <code>FALSE</code> to disable.</p></dd>
+
+
 <dt>use_glue</dt>
 <dd><p>whether to use <code><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></code> to combine
 <code>...</code>; default is false</p></dd>
+
+
 <dt>reset_timer</dt>
 <dd><p>whether to reset timer used by <code>calc_delta</code></p></dd>
+
+
 <dt>root_path</dt>
 <dd><p>root directory if you want log messages to be saved to
 hard disks; if <code>root_path</code> is <code>NULL</code>, <code>""</code>, or
 <code><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">nullfile</a></code>, then logger path will be unset.</p></dd>
+
+
 <dt>max_bytes</dt>
 <dd><p>maximum file size for each logger partitions</p></dd>
+
+
 <dt>max_files</dt>
 <dd><p>maximum number of partition files to hold the log; old
 files will be deleted.</p></dd>
+
+
 <dt>module_id</dt>
 <dd><p>'RAVE' module identification string, or name-space; default
 is <code>'ravedash'</code></p></dd>
+
+
 <dt>type</dt>
 <dd><p>which type of logging should be set; default is <code>'console'</code>,
 if file log is enabled through <code>set_logger_path</code>, <code>type</code> could be
 <code>'file'</code> or <code>'both'</code>. Default log level is <code>'info'</code> on
 console and <code>'debug'</code> on file.</p></dd>
+
+
 <dt>cond</dt>
 <dd><p>condition to log</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The message without time-stamps</p>
+    
+
+<p>The message without time-stamps</p>
     </div>
 
     <div class="section level2">
@@ -145,7 +168,7 @@ console and <code>'debug'</code> on file.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>
