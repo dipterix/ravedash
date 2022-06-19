@@ -36,14 +36,15 @@ ensure_template <- function(path, use_cache = TRUE){
 #' @name rave-session
 #' @title Create, register, list, and remove 'RAVE' sessions
 #' @param update logical, whether to update to latest 'RAVE' template
-#' @param session_id session identification string; use \code{list_session}
-#' to list all existing sessions
+#' @param x session identification string, or session object; use
+#' \code{list_session} to list all existing sessions
 #' @param path root path to store the sessions; default is the
 #' \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}
+#' @param host,port,options configurations needed to launch the session
 #' @return
 #' \describe{
 #' \item{\code{new_session}}{returns a session object with character
-#' \code{'session_id'} and a function \code{'launch_app'} to launch the
+#' \code{'session_id'} and a function \code{'launch_session'} to launch the
 #' application from this session}
 #' \item{\code{use_session}}{returns a session object, the same as
 #' \code{new_session} under the condition that corresponding session exists,
@@ -59,7 +60,7 @@ ensure_template <- function(path, use_cache = TRUE){
 #' if(interactive()){
 #'
 #'   sess <- new_session()
-#'   sess$launch_app()
+#'   sess$launch_session()
 #'
 #'   all_sessions <- list_session()
 #'   print(all_sessions)
@@ -67,7 +68,7 @@ ensure_template <- function(path, use_cache = TRUE){
 #'   # Use existing session
 #'   session_id <- all_sessions[[1]]$session_id
 #'   sess <- use_session(session_id)
-#'   sess$launch_app()
+#'   sess$launch_session()
 #'
 #'   # Remove session
 #'   remove_session(session_id)
@@ -94,7 +95,7 @@ new_session <- function(update = FALSE) {
   }
 
   # create a temporary repository
-  session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%M%H%S-%Z-"), toupper(rand_string(4)))
+  session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-%Z-"), toupper(rand_string(4)))
   cache_path <- session_root(ensure = TRUE)
   cache_path <- normalizePath(cache_path)
   app_path <- file.path(cache_path, session_id)
@@ -165,20 +166,91 @@ new_session <- function(update = FALSE) {
 
 #' @rdname rave-session
 #' @export
-use_session <- function(session_id) {
+use_session <- function(x) {
+  UseMethod("use_session")
+}
+
+#' @export
+use_session.default <- function(x) {
   cache_path <- session_root()
-  app_path <- file.path(cache_path, session_id)
+  app_path <- file.path(cache_path, x)
   app_path <- normalizePath(app_path, mustWork = TRUE)
 
-  structure(
+  x <- structure(
     list(
-      launch_app = function(...){
-        shidashi::render(root_path = app_path, ...)
-      },
-      session_id = session_id
+      app_path = app_path,
+      session_id = x
     ),
     class = "rave-dash-session"
   )
+  x$launch_session <- function(...) {
+    launch_session(x, ...)
+  }
+  x
+}
+
+#' @rdname rave-session
+#' @export
+launch_session <- function(
+    x, host = "127.0.0.1", port = NULL, options = list(
+      jupyter = TRUE,
+      jupyter_port = NULL,
+      as_job = TRUE,
+      launch_browser = TRUE
+    )) {
+  sess <- use_session(x)
+
+  options <- as.list(options)
+
+  jupyter_port <- options$jupyter_port
+
+  if(isTRUE(options$jupyter)) {
+    if(length(jupyter_port) == 0) {
+      jupyter_port <- raveio::raveio_getopt("jupyter_port", default = 17284L)
+    } else {
+      jupyter_port <- as.integer(jupyter_port)
+      if(!(length(jupyter_port) == 1 && !is.na(jupyter_port) &&
+           jupyter_port >= 1024 && jupyter_port <= 65535)) {
+        stop("`launch_session`: options$jupyter_port must be an integer from 1024-65535.")
+      }
+    }
+    jupyter_wd <- raveio::raveio_getopt('data_dir')
+    rpymat::jupyter_check_launch(
+      open_browser = FALSE, workdir = jupyter_wd, port = jupyter_port,
+      host = host, async = TRUE)
+
+    raveio::save_yaml(
+      list(
+        host = host,
+        port = jupyter_port
+      ),
+      file = file.path(x$app_path, "jupyter.yaml")
+    )
+  }
+  port <- as.integer(port)
+  if(length(port)) {
+    if(!(length(port) == 1 && !is.na(port) && port >= 1024 && port <= 65535)) {
+      stop("`launch_session`: port must be an integer from 1024-65535.")
+    }
+  } else {
+    port <- NULL
+  }
+
+  shidashi::render(
+    root_path = x$app_path,
+    port = port,
+    host = host,
+    launch_browser = options$launch_browser,
+    as_job = options$as_job,
+    test_mode = isTRUE(options$test_mode)
+  )
+
+}
+
+
+#' @export
+`use_session.rave-dash-session` <- function(x) {
+  x
 }
 
 #' @export
@@ -203,15 +275,32 @@ use_session <- function(session_id) {
   cat("  Date created:", timestamp, "\n\n")
 
   vname <- paste(deparse(vname), collapse = "\n")
-  cat(sprintf("Please run `%s$launch_app()` to launch the session.\n", vname))
+  cat(sprintf("Please run `%s$launch_session()` to launch the session.\n", vname))
 
 }
 
 #' @rdname rave-session
 #' @export
-remove_session <- function(session_id){
-  if(grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", session_id)){
-    session_path <- file.path(session_root(), session_id)
+remove_session <- function(x){
+  UseMethod("remove_session")
+}
+
+#' @export
+remove_session.default <- function(x){
+  if(grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", x)){
+    session_path <- file.path(session_root(), x)
+    if(dir.exists(session_path)){
+      unlink(session_path, recursive = TRUE)
+      return(invisible(TRUE))
+    }
+  }
+  return(invisible(FALSE))
+}
+
+#' @export
+`remove_session.rave-dash-session` <- function(x) {
+  if(grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", x$session_id)){
+    session_path <- file.path(session_root(), x$session_id)
     if(dir.exists(session_path)){
       unlink(session_path, recursive = TRUE)
       return(invisible(TRUE))
@@ -222,8 +311,19 @@ remove_session <- function(session_id){
 
 #' @rdname rave-session
 #' @export
+remove_all_sessions <- function() {
+  sess <- list_session()
+  for(s in sess) {
+    remove_session(s)
+  }
+  invisible()
+}
+
+#' @rdname rave-session
+#' @export
 list_session <- function(path = session_root()){
   dirs <- list.dirs(path = path, full.names = FALSE, recursive = FALSE)
   sel <- grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", dirs)
-  lapply(dirs[sel], use_session)
+  re <- lapply(dirs[sel], use_session)
+  re
 }

@@ -4,23 +4,37 @@
 \alias{rave-session}
 \alias{new_session}
 \alias{use_session}
+\alias{launch_session}
 \alias{remove_session}
+\alias{remove_all_sessions}
 \alias{list_session}
 \title{Create, register, list, and remove 'RAVE' sessions}
 \usage{
 new_session(update = FALSE)
 
-use_session(session_id)
+use_session(x)
 
-remove_session(session_id)
+launch_session(
+  x,
+  host = "127.0.0.1",
+  port = NULL,
+  options = list(jupyter = TRUE, jupyter_port = NULL, as_job = TRUE, launch_browser =
+    TRUE)
+)
+
+remove_session(x)
+
+remove_all_sessions()
 
 list_session(path = session_root())
 }
 \arguments{
 \item{update}{logical, whether to update to latest 'RAVE' template}
 
-\item{session_id}{session identification string; use \code{list_session}
-to list all existing sessions}
+\item{x}{session identification string, or session object; use
+\code{list_session} to list all existing sessions}
+
+\item{host, port, options}{configurations needed to launch the session}
 
 \item{path}{root path to store the sessions; default is the
 \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}}
@@ -28,7 +42,7 @@ to list all existing sessions}
 \value{
 \describe{
 \item{\code{new_session}}{returns a session object with character
-\code{'session_id'} and a function \code{'launch_app'} to launch the
+\code{'session_id'} and a function \code{'launch_session'} to launch the
 application from this session}
 \item{\code{use_session}}{returns a session object, the same as
 \code{new_session} under the condition that corresponding session exists,
@@ -47,7 +61,7 @@ Create, register, list, and remove 'RAVE' sessions
 if(interactive()){
 
   sess <- new_session()
-  sess$launch_app()
+  sess$launch_session()
 
   all_sessions <- list_session()
   print(all_sessions)
@@ -55,7 +69,7 @@ if(interactive()){
   # Use existing session
   session_id <- all_sessions[[1]]$session_id
   sess <- use_session(session_id)
-  sess$launch_app()
+  sess$launch_session()
 
   # Remove session
   remove_session(session_id)

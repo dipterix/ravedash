@@ -1,7 +1,7 @@
 Package: ravedash
 Type: Package
 Title: Dashboard System for Reproducible Visualization of 'iEEG'
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: c(
     person("Zhengjia", "Wang", email = "zhengjia.wang@pennmedicine.upenn.edu", role = c("aut", "cre", "cph"))
     )
