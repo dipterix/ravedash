@@ -8,7 +8,7 @@ debug_modules(
   module_root = rstudioapi::getActiveProject(),
   host = "127.0.0.1",
   port = 17283,
-  jupyter = TRUE,
+  jupyter = FALSE,
   ...
 )
 }
@@ -18,7 +18,7 @@ debug_modules(
 
 \item{host, port}{host and port of the application}
 
-\item{jupyter}{whether to launch \code{'Jupyter'} server}
+\item{jupyter}{whether to launch \code{'Jupyter'} server; default is false}
 
 \item{...}{passed to \code{\link[shidashi]{render}}}
 }

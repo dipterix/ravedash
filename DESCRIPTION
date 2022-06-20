@@ -27,7 +27,8 @@ Imports:
 Suggests: 
     fastmap (>= 1.1.0),
     rlang (>= 1.0.2),
-    crayon (>= 1.4.2)
+    crayon (>= 1.4.2),
+    rstudioapi
 Remotes: 
     dipterix/shidashi,
     beauchamplab/raveio,
