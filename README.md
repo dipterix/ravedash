@@ -2,26 +2,25 @@
 # ravedash
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/ravedash)](https://CRAN.R-project.org/package=ravedash)
+[![r-universe](https://beauchamplab.r-universe.dev/badges/ravedash)](https://beauchamplab.r-universe.dev/ui#builds)
 [![R-CMD-check](https://github.com/dipterix/ravedash/workflows/R-CMD-check/badge.svg)](https://github.com/dipterix/ravedash/actions)
+[![DOI](https://raw.githubusercontent.com/dipterix/threeBrain/master/inst/doi.svg)](https://doi.org/10.1016/j.neuroimage.2020.117341)
 <!-- badges: end -->
 
-The goal of ravedash is to ...
+`ravedash` is part of `RAVE`. Please install `RAVE` directly from the [wiki page](https://openwetware.org/wiki/RAVE).
 
-## Installation
-
-You can install the development version of ravedash from [GitHub](https://github.com/) with:
+To install `ravedash` alone, simply type R command:
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("dipterix/ravedash")
+options(repos = c(ropensci = 'https://beauchamplab.r-universe.dev', 
+        CRAN = 'https://cloud.r-project.org'))
+install.packages("ravedash")
 ```
 
-## Example
+## Citation
 
-This is a basic example which shows you how to solve a common problem:
+Please cite the following paper for publication use:
 
-``` r
-library(ravedash)
-## basic example code
-```
+* `Magnotti J.F., Wang Z., Beauchamp M.S.. RAVE: comprehensive open-source software for reproducible analysis and visualization of intracranial EEG data. NeuroImage, 223, p.117341.` ([DOI](https://doi.org/10.1016/j.neuroimage.2020.117341))
 

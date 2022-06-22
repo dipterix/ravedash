@@ -23,7 +23,7 @@
 \alias{presets_loader_project}
 \alias{presets_loader_reference}
 \alias{presets_loader_subject}
-\title{Preset reusable 'RAVE' front-end elements}
+\title{Preset reusable front-end components for 'RAVE' modules}
 \usage{
 presets_analysis_electrode_selector2(
   id = "electrode_text",
@@ -190,6 +190,13 @@ existing references}
 \item{checks}{whether to check if subject has been applied with 'Notch'
 filters or 'Wavelet'; default is both.}
 }
+\value{
+A \code{'RAVEShinyComponent'} instance.
+}
 \description{
-Preset reusable 'RAVE' front-end elements
+For examples and use cases, please check
+\code{\link{new_rave_shiny_component_container}}.
+}
+\seealso{
+\code{\link{new_rave_shiny_component_container}}
 }

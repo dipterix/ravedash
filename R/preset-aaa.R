@@ -1,4 +1,7 @@
 #' @name rave-ui-preset
+#' @title Preset reusable front-end components for 'RAVE' modules
+#' @description For examples and use cases, please check
+#' \code{\link{new_rave_shiny_component_container}}.
 #' @param id input or output ID of the element; this ID will be prepended with
 #' module namespace
 #' @param varname variable name(s) in the module's settings file
@@ -33,6 +36,7 @@
 #' existing references
 #' @param checks whether to check if subject has been applied with 'Notch'
 #' filters or 'Wavelet'; default is both.
-#' @title Preset reusable 'RAVE' front-end elements
+#' @returns A \code{'RAVEShinyComponent'} instance.
+#' @seealso \code{\link{new_rave_shiny_component_container}}
 NULL
 

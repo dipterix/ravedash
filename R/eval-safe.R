@@ -1,6 +1,6 @@
 
 safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {}, log_error = "error"){
-  expr_ = substitute(expr)
+  expr_ <- substitute(expr)
 
   parent_frame <- parent.frame()
   options(rlang_trace_top_env = parent_frame)
@@ -38,19 +38,19 @@ safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {},
 
 observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...){
   if(!quoted){
-    x = substitute(x)
+    x <- substitute(x)
   }
 
   # Make sure shiny doesn't crash
-  x = bquote({
+  x <- bquote({
     asNamespace('ravedash')$safe_wrap_expr(.(x))
   })
 
   if(!is.environment(env)){
-    env = parent.frame()
+    env <- parent.frame()
   }
   if(is.null(domain)){
-    domain = shiny::getDefaultReactiveDomain()
+    domain <- shiny::getDefaultReactiveDomain()
   }
   shiny::observe(
     x = x,

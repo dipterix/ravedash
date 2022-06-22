@@ -84,7 +84,7 @@ R_user_dir <- function (package, which = c("data", "config", "cache"))
 dipsaus::`%OF%`
 
 #' @name random-text
-#' @title Randomly choose from a list of text
+#' @title Randomly choose a text from a list of strings
 #' @param candidates character vectors, a list of candidates
 #' @return \code{be_patient_text} returns a text asking users to be patient;
 #' \code{finished_text} returns the text indicating the task has finished.
@@ -113,7 +113,7 @@ be_patient_text <- function(candidates){
     sp <- candidates
   }
 
-  prob = rev(seq_along(sp))
+  prob <- rev(seq_along(sp))
   sample(
     sp,
     size = 1,
@@ -141,7 +141,7 @@ finished_text <- function(candidates){
     sp <- candidates
   }
 
-  prob = rev(seq_along(sp))
+  prob <- rev(seq_along(sp))
   sample(
     sp,
     size = 1,

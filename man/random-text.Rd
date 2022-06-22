@@ -4,7 +4,7 @@
 \alias{random-text}
 \alias{be_patient_text}
 \alias{finished_text}
-\title{Randomly choose from a list of text}
+\title{Randomly choose a text from a list of strings}
 \usage{
 be_patient_text(candidates)
 
@@ -18,7 +18,7 @@ finished_text(candidates)
 \code{finished_text} returns the text indicating the task has finished.
 }
 \description{
-Randomly choose from a list of text
+Randomly choose a text from a list of strings
 }
 \examples{
 

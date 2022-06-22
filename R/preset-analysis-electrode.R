@@ -7,7 +7,7 @@ presets_analysis_electrode_selector2 <- function(
   loader_subject_id = "loader_subject_code",
   pipeline_repository = "repository"
 ) {
-  comp = RAVEShinyComponent$new(id = id, varname = varname)
+  comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
   comp$repository_name <- pipeline_repository
 

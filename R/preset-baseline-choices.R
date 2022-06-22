@@ -13,7 +13,7 @@ presets_baseline_choices <- function(
   force(baseline_choices)
   force(baseline_along_choices)
 
-  comp = RAVEShinyComponent$new(id = id, varname = varname)
+  comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$no_save <- ""
   comp$repository_name <- pipeline_repository
 

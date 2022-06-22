@@ -1,9 +1,9 @@
 Package: ravedash
 Type: Package
 Title: Dashboard System for Reproducible Visualization of 'iEEG'
-Version: 0.1.0.9000
+Version: 0.1.1
 Authors@R: c(
-    person("Zhengjia", "Wang", email = "zhengjia.wang@pennmedicine.upenn.edu", role = c("aut", "cre", "cph"))
+    person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph"))
     )
 Description: Dashboard system to display the analysis results produced by 'RAVE'
     (Magnotti J.F., Wang Z., Beauchamp M.S. (2020), R analysis 
@@ -11,7 +11,7 @@ Description: Dashboard system to display the analysis results produced by 'RAVE'
     Provides infrastructure to integrate customized analysis pipelines into
     dashboard modules, including file structures, front-end widgets, and 
     event handlers.
-License: GPL-3
+License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-US
 Imports: 
@@ -28,18 +28,10 @@ Suggests:
     fastmap (>= 1.1.0),
     rlang (>= 1.0.2),
     crayon (>= 1.4.2),
-    rstudioapi
-Remotes: 
-    dipterix/shidashi,
-    beauchamplab/raveio,
-    rstudio/shiny,
-    dipterix/dipsaus,
-    r-lib/fastmap,
-    daroczig/logger,
-    dreamRs/shinyWidgets,
-    dipterix/threeBrain,
-    r-lib/crayon,
-    dipterix/rpymat,
-    r-lib/rlang
+    rstudioapi,
+    knitr,
+    rmarkdown
 RoxygenNote: 7.2.0
-URL: http://dipterix.org/ravedash/
+URL: https://dipterix.org/ravedash/
+BugReports: https://github.com/dipterix/ravedash/issues
+VignetteBuilder: knitr

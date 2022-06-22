@@ -62,10 +62,10 @@ RAVEShinyComponent <- R6::R6Class(
     repository_name = character(0L),
 
     initialize = function(id, varname = id){
-      self$id = id
-      self$varname = varname
+      self$id <- id
+      self$varname <- varname
       self$no_save <- FALSE
-      self$validators = dipsaus::fastqueue2()
+      self$validators <- dipsaus::fastqueue2()
       private$.tools <- dipsaus::fastmap2()
     },
 

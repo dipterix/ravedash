@@ -136,12 +136,12 @@ input_card <- function(title, ...,
 
   if(href %in% c("", "#", "/")) {
     if( append_tools ) {
-      all_tools = list(
+      all_tools <- list(
         shidashi::card_tool(widget = "collapse"),
         tools
       )
     } else {
-      all_tools = list(
+      all_tools <- list(
         tools,
         shidashi::card_tool(widget = "collapse")
       )
@@ -149,13 +149,13 @@ input_card <- function(title, ...,
 
   } else {
     if( append_tools ) {
-      all_tools = list(
+      all_tools <- list(
         shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
         shidashi::card_tool(widget = "collapse"),
         tools
       )
     } else {
-      all_tools = list(
+      all_tools <- list(
         tools,
         shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
         shidashi::card_tool(widget = "collapse")
@@ -190,13 +190,13 @@ output_card <- function(title, ..., class = "", class_body = "padding-10",
 
   if(href %in% c("", "#", "/")) {
     if( append_tools ){
-      all_tools = list(
+      all_tools <- list(
         shidashi::card_tool(widget = "collapse"),
         shidashi::card_tool(widget = "maximize"),
         tools
       )
     } else {
-      all_tools = list(
+      all_tools <- list(
         tools,
         shidashi::card_tool(widget = "collapse"),
         shidashi::card_tool(widget = "maximize")
@@ -205,14 +205,14 @@ output_card <- function(title, ..., class = "", class_body = "padding-10",
 
   } else {
     if( append_tools ){
-      all_tools = list(
+      all_tools <- list(
         shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
         shidashi::card_tool(widget = "collapse"),
         shidashi::card_tool(widget = "maximize"),
         tools
       )
     } else {
-      all_tools = list(
+      all_tools <- list(
         tools,
         shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
         shidashi::card_tool(widget = "collapse"),

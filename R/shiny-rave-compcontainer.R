@@ -69,7 +69,7 @@ RAVEShinyComponentContainer <- R6::R6Class(
       if(!length(settings_path)){
         stop("Invalid pipeline_path and settings_file combinations: cannot find pipeline settings file")
       }
-      private$.settings_file = settings_file
+      private$.settings_file <- settings_file
       self$data <- dipsaus::fastmap2()
       private$.module_id <- module_id
       private$.pipeline_name <- pipeline_name
