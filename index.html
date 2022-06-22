@@ -36,7 +36,7 @@
     
     <a class="navbar-brand me-2" href="index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,12 +48,28 @@
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/start.html">How to start a `RAVE` dashboard</a>
+  </div>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="news/index.html">Changelog</a>
+</li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/dipterix/ravedash/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -64,28 +80,33 @@
 <div class="page-header"><h1 id="ravedash">ravedash<a class="anchor" aria-label="anchor" href="#ravedash"></a>
 </h1></div>
 <!-- badges: start -->
-<p>The goal of ravedash is to …</p>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<p>You can install the development version of ravedash from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p><code>ravedash</code> is part of <code>RAVE</code>. Please install <code>RAVE</code> directly from the <a href="https://openwetware.org/wiki/RAVE" class="external-link">wiki page</a>.</p>
+<p>To install <code>ravedash</code> alone, simply type R command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"dipterix/ravedash"</span><span class="op">)</span></code></pre></div>
-</div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>ropensci <span class="op">=</span> <span class="st">'https://beauchamplab.r-universe.dev'</span>, 
+        CRAN <span class="op">=</span> <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ravedash"</span><span class="op">)</span></code></pre></div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dipterix.org/ravedash/">ravedash</a></span><span class="op">)</span>
-<span class="co">## basic example code</span></code></pre></div>
+<p>Please cite the following paper for publication use:</p>
+<ul><li>
+<code>Magnotti J.F., Wang Z., Beauchamp M.S.. RAVE: comprehensive open-source software for reproducible analysis and visualization of intracranial EEG data. NeuroImage, 223, p.117341.</code> (<a href="https://doi.org/10.1016/j.neuroimage.2020.117341" class="external-link">DOI</a>)</li></ul>
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="license">
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/dipterix/ravedash/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/dipterix/ravedash/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
 
@@ -107,7 +128,10 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://CRAN.R-project.org/package=ravedash" class="external-link"><img src="https://www.r-pkg.org/badges/version/ravedash" alt="CRAN status"></a></li>
+<li><a href="https://beauchamplab.r-universe.dev/ui#builds" class="external-link"><img src="https://beauchamplab.r-universe.dev/badges/ravedash" alt="r-universe"></a></li>
 <li><a href="https://github.com/dipterix/ravedash/actions" class="external-link"><img src="https://github.com/dipterix/ravedash/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://doi.org/10.1016/j.neuroimage.2020.117341" class="external-link"><img src="https://raw.githubusercontent.com/dipterix/threeBrain/master/inst/doi.svg" alt="DOI"></a></li>
 </ul>
 </div>
 

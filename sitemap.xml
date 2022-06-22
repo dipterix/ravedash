@@ -1,66 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://dipterix.org/ravedash/404.html</loc>
+    <loc>https://dipterix.org/ravedash/404.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/authors.html</loc>
+    <loc>https://dipterix.org/ravedash/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/index.html</loc>
+    <loc>https://dipterix.org/ravedash/LICENSE.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/card_url.html</loc>
+    <loc>https://dipterix.org/ravedash/articles/index.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/debug_modules.html</loc>
+    <loc>https://dipterix.org/ravedash/articles/start.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/group_box.html</loc>
+    <loc>https://dipterix.org/ravedash/authors.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/index.html</loc>
+    <loc>https://dipterix.org/ravedash/index.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/logger.html</loc>
+    <loc>https://dipterix.org/ravedash/news/index.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/module_server_common.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/card_url.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/new_rave_shiny_component_container.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/debug_modules.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/random-text.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/group_box.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/rave-input-output-card.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/index.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/rave-runtime-events.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/logger.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/rave-session.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/module_server_common.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/rave-ui-preset.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/new_rave_shiny_component_container.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/ravedash_footer.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/random-text.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/reexports.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/rave-input-output-card.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/run_analysis_button.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/rave-runtime-events.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/safe_observe.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/rave-session.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/shiny_icons.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/rave-ui-preset.html</loc>
   </url>
   <url>
-    <loc>http://dipterix.org/ravedash/reference/simple_layout.html</loc>
+    <loc>https://dipterix.org/ravedash/reference/ravedash_footer.html</loc>
+  </url>
+  <url>
+    <loc>https://dipterix.org/ravedash/reference/reexports.html</loc>
+  </url>
+  <url>
+    <loc>https://dipterix.org/ravedash/reference/run_analysis_button.html</loc>
+  </url>
+  <url>
+    <loc>https://dipterix.org/ravedash/reference/safe_observe.html</loc>
+  </url>
+  <url>
+    <loc>https://dipterix.org/ravedash/reference/shiny_icons.html</loc>
+  </url>
+  <url>
+    <loc>https://dipterix.org/ravedash/reference/simple_layout.html</loc>
   </url>
 </urlset>
