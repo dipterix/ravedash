@@ -119,7 +119,8 @@ names.ravedash_shiny_icons <- function(x){
 #' @title 'RAVE' run-time events
 #' @description A set of preset behaviors used by 'RAVE' modules
 #' @param session shiny session, usually automatically determined
-#' @param .rave_id internally used to store unique session identification
+#' @param rave_id,.rave_id internally used to store unique session
+#' identification key
 #' @param key event key to fire or to monitor
 #' @param value event value
 #' @param global whether to notify other sessions (experimental and not
@@ -351,6 +352,17 @@ fire_rave_event <- function(key, value, global = FALSE, force = FALSE,
     tool$rave_event[[key]] <- value
   }
   invisible()
+}
+
+#' @rdname rave-runtime-events
+#' @export
+get_session_by_rave_id <- function(rave_id) {
+  sess <- get(x = '.sessions')
+  re <- sess$get(rave_id)
+  if(is.list(re)) {
+    return(re$root_session)
+  }
+  return()
 }
 
 #' @rdname rave-runtime-events
@@ -599,8 +611,11 @@ ravedash_footer <- function(module_id = NULL, label = "Run Analysis",
 
 }
 
-
-
+#' Get current active module information, internally used
+#' @param session shiny reactive domain, default is current domain
+#' @return A named list, including module ID, module label, internal
+#' \code{'rave_id'}.
+#' @export
 get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
   if(is.environment(session)){
     rave_events <- session$cache$get("rave_reactives", missing = NULL)

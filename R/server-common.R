@@ -115,6 +115,10 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
   local_data <- dipsaus::fastmap2()
 
+  session$sendCustomMessage("shidashi.set_current_module", list(
+    module_id = module_id,
+    rave_id = tools$rave_id
+  ))
 
   module_is_active <- function(id = module_id){
     module <- get_active_module_info()

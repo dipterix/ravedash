@@ -5,6 +5,7 @@
 \alias{register_rave_session}
 \alias{get_default_handlers}
 \alias{fire_rave_event}
+\alias{get_session_by_rave_id}
 \alias{get_rave_event}
 \alias{open_loader}
 \alias{close_loader}
@@ -29,6 +30,8 @@ fire_rave_event(
   .internal_ok = FALSE
 )
 
+get_session_by_rave_id(rave_id)
+
 get_rave_event(key, session = shiny::getDefaultReactiveDomain())
 
 open_loader(session = shiny::getDefaultReactiveDomain())
@@ -44,8 +47,6 @@ current_shiny_theme(default, session = shiny::getDefaultReactiveDomain())
 \arguments{
 \item{session}{shiny session, usually automatically determined}
 
-\item{.rave_id}{internally used to store unique session identification}
-
 \item{key}{event key to fire or to monitor}
 
 \item{value}{event value}
@@ -57,6 +58,9 @@ recommended)}
 changed}
 
 \item{.internal_ok}{internally used}
+
+\item{rave_id, .rave_id}{internally used to store unique session
+identification key}
 
 \item{default}{default value if not found}
 }
