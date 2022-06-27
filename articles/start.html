@@ -95,32 +95,32 @@
 <p><code>ravedash</code> requires additional templates from <a href="https://github.com/dipterix/rave-pipelines" class="external-link"><code>RAVE</code> built-in pipelines</a> (released under MIT license). You can always start with this template and expand from there.</p>
 <p>To download the template, simply run the following one-time command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">raveio</span><span class="fu">::</span><span class="fu"><a href="https://beauchamplab.github.io/raveio/reference/pipeline_install.html" class="external-link">pipeline_install_github</a></span><span class="op">(</span><span class="st">'dipterix/rave-pipelines'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">raveio</span><span class="fu">::</span><span class="fu"><a href="https://beauchamplab.github.io/raveio/reference/pipeline_install.html" class="external-link">pipeline_install_github</a></span><span class="op">(</span><span class="st">'dipterix/rave-pipelines'</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="manage-the-dashboard">Manage the dashboard<a class="anchor" aria-label="anchor" href="#manage-the-dashboard"></a>
 </h2>
 <p>To start a <code>ravedash</code> application, you need to create a session first.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sess</span> <span class="op">&lt;-</span> <span class="fu">ravedash</span><span class="fu">::</span><span class="fu"><a href="../reference/rave-session.html">new_session</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">sess</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sess</span> <span class="op">&lt;-</span> <span class="fu">ravedash</span><span class="fu">::</span><span class="fu"><a href="../reference/rave-session.html">new_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">sess</span></span></code></pre></div>
 <p>To launch the session</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sess</span><span class="op">$</span><span class="fu">launch_session</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sess</span><span class="op">$</span><span class="fu">launch_session</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>A session is essentially a folder located on your hard drive. The folder contains a copy of all the modules that are currently installed as well as intermediate data, allowing you to always resume sessions from where it is left off (depends on the module implementation).</p>
 <p>For example, it might take very long time to visually inspect hundreds of electrodes one-by-one. The <code>ravedash</code> session allows you to shutdown the application without losing the current configurations, and resume the analysis later on.</p>
 <p>To resume the session, you can use <code>use_session</code> with the session ID, or simply list all the sessions using <code>list_session</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ravedash</span><span class="fu">::</span><span class="fu"><a href="../reference/rave-session.html">list_session</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; RAVE session &lt;session-220619-155630-EDT-PB0P&gt;</span>
-<span class="co">#&gt;   Path: /Users/dipterix/rave_data/cache_dir/session-220619-155630-EDT-PB0P </span>
-<span class="co">#&gt;   Date created: 2022-06-19 15:56:30 EDT </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Please run `x$launch_session()` to launch the session.</span>
-
-<span class="va">sess</span> <span class="op">&lt;-</span> <span class="fu">ravedash</span><span class="fu">::</span><span class="fu"><a href="../reference/rave-session.html">use_session</a></span><span class="op">(</span><span class="st">"session-220619-155630-EDT-PB0P"</span><span class="op">)</span>
-<span class="va">sess</span><span class="op">$</span><span class="fu">launch_session</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">ravedash</span><span class="fu">::</span><span class="fu"><a href="../reference/rave-session.html">list_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; RAVE session &lt;session-220619-155630-EDT-PB0P&gt;</span></span>
+<span><span class="co">#&gt;   Path: /Users/dipterix/rave_data/cache_dir/session-220619-155630-EDT-PB0P </span></span>
+<span><span class="co">#&gt;   Date created: 2022-06-19 15:56:30 EDT </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Please run `x$launch_session()` to launch the session.</span></span>
+<span></span>
+<span><span class="va">sess</span> <span class="op">&lt;-</span> <span class="fu">ravedash</span><span class="fu">::</span><span class="fu"><a href="../reference/rave-session.html">use_session</a></span><span class="op">(</span><span class="st">"session-220619-155630-EDT-PB0P"</span><span class="op">)</span></span>
+<span><span class="va">sess</span><span class="op">$</span><span class="fu">launch_session</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="develop-your-own-modules">Develop your own modules<a class="anchor" aria-label="anchor" href="#develop-your-own-modules"></a>
@@ -140,7 +140,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer>

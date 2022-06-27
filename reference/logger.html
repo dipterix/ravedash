@@ -57,25 +57,25 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">logger</span><span class="op">(</span>
-  <span class="va">...</span>,
-  level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"info"</span>, <span class="st">"warning"</span>, <span class="st">"error"</span>, <span class="st">"fatal"</span>, <span class="st">"debug"</span>, <span class="st">"trace"</span><span class="op">)</span>,
-  calc_delta <span class="op">=</span> <span class="st">"auto"</span>,
-  .envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span>,
-  .sep <span class="op">=</span> <span class="st">""</span>,
-  use_glue <span class="op">=</span> <span class="cn">FALSE</span>,
-  reset_timer <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span>
-
-<span class="fu">set_logger_path</span><span class="op">(</span><span class="va">root_path</span>, <span class="va">max_bytes</span>, <span class="va">max_files</span><span class="op">)</span>
-
-<span class="fu">logger_threshold</span><span class="op">(</span>
-  level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"info"</span>, <span class="st">"warning"</span>, <span class="st">"error"</span>, <span class="st">"fatal"</span>, <span class="st">"debug"</span>, <span class="st">"trace"</span><span class="op">)</span>,
-  <span class="va">module_id</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"console"</span>, <span class="st">"file"</span>, <span class="st">"both"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="fu">logger_error_condition</span><span class="op">(</span><span class="va">cond</span>, level <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">logger</span><span class="op">(</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"info"</span>, <span class="st">"warning"</span>, <span class="st">"error"</span>, <span class="st">"fatal"</span>, <span class="st">"debug"</span>, <span class="st">"trace"</span><span class="op">)</span>,</span>
+<span>  calc_delta <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  .envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .sep <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  use_glue <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  reset_timer <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">set_logger_path</span><span class="op">(</span><span class="va">root_path</span>, <span class="va">max_bytes</span>, <span class="va">max_files</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">logger_threshold</span><span class="op">(</span></span>
+<span>  level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"info"</span>, <span class="st">"warning"</span>, <span class="st">"error"</span>, <span class="st">"fatal"</span>, <span class="st">"debug"</span>, <span class="st">"trace"</span><span class="op">)</span>,</span>
+<span>  <span class="va">module_id</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"console"</span>, <span class="st">"file"</span>, <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">logger_error_condition</span><span class="op">(</span><span class="va">cond</span>, level <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -148,30 +148,30 @@ console and <code>'debug'</code> on file.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">"This is a message"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">"A message with glue: a={a}"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">"A message without glue: a={a}"</span>, use_glue <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">"Message A"</span>, calc_delta <span class="op">=</span> <span class="cn">TRUE</span>, reset_timer <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">"Seconds before logging another message"</span>, calc_delta <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># by default, debug and trace messages won't be displayed</span></span>
-<span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">'debug message'</span>, level <span class="op">=</span> <span class="st">'debug'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># adjust logger level, make sure `module_id` is a valid RAVE module ID</span></span>
-<span class="r-in"><span class="fu">logger_threshold</span><span class="op">(</span><span class="st">'debug'</span>, module_id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Debug message will display</span></span>
-<span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">'debug message'</span>, level <span class="op">=</span> <span class="st">'debug'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Trace message will not display as it's lower than debug level</span></span>
-<span class="r-in"><span class="fu">logger</span><span class="op">(</span><span class="st">'trace message'</span>, level <span class="op">=</span> <span class="st">'trace'</span><span class="op">)</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">"This is a message"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">"A message with glue: a={a}"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">"A message without glue: a={a}"</span>, use_glue <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">"Message A"</span>, calc_delta <span class="op">=</span> <span class="cn">TRUE</span>, reset_timer <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">"Seconds before logging another message"</span>, calc_delta <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># by default, debug and trace messages won't be displayed</span></span></span>
+<span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">'debug message'</span>, level <span class="op">=</span> <span class="st">'debug'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># adjust logger level, make sure `module_id` is a valid RAVE module ID</span></span></span>
+<span class="r-in"><span><span class="fu">logger_threshold</span><span class="op">(</span><span class="st">'debug'</span>, module_id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Debug message will display</span></span></span>
+<span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">'debug message'</span>, level <span class="op">=</span> <span class="st">'debug'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Trace message will not display as it's lower than debug level</span></span></span>
+<span class="r-in"><span><span class="fu">logger</span><span class="op">(</span><span class="st">'trace message'</span>, level <span class="op">=</span> <span class="st">'trace'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -183,7 +183,7 @@ console and <code>'debug'</code> on file.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>
