@@ -245,7 +245,9 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
   root_session <- session$rootScope()
 
   if(!inherits(session$userData$ravedash_reactive_handlers, "fastmap2")){
-    session$userData$ravedash_reactive_handlers <- dipsaus::fastmap2()
+    handler_map <- dipsaus::fastmap2()
+    handler_map$output_options <- dipsaus::fastmap2()
+    session$userData$ravedash_reactive_handlers <- handler_map
   }
 
   if(!root_session$cache$exists('rave_id')){

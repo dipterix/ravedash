@@ -1,7 +1,7 @@
 Package: ravedash
 Type: Package
 Title: Dashboard System for Reproducible Visualization of 'iEEG'
-Version: 0.1.1.9000
+Version: 0.1.1.9001
 Authors@R: c(
     person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph"))
     )
@@ -30,6 +30,7 @@ Suggests:
     crayon (>= 1.4.2),
     rstudioapi,
     knitr,
+    httr,
     rmarkdown
 RoxygenNote: 7.2.0
 URL: https://dipterix.org/ravedash/
