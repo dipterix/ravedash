@@ -160,7 +160,7 @@ NULL
 #' @rdname standalone_viewer
 #' @export
 register_output_options <- function(
-    outputId, ..., .opt = list(),
+    outputId, ..., .opt = list(), extras = list(),
     session = shiny::getDefaultReactiveDomain()) {
   tools <- register_rave_session(session)
   reactive_handlers <- get_default_handlers(session)
@@ -168,7 +168,10 @@ register_output_options <- function(
     reactive_handlers$output_options <- dipsaus::fastmap2()
   }
   output_options <- reactive_handlers$output_options
-  output_options[[outputId]] <- c(list(...), .opt)
+  output_options[[session$ns(outputId)]] <- list(
+    args = c(list(...), .opt),
+    extras = extras
+  )
   invisible()
 }
 
@@ -227,10 +230,11 @@ standalone_viewer <- function(
 
     root_session$output[[wrapper_id]] <- shiny::renderUI({
 
+      opts <- as.list(output_options[[full_outputId]])
       # get output options
       output_args <- c(
         list(full_outputId),
-        as.list(output_options[[full_outputId]])
+        as.list(opts$args)
       )
 
       output_args2 <- output_args

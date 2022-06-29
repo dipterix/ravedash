@@ -7,17 +7,35 @@ presets_loader_3dviewer <- function(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
-  loader_electrodes_id = "loader_electrode_text"
+  loader_electrodes_id = "loader_electrode_text",
+  widgets = c("standalone", "download")
 ) {
   comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- c(loader_project_id, loader_subject_id, loader_electrodes_id, loader_reference_id)
   comp$no_save <- TRUE
 
+  widgets <- widgets[widgets %in% c("standalone", "download")]
+
   comp$ui_func <- function(id, value, depends){
-    threeBrain::threejsBrainOutput(
-      outputId = id,
-      height = height,
-      reportSize = FALSE
+    if(length(widgets)) {
+      addon <- output_widget_container(
+        class = "position-absolute",
+        .list = lapply(widgets, function(widget) {
+          output_widget(
+            outputId = id,
+            type = widget
+          )
+        }))
+    } else {
+      addon <- NULL
+    }
+    shiny::tagList(
+      addon,
+      threeBrain::threejsBrainOutput(
+        outputId = id,
+        height = height,
+        reportSize = FALSE
+      )
     )
   }
   comp$server_func <- function(input, output, session){
@@ -122,13 +140,19 @@ presets_loader_3dviewer <- function(
 
 
     output$loader_3d_viewer <- shiny::bindEvent(
-      threeBrain::renderBrain({
-        wg <- viewer()
-        shiny::validate(shiny::need(!is.null(wg), message = ""))
+      render_output(
+        outputId = "loader_3d_viewer",
+        .session = session,
+        renderer = threeBrain::renderBrain,
+        .export_type = "3dviewer",
+        .export_name = "electrodes-to-load",
+        expr = {
+          wg <- viewer()
+          shiny::validate(shiny::need(!is.null(wg), message = ""))
 
-        return(wg)
-
-      }),
+          return(wg)
+        }
+      ),
       viewer(), ignoreNULL = FALSE, ignoreInit = FALSE
     )
 

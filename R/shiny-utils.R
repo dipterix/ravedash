@@ -248,6 +248,12 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
     handler_map <- dipsaus::fastmap2()
     handler_map$output_options <- dipsaus::fastmap2()
     session$userData$ravedash_reactive_handlers <- handler_map
+
+    # Probably first time registering session
+    clean_shiny_sessions(active = FALSE)
+    session$onEnded(function() {
+      clean_shiny_sessions(sessions = session, active = TRUE)
+    })
   }
 
   if(!root_session$cache$exists('rave_id')){
@@ -290,6 +296,52 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
     rave_event = rave_event,
     loop_event = rave_loop_events
   )
+}
+
+clean_shiny_sessions <- function(sessions = NULL, active = FALSE) {
+  sess <- get(".sessions")
+  current_size <- sess$size()
+
+  # Do not actively clean ended sessions
+  if(!is.null(sessions) && length(sessions)) {
+    active <- TRUE
+    if(!is.list(sessions)) {
+      sessions <- list(sessions)
+    }
+  }
+  if( !active && current_size <= 20 ) {
+    return()
+  }
+  if(is.null(sessions)) {
+    rave_ids <- sess$keys()
+  } else {
+    rave_ids <- unlist(lapply(sessions, function(session) {
+      tryCatch({
+        session$userData$rave_id
+      }, error = function(e){ NULL })
+    }))
+  }
+
+  lapply(rave_ids, function(key){
+    try({
+      item <- sess$get(key, missing = NULL)
+      if(is.null(item)){ return() }
+      if(!is.list(item)){
+        sess$remove(key)
+        return()
+      }
+      if(!is.environment(item$root_session)){
+        sess$remove(key)
+        return()
+      }
+      root_session <- item$root_session
+      if( root_session$isEnded() ){
+        sess$remove(key)
+        return()
+      }
+    }, silent = TRUE)
+  })
+  invisible(sess$size())
 }
 
 #' @rdname rave-runtime-events

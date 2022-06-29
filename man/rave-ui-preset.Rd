@@ -95,7 +95,8 @@ presets_loader_3dviewer(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
-  loader_electrodes_id = "loader_electrode_text"
+  loader_electrodes_id = "loader_electrode_text",
+  widgets = c("standalone", "download")
 )
 
 presets_loader_electrodes(

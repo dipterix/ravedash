@@ -9,6 +9,7 @@ register_output_options(
   outputId,
   ...,
   .opt = list(),
+  extras = list(),
   session = shiny::getDefaultReactiveDomain()
 )
 
