@@ -3,6 +3,7 @@
 \name{standalone_viewer}
 \alias{standalone_viewer}
 \alias{register_output_options}
+\alias{get_output_options}
 \title{Register shiny-output options to allow display in stand-alone viewers}
 \usage{
 register_output_options(
@@ -12,6 +13,8 @@ register_output_options(
   extras = list(),
   session = shiny::getDefaultReactiveDomain()
 )
+
+get_output_options(outputId, session = shiny::getDefaultReactiveDomain())
 
 standalone_viewer(
   outputId,

@@ -162,17 +162,30 @@ NULL
 register_output_options <- function(
     outputId, ..., .opt = list(), extras = list(),
     session = shiny::getDefaultReactiveDomain()) {
-  tools <- register_rave_session(session)
   reactive_handlers <- get_default_handlers(session)
   if(!"output_options" %in% names(reactive_handlers)) {
     reactive_handlers$output_options <- dipsaus::fastmap2()
   }
   output_options <- reactive_handlers$output_options
-  output_options[[session$ns(outputId)]] <- list(
-    args = c(list(...), .opt),
-    extras = extras
-  )
-  invisible()
+  re <- as.list(output_options[[session$ns(outputId)]])
+  re$args <- c(list(...), .opt)
+  if(!inherits(re$extras, "fastmap2")) {
+    re$extras <- dipsaus::fastmap2()
+  }
+  dipsaus::list_to_fastmap2(as.list(extras), re$extras)
+  output_options[[session$ns(outputId)]] <- re
+  invisible(re)
+}
+
+#' @rdname standalone_viewer
+#' @export
+get_output_options <- function(outputId, session = shiny::getDefaultReactiveDomain()) {
+  reactive_handlers <- get_default_handlers(session = session)
+  output_options <- reactive_handlers$output_options
+  if(!is.list(output_options)) {
+    return(list())
+  }
+  as.list(output_options[[session$ns(outputId)]])
 }
 
 #' @rdname standalone_viewer

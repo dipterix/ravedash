@@ -139,22 +139,35 @@ presets_loader_3dviewer <- function(
       )
 
 
-    output$loader_3d_viewer <- shiny::bindEvent(
-      render_output(
-        outputId = "loader_3d_viewer",
-        .session = session,
-        renderer = threeBrain::renderBrain,
-        .export_type = "3dviewer",
-        .export_name = "electrodes-to-load",
-        expr = {
+    register_output(
+      shiny::bindEvent(
+        threeBrain::renderBrain({
           wg <- viewer()
           shiny::validate(shiny::need(!is.null(wg), message = ""))
-
           return(wg)
-        }
+        }),
+        viewer(), ignoreNULL = FALSE, ignoreInit = FALSE
       ),
-      viewer(), ignoreNULL = FALSE, ignoreInit = FALSE
+      outputId = "loader_3d_viewer",
+      export_type = "3dviewer",
+      session = session
     )
+    # output$loader_3d_viewer <- shiny::bindEvent(
+    #   render_output(
+    #     outputId = "loader_3d_viewer",
+    #     .session = session,
+    #     renderer = threeBrain::renderBrain,
+    #     .export_type = "3dviewer",
+    #     .export_name = "electrodes-to-load",
+    #     expr = {
+    #       wg <- viewer()
+    #       shiny::validate(shiny::need(!is.null(wg), message = ""))
+    #
+    #       return(wg)
+    #     }
+    #   ),
+    #   viewer(), ignoreNULL = FALSE, ignoreInit = FALSE
+    # )
 
   }
 
