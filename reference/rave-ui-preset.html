@@ -130,7 +130,8 @@ new_rave_shiny_component_container."><!-- mathjax --><script src="https://cdnjs.
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
 <span>  loader_reference_id <span class="op">=</span> <span class="st">"loader_reference_name"</span>,</span>
-<span>  loader_electrodes_id <span class="op">=</span> <span class="st">"loader_electrode_text"</span></span>
+<span>  loader_electrodes_id <span class="op">=</span> <span class="st">"loader_electrode_text"</span>,</span>
+<span>  gadgets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"standalone"</span>, <span class="st">"download"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_electrodes</span><span class="op">(</span></span>
@@ -251,6 +252,11 @@ different to the default</p></dd>
 <dt>loader_electrodes_id</dt>
 <dd><p>the ID of <code>presets_loader_electrodes</code> if
 different to the default</p></dd>
+
+
+<dt>gadgets</dt>
+<dd><p>gadget types to include; see <code>type</code> argument in function
+<code><a href="output_gadget.html">output_gadget</a></code></p></dd>
 
 
 <dt>mode</dt>

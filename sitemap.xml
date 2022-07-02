@@ -49,6 +49,9 @@
     <loc>https://dipterix.org/ravedash/reference/new_rave_shiny_component_container.html</loc>
   </url>
   <url>
+    <loc>https://dipterix.org/ravedash/reference/output_gadget.html</loc>
+  </url>
+  <url>
     <loc>https://dipterix.org/ravedash/reference/random-text.html</loc>
   </url>
   <url>
@@ -68,6 +71,9 @@
   </url>
   <url>
     <loc>https://dipterix.org/ravedash/reference/reexports.html</loc>
+  </url>
+  <url>
+    <loc>https://dipterix.org/ravedash/reference/register_output.html</loc>
   </url>
   <url>
     <loc>https://dipterix.org/ravedash/reference/run_analysis_button.html</loc>
