@@ -96,7 +96,7 @@ presets_loader_3dviewer(
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
   loader_electrodes_id = "loader_electrode_text",
-  widgets = c("standalone", "download")
+  gadgets = c("standalone", "download")
 )
 
 presets_loader_electrodes(
@@ -184,6 +184,9 @@ different to the default}
 
 \item{loader_electrodes_id}{the ID of \code{presets_loader_electrodes} if
 different to the default}
+
+\item{gadgets}{gadget types to include; see \code{type} argument in function
+\code{\link{output_gadget}}}
 
 \item{mode}{whether to create new reference, or simply to choose from
 existing references}

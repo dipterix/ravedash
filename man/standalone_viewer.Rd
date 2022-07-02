@@ -2,20 +2,8 @@
 % Please edit documentation in R/eval-safe.R
 \name{standalone_viewer}
 \alias{standalone_viewer}
-\alias{register_output_options}
-\alias{get_output_options}
 \title{Register shiny-output options to allow display in stand-alone viewers}
 \usage{
-register_output_options(
-  outputId,
-  ...,
-  .opt = list(),
-  extras = list(),
-  session = shiny::getDefaultReactiveDomain()
-)
-
-get_output_options(outputId, session = shiny::getDefaultReactiveDomain())
-
 standalone_viewer(
   outputId,
   module_session,
@@ -27,15 +15,13 @@ standalone_viewer(
 \arguments{
 \item{outputId}{the full shiny output ID}
 
-\item{..., .opt}{additional configurations}
-
-\item{session}{shiny session object}
-
 \item{module_session}{the module shiny session; if not provided, then
 the session will be inferred by \code{rave_id}}
 
 \item{rave_id}{the unique identification key for 'RAVE' module sessions,
 can be obtained via \code{\link{get_active_module_info}}}
+
+\item{session}{shiny session object}
 
 \item{wrapper_id}{the wrapping render ID, default is \code{"viewer"}}
 }

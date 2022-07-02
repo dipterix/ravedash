@@ -1,7 +1,24 @@
+#' @name output_gadget
+#' @title 'RAVE' dashboard output gadgets
+#' @param outputId output ID in the root scope of shiny session
+#' @param inputId input ID, automatically assigned internally
+#' @param icon gadget icon
+#' @param type,gadgets gadget type(s), currently supported: \code{'standalone'},
+#' \code{'download'}, \code{'actionbutton'}
+#' @param class additional class to the gadget or its container
+#' @param expr shiny output call expression, for example,
+#' \code{shiny::plotOutput({...})}
+#' @param quoted whether \code{expr} is quoted; default is false
+#' @param env environment where \code{expr} should be evaluated
+#' @param container optional container for the gadgets and outputs; will be ignored
+#' if \code{wrapper} is false
+#' @param wrapper whether to wrap the gadgets and the output within
+#' a 'HTML' container
+#' @param ... ignored
 #' @export
-output_widget <- function(
+output_gadget <- function(
   outputId, icon = NULL,
-  type = c("standalone", "download", 'action', 'custom'),
+  type = c("standalone", "download", 'actionbutton', 'custom'),
   class = NULL, inputId = NULL, ...
 ) {
   type <- match.arg(type)
@@ -16,6 +33,15 @@ output_widget <- function(
       }
     )
   }
+
+  title <- switch (
+    type,
+    standalone = "Open in a new tab",
+    download = "Download",
+    {
+      ""
+    }
+  )
 
   if(type %in% c('actionbutton', 'download')) {
     if(length(inputId) != 1) {
@@ -39,6 +65,7 @@ output_widget <- function(
     class = class,
     `data-type` = type,
     `data-target` = outputId,
+    title = title,
     icon,
     ...
   )
@@ -52,58 +79,52 @@ output_widget <- function(
   do.call(shiny::tags$a, args)
 }
 
+#' @rdname output_gadget
 #' @export
-output_widget_container <- function(
-  ..., .list = list(), class = NULL
-) {
-  args = c(
-    list(
-      class = dipsaus::combine_html_class("ravedash-output-widget-container", class),
-      ...
-    ),
-    .list
-  )
-  do.call(shiny::div, args)
-}
+output_gadget_container <- function(
+    expr, gadgets = c("standalone", "download"),
+    quoted = FALSE, env = parent.frame(), outputId = NULL,
+    class = NULL, container = NULL, wrapper = TRUE) {
 
-
-get_output <- function(outputId, session = shiny::getDefaultReactiveDomain()) {
-
-  module_id <- session$ns(NULL)
-  # make sure we are working on the root scope
-  session <- session$rootScope()
-
-  # get module information
-  if(!is.null(module_info)) {
-    module_info <- get_active_module_info(session = session)
-    module_id <- module_info$id
+  if(is.null(container)) {
+    if(wrapper) {
+      container <- function(...) {
+        shiny::div(
+          class = "ravedash-output-widget-wrapper",
+          ...
+        )
+      }
+    } else {
+      container <- function(...) {
+        shiny::tagList(...)
+      }
+    }
   }
 
-  # get renderer's information
-  reactive_handlers <- get_default_handlers(session = session)
-  output_options <- reactive_handlers$output_options
-  ns <- shiny::NS(module_id)
-  outputId_full <- ns(outputId)
-  render_function <- session$getOutput(outputId_full)
-
-  if(!is.function(render_function)) {
-    stop("Cannot find render function for output: ", outputId)
+  if(!quoted) {
+    expr <- substitute(expr)
+  }
+  if(is.null(outputId)) {
+    expr <- match.call(definition = eval(expr[[1]], envir = env), call = expr, expand.dots = TRUE, envir = env)
+    outputId <- eval(expr$outputId, envir = env)
   }
 
-  # get output function
-  ui_function <- attr(render_function, "outputFunc")
-
-  # get output options
-  output_opt <- as.list(output_options[[outputId_full]])
-
-  list(
-    namespace = ns(NULL),
-    outputId = outputId,
-    outputId_full = outputId_full,
-    render_function = render_function,
-    output_function = ui_function,
-    output_args = output_opt$args,
-    extras = output_opt$extras
+  gs <- lapply(gadgets, function(type) {
+    output_gadget(
+      outputId = outputId,
+      type = type
+    )
+  })
+  if(length(gs)) {
+    gs <- shiny::div(class = dipsaus::combine_html_class(
+      "ravedash-output-widget-container", class), gs)
+  } else {
+    gs <- NULL
+  }
+  container(
+    gs,
+    eval(expr, envir = env)
   )
 
 }
+

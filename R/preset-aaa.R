@@ -36,6 +36,8 @@
 #' existing references
 #' @param checks whether to check if subject has been applied with 'Notch'
 #' filters or 'Wavelet'; default is both.
+#' @param gadgets gadget types to include; see \code{type} argument in function
+#' \code{\link{output_gadget}}
 #' @returns A \code{'RAVEShinyComponent'} instance.
 #' @seealso \code{\link{new_rave_shiny_component_container}}
 NULL

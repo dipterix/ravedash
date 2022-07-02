@@ -80,11 +80,9 @@ observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL,
 safe_observe <- observe
 
 #' @title Register shiny-output options to allow display in stand-alone viewers
-#' @name standalone_viewer
 #' @description Save the output options such that the additional configurations
 #' can be used by stand-alone viewer
 #' @param outputId the full shiny output ID
-#' @param ...,.opt additional configurations
 #' @param session shiny session object
 #' @param module_session the module shiny session; if not provided, then
 #' the session will be inferred by \code{rave_id}
@@ -155,40 +153,6 @@ safe_observe <- observe
 #'
 #' }
 #'
-NULL
-
-#' @rdname standalone_viewer
-#' @export
-register_output_options <- function(
-    outputId, ..., .opt = list(), extras = list(),
-    session = shiny::getDefaultReactiveDomain()) {
-  reactive_handlers <- get_default_handlers(session)
-  if(!"output_options" %in% names(reactive_handlers)) {
-    reactive_handlers$output_options <- dipsaus::fastmap2()
-  }
-  output_options <- reactive_handlers$output_options
-  re <- as.list(output_options[[session$ns(outputId)]])
-  re$args <- c(list(...), .opt)
-  if(!inherits(re$extras, "fastmap2")) {
-    re$extras <- dipsaus::fastmap2()
-  }
-  dipsaus::list_to_fastmap2(as.list(extras), re$extras)
-  output_options[[session$ns(outputId)]] <- re
-  invisible(re)
-}
-
-#' @rdname standalone_viewer
-#' @export
-get_output_options <- function(outputId, session = shiny::getDefaultReactiveDomain()) {
-  reactive_handlers <- get_default_handlers(session = session)
-  output_options <- reactive_handlers$output_options
-  if(!is.list(output_options)) {
-    return(list())
-  }
-  as.list(output_options[[session$ns(outputId)]])
-}
-
-#' @rdname standalone_viewer
 #' @export
 standalone_viewer <- function(
     outputId, module_session, rave_id,

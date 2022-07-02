@@ -8,34 +8,22 @@ presets_loader_3dviewer <- function(
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
   loader_electrodes_id = "loader_electrode_text",
-  widgets = c("standalone", "download")
+  gadgets = c("standalone", "download")
 ) {
   comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- c(loader_project_id, loader_subject_id, loader_electrodes_id, loader_reference_id)
   comp$no_save <- TRUE
 
-  widgets <- widgets[widgets %in% c("standalone", "download")]
+  gadgets <- gadgets[gadgets %in% c("standalone", "download")]
 
   comp$ui_func <- function(id, value, depends){
-    if(length(widgets)) {
-      addon <- output_widget_container(
-        class = "position-absolute",
-        .list = lapply(widgets, function(widget) {
-          output_widget(
-            outputId = id,
-            type = widget
-          )
-        }))
-    } else {
-      addon <- NULL
-    }
-    shiny::tagList(
-      addon,
+    output_gadget_container(
       threeBrain::threejsBrainOutput(
         outputId = id,
         height = height,
         reportSize = FALSE
-      )
+      ),
+      gadgets = gadgets
     )
   }
   comp$server_func <- function(input, output, session){

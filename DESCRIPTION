@@ -23,7 +23,8 @@ Imports:
     shiny (>= 1.7.1),
     shinyWidgets (>= 0.6.2),
     threeBrain (>= 0.2.4),
-    shinyvalidate
+    shinyvalidate,
+    htmlwidgets
 Suggests: 
     fastmap (>= 1.1.0),
     rlang (>= 1.0.2),
