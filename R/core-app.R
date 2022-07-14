@@ -36,11 +36,26 @@ ensure_template <- function(path, use_cache = TRUE){
 #' @name rave-session
 #' @title Create, register, list, and remove 'RAVE' sessions
 #' @param update logical, whether to update to latest 'RAVE' template
-#' @param x session identification string, or session object; use
+#' @param session,x session identification string, or session object; use
 #' \code{list_session} to list all existing sessions
 #' @param path root path to store the sessions; default is the
 #' \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}
-#' @param host,port,options configurations needed to launch the session
+#' @param host host 'IP' address, default is 'localhost'
+#' @param port port to listen
+#' @param options additional options, including \code{jupyter},
+#' \code{jupyter_port}, \code{as_job}, and \code{launch_browser}
+#' @param jupyter logical, whether to launch 'jupyter' instance as well. It
+#' requires additional setups to enable 'jupyter' lab
+#' @param jupyter_port port used by 'jupyter' lab, can be set by
+#' \code{'jupyter_port'} option in \code{\link[raveio]{raveio_setopt}}
+#' @param as_job whether to launch the application as 'RStudio' job, default is
+#' true if 'RStudio' is detected; when running without 'RStudio', this option
+#' is always false
+#' @param launch_browser whether to launch browser, default is true
+#' @param new whether to create a new session instead of using the most recent
+#' one, default is false
+#' @param order whether to order the session by date created; choices are
+#' \code{'none'} (default), \code{'ascend'}, \code{'descend'}
 #' @return
 #' \describe{
 #' \item{\code{new_session}}{returns a session object with character
@@ -160,6 +175,7 @@ new_session <- function(update = FALSE) {
   #   overwrite = TRUE, copy.date = TRUE
   # )
 
+  logger("A new RAVE session has been created [session ID: { session_id }]", level = "info", use_glue = TRUE)
   use_session(session_id)
 
 }
@@ -200,7 +216,18 @@ launch_session <- function(
     )) {
   sess <- use_session(x)
 
-  options <- as.list(options)
+  default_options <- list(
+    jupyter = TRUE,
+    jupyter_port = NULL,
+    as_job = TRUE,
+    launch_browser = TRUE
+  )
+
+  for(nm in names(options)) {
+    default_options[[nm]] <- options[[nm]]
+  }
+
+  options <- default_options
 
   jupyter_port <- options$jupyter_port
 
@@ -321,9 +348,90 @@ remove_all_sessions <- function() {
 
 #' @rdname rave-session
 #' @export
-list_session <- function(path = session_root()){
+list_session <- function(path = session_root(), order = c("none", "ascend", "descend")){
+  order <- match.arg(order)
   dirs <- list.dirs(path = path, full.names = FALSE, recursive = FALSE)
   sel <- grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", dirs)
-  re <- lapply(dirs[sel], use_session)
+  session_ids <- dirs[sel]
+  if(order != "none") {
+
+    timestamps <- sub("\\-[a-zA-Z]+\\-[a-zA-Z0-9]{4}$", "", session_ids)
+    timestamps <- strptime(timestamps, "session-%y%m%d-%H%M%S")
+    order <- order(timestamps, decreasing = order == "descend", na.last = TRUE)
+    session_ids <- session_ids[order]
+
+  }
+  re <- lapply(session_ids, use_session)
   re
+}
+
+#' @rdname rave-session
+#' @export
+start_session <- function(session, new = FALSE, host = "127.0.0.1", port = NULL,
+                          jupyter = NA, jupyter_port = NULL, as_job = TRUE,
+                          launch_browser = TRUE) {
+  if(!missing(session) && length(session)) {
+    if(new) {
+      stop("`start_session`: Please leave `session` blank or NULL if you want to create a new session (new=TRUE).")
+    }
+    if(length(session) != 1) {
+      stop("`start_session`: Invalid `session`.")
+    }
+    if(!inherits(session, "rave-dash-session")) {
+      if(!grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", session)) {
+        stop("`start_session`: Invalid `session`.")
+      }
+      session <- tryCatch({
+        use_session(x = session)
+      }, error = function(e) {
+        stop(sprintf("`start_session`: Session [%s] cannot be found.", session))
+      })
+    }
+  } else if(new){
+    session <- new_session()
+  } else {
+    # find existing session (most recent)
+    all_sessions <- list_session(order = "descend")
+    if(length(all_sessions)) {
+      session <- all_sessions[[1]]
+    } else {
+      # start a new session
+      session <- new_session()
+    }
+  }
+
+  rs_available <- dipsaus::rs_avail(child_ok = TRUE, shiny_ok = TRUE)
+  if(is.na(jupyter)) {
+    jupyter <- rs_available
+  } else if(isTRUE(jupyter) && !rs_available) {
+    warning("RStudio is not available. Please manually launch Jupyter lab")
+    jupyter <- FALSE
+  }
+  if(!rs_available) {
+    as_job <- FALSE
+  }
+
+  if(as_job) {
+    job_id <- launch_session(x = session, host = host, port = port, options = list(
+      jupyter = jupyter,
+      jupyter_port = jupyter_port,
+      as_job = as_job,
+      launch_browser = launch_browser
+    ))
+    if(as_job) {
+      logger("RAVE application [{session$session_id}] has been launched. Detailed information has been printed out in the `jobs` panel.", level = "info", use_glue = TRUE, .trim = FALSE)
+    }
+
+    return(invisible(list(
+      session = session,
+      job_id = job_id
+    )))
+  } else {
+    return(launch_session(x = session, host = host, port = port, options = list(
+      jupyter = jupyter,
+      jupyter_port = jupyter_port,
+      as_job = as_job,
+      launch_browser = launch_browser
+    )))
+  }
 }

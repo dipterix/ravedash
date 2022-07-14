@@ -8,6 +8,7 @@
 \alias{remove_session}
 \alias{remove_all_sessions}
 \alias{list_session}
+\alias{start_session}
 \title{Create, register, list, and remove 'RAVE' sessions}
 \usage{
 new_session(update = FALSE)
@@ -26,18 +27,52 @@ remove_session(x)
 
 remove_all_sessions()
 
-list_session(path = session_root())
+list_session(path = session_root(), order = c("none", "ascend", "descend"))
+
+start_session(
+  session,
+  new = FALSE,
+  host = "127.0.0.1",
+  port = NULL,
+  jupyter = NA,
+  jupyter_port = NULL,
+  as_job = TRUE,
+  launch_browser = TRUE
+)
 }
 \arguments{
 \item{update}{logical, whether to update to latest 'RAVE' template}
 
-\item{x}{session identification string, or session object; use
-\code{list_session} to list all existing sessions}
+\item{host}{host 'IP' address, default is 'localhost'}
 
-\item{host, port, options}{configurations needed to launch the session}
+\item{port}{port to listen}
+
+\item{options}{additional options, including \code{jupyter},
+\code{jupyter_port}, \code{as_job}, and \code{launch_browser}}
 
 \item{path}{root path to store the sessions; default is the
 \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}}
+
+\item{order}{whether to order the session by date created; choices are
+\code{'none'} (default), \code{'ascend'}, \code{'descend'}}
+
+\item{session, x}{session identification string, or session object; use
+\code{list_session} to list all existing sessions}
+
+\item{new}{whether to create a new session instead of using the most recent
+one, default is false}
+
+\item{jupyter}{logical, whether to launch 'jupyter' instance as well. It
+requires additional setups to enable 'jupyter' lab}
+
+\item{jupyter_port}{port used by 'jupyter' lab, can be set by
+\code{'jupyter_port'} option in \code{\link[raveio]{raveio_setopt}}}
+
+\item{as_job}{whether to launch the application as 'RStudio' job, default is
+true if 'RStudio' is detected; when running without 'RStudio', this option
+is always false}
+
+\item{launch_browser}{whether to launch browser, default is true}
 }
 \value{
 \describe{
