@@ -381,11 +381,9 @@ start_session <- function(session, new = FALSE, host = "127.0.0.1", port = NULL,
     if(new) {
       stop("`start_session`: Please leave `session` blank or NULL if you want to create a new session (new=TRUE).")
     }
-    if(length(session) != 1) {
-      stop("`start_session`: Invalid `session`.")
-    }
     if(!inherits(session, "rave-dash-session")) {
-      if(!grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", session)) {
+      if(length(session) != 1 || is.na(session) ||
+         !grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", session)) {
         stop("`start_session`: Invalid `session`.")
       }
       session <- tryCatch({
