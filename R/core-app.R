@@ -188,6 +188,12 @@ use_session <- function(x) {
 
 #' @export
 use_session.default <- function(x) {
+  force(x)
+
+  if(length(x) != 1 || is.na(x) || !grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", x)) {
+    stop("Invalid session ID")
+  }
+
   cache_path <- session_root()
   app_path <- file.path(cache_path, x)
   app_path <- normalizePath(app_path, mustWork = TRUE)
@@ -304,6 +310,7 @@ launch_session <- function(
   vname <- paste(deparse(vname), collapse = "\n")
   cat(sprintf("Please run `%s$launch_session()` to launch the session.\n", vname))
 
+  invisible(x)
 }
 
 #' @rdname rave-session
