@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9002</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,18 @@
 <span></span>
 <span><span class="fu">remove_all_sessions</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">list_session</span><span class="op">(</span>path <span class="op">=</span> <span class="fu">session_root</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">list_session</span><span class="op">(</span>path <span class="op">=</span> <span class="fu">session_root</span><span class="op">(</span><span class="op">)</span>, order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"ascend"</span>, <span class="st">"descend"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">start_session</span><span class="op">(</span></span>
+<span>  <span class="va">session</span>,</span>
+<span>  new <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  host <span class="op">=</span> <span class="st">"127.0.0.1"</span>,</span>
+<span>  port <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  jupyter <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  jupyter_port <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  as_job <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -82,18 +93,57 @@
 <dd><p>logical, whether to update to latest 'RAVE' template</p></dd>
 
 
-<dt>x</dt>
-<dd><p>session identification string, or session object; use
-<code>list_session</code> to list all existing sessions</p></dd>
+<dt>host</dt>
+<dd><p>host 'IP' address, default is 'localhost'</p></dd>
 
 
-<dt>host, port, options</dt>
-<dd><p>configurations needed to launch the session</p></dd>
+<dt>port</dt>
+<dd><p>port to listen</p></dd>
+
+
+<dt>options</dt>
+<dd><p>additional options, including <code>jupyter</code>,
+<code>jupyter_port</code>, <code>as_job</code>, and <code>launch_browser</code></p></dd>
 
 
 <dt>path</dt>
 <dd><p>root path to store the sessions; default is the
 <code>"tensor_temp_path"</code> in <code><a href="https://beauchamplab.github.io/raveio/reference/raveio-option.html" class="external-link">raveio_getopt</a></code></p></dd>
+
+
+<dt>order</dt>
+<dd><p>whether to order the session by date created; choices are
+<code>'none'</code> (default), <code>'ascend'</code>, <code>'descend'</code></p></dd>
+
+
+<dt>session, x</dt>
+<dd><p>session identification string, or session object; use
+<code>list_session</code> to list all existing sessions</p></dd>
+
+
+<dt>new</dt>
+<dd><p>whether to create a new session instead of using the most recent
+one, default is false</p></dd>
+
+
+<dt>jupyter</dt>
+<dd><p>logical, whether to launch 'jupyter' instance as well. It
+requires additional setups to enable 'jupyter' lab</p></dd>
+
+
+<dt>jupyter_port</dt>
+<dd><p>port used by 'jupyter' lab, can be set by
+<code>'jupyter_port'</code> option in <code><a href="https://beauchamplab.github.io/raveio/reference/raveio-option.html" class="external-link">raveio_setopt</a></code></p></dd>
+
+
+<dt>as_job</dt>
+<dd><p>whether to launch the application as 'RStudio' job, default is
+true if 'RStudio' is detected; when running without 'RStudio', this option
+is always false</p></dd>
+
+
+<dt>launch_browser</dt>
+<dd><p>whether to launch browser, default is true</p></dd>
 
 </dl></div>
     <div class="section level2">
