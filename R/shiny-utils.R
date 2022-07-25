@@ -7,6 +7,7 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
 
 .shiny_icons_methods <- local({
   li <- NULL
+  dep <- NULL
 
   ensure_li <- function(){
     if(is.null(li)){
@@ -48,16 +49,38 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
         wrench = "wrench"
       )
     }
+    if(is.null(dep)) {
+      dep <<- htmltools::htmlDependency(
+        name = "fontawesome-free-ravedash",
+        version = "5.15.4",
+        package = 'ravedash',
+        src = c(file = "assets"),
+        stylesheet = "css/all.min.css",
+        all_files = TRUE
+      )
+    }
     li
   }
 
   get_icon <- function(name, class = NULL){
     ensure_li()
-    re <- shiny::icon(li[[name]], class = class)
+    re <- li[[name]]
     if(is.null(re)){
       warning("Icon `", name, "` not found, please file an issue to the 'RAVE' team to support your icon")
-      re <- shiny::icon(name)
+      re <- name
     }
+    # class <- dipsaus::combine_html_class(sprintf("fa-%s", re), class)
+    # if(is.null(class) || !grepl("fa[sb]{0,1}", class)) {
+    #   class <- dipsaus::combine_html_class("fa", class)
+    # }
+    # re <- htmltools::tags$li(
+    #   class = class,
+    #   role = "presentation",
+    #   `aria-label` = sprintf("%s icon", re),
+    #   dep
+    # )
+    re <- shiny::icon(re, class = class, verify_fa = FALSE, html_dependency = dep)
+    attr(re, "browsable_html") <- TRUE
     re
   }
 
