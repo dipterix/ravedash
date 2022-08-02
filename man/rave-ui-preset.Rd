@@ -65,8 +65,8 @@ presets_import_export_subject_pipeline(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   pipeline_repository = "repository",
-  settings_entries = c("loaded_electrodes", "epoch_choice",
-    "epoch_choice__trial_starts", "epoch_choice__trial_ends", "reference_name"),
+  settings_entries = c("loaded_electrodes", "epoch_choice", "epoch_choice__trial_starts",
+    "epoch_choice__trial_ends", "reference_name"),
   fork_mode = c("exclude", "include")
 )
 

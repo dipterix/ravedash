@@ -12,7 +12,7 @@ presets_import_setup_channels <- function(
   comp$no_save <- c("", "msg", "actions", "actions_alt", "snapshot",
                     "do_import")
 
-  all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4)]
+  all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4,7)]
 
   comp$ui_func <- function(id, value, depends){
 
@@ -293,6 +293,61 @@ presets_import_setup_channels <- function(
                 )
               }
 
+            })
+
+
+          }
+        } else if (format == 5) {
+          # Ignore electrode_file
+          electrode_file <- list.files(file.path(preproc$raw_path, blocks[[1]]),
+                                       pattern = "\\.nev$", ignore.case = TRUE)
+          if(!length(electrode_file)) {
+            local_reactives$snapshot <- shiny::p(
+              "Cannot find any NEV file in the first block (",
+              blocks[[1]], ")"
+            )
+          } else {
+            tryCatch({
+              brfile <- raveio::BlackrockFile$new(
+                path = file.path(preproc$raw_path, blocks[[1]], electrode_file[[1]]),
+                block = blocks[[1]]
+              )
+              elec_table <- brfile$electrode_table
+              duration <- brfile$recording_duration
+
+              nsinfo <- lapply(split(elec_table, elec_table$NSType), function(x) {
+                ns_type <- x$NSType[[1]]
+                shiny::tags$li(
+                  sprintf(
+                    "%s: %s [%.0f Hz, %.2f sec]", ns_type,
+                    dipsaus::deparse_svec(x$Electrode),
+                    x$SampleRate[[1]],
+                    duration[[ns_type]]
+                  )
+                )
+              })
+
+              local_reactives$snapshot <- shiny::p(
+                "With given data format (BlackRock), I found the following NSX files in ",
+                "the first block (", blocks[[1]], "): ",
+                paste(names(brfile$has_nsx)[brfile$has_nsx], collapse = ", "),
+                ". Here is the header information: ",
+                shiny::tags$ul(
+                  shiny::tags$li(
+                    "Total number of channels: ", nrow(elec_table)
+                  ),
+                  nsinfo
+                ),
+                "If no physical unit specified, all the signals will use [uV] by default."
+              )
+            }, error = function(e){
+              local_reactives$snapshot <- shiny::p(
+                "Cannot read the BlackRock files ",
+                gsub("\\.nev", ".*", basename(electrode_file), ignore.case = TRUE),
+                " in the first block (",
+                blocks[[1]], "). Please check if the file version is at least 2.3."
+              )
+              ravedash::logger_error_condition(e)
             })
 
 

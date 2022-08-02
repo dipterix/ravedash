@@ -12,7 +12,14 @@ presets_import_setup_blocks <- function(
   comp$no_save <- c("", "msg", "actions", "format_details", "action_dbl_confirm",
                     "block_preview", "")
 
-  all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4)]
+  all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4,7)]
+  regexps <- c(
+    "\\.(h5|mat)$",
+    "\\.(h5|mat)$",
+    "\\.(edf)$",
+    "\\.(eeg|dat|vmrk|vhdr)$",
+    "\\.(nev|ns[1-6])$"
+  )
 
   comp$ui_func <- function(id, value, depends){
 
@@ -352,6 +359,9 @@ presets_import_setup_blocks <- function(
           #     )
           #   ))
         },
+        '5' = {
+          paste0("In each block folder, one Neuro-Event file [.nev] and corresponding NSX files [.ns1, .ns2, ..., .ns6] containing electrode data.")
+        },
         {
           paste0("In each block folder, one EDF(+)/EEG file containing all electrode data.")
           # shiny::div(
@@ -389,8 +399,10 @@ presets_import_setup_blocks <- function(
 
       root_str <- sprintf("%s (subject folder)", subject_code)
 
+      regexp <- regexps[[fmt_idx]]
+
       for(block in blocks) {
-        fs <- list.files(file.path(dirs$raw_path, block), pattern = "\\.(h5|mat|edf|eeg|dat|vmrk|vhdr)$", recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
+        fs <- list.files(file.path(dirs$raw_path, block), pattern = regexp, recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
         if(length(fs) > max_components) {
           fs <- c(fs[seq_len(max_components - 1)], "...")
         }
