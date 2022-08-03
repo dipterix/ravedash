@@ -12,6 +12,7 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
   ensure_li <- function(){
     if(is.null(li)){
       li <<- list(
+        brain = "brain",
         bars = "bars",
         grid = "th",
         keyboard = "keyboard",
