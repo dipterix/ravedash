@@ -23,6 +23,10 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
         angle_left = 'angle-left',
         angle_up = 'angle-up',
         angle_down = 'angle-down',
+        angle_double_right = 'angle-double-right',
+        angle_double_left = 'angle-double-left',
+        angle_double_up = 'angle-double-up',
+        angle_double_down = 'angle-double-down',
         arrow_right = 'arrow-right',
         arrow_left = 'arrow-left',
         arrow_up = 'arrow-up',
@@ -66,7 +70,7 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
     ensure_li()
     re <- li[[name]]
     if(is.null(re)){
-      warning("Icon `", name, "` not found, please file an issue to the 'RAVE' team to support your icon")
+      # warning("Icon `", name, "` not found, please file an issue to the 'RAVE' team to support your icon")
       re <- name
     }
     # class <- dipsaus::combine_html_class(sprintf("fa-%s", re), class)
