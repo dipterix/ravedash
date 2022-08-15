@@ -5,7 +5,9 @@ presets_analysis_electrode_selector2 <- function(
   label = "Select Electrodes",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
-  pipeline_repository = "repository"
+  pipeline_repository = "repository",
+  start_simple = FALSE,
+  multiple = TRUE
 ) {
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
@@ -17,9 +19,12 @@ presets_analysis_electrode_selector2 <- function(
   selected_electrode_text_str <- "selected_electrode_text" # card_electrode_selector
   merge_hemisphere_str <- "merge_hemisphere_labels"
   download_str <- "download"
+  btn_previous_str <- "previous"
+  btn_next_str <- "next"
 
+  css_class_optional <- ifelse(start_simple, "rave-optional soft-hidden", "rave-optional")
 
-  comp$no_save <- c(reset_str, category_choices_str, selected_electrode_text_str)
+  comp$no_save <- c(reset_str, category_choices_str, selected_electrode_text_str, btn_previous_str, btn_next_str)
 
   # repository_name <- "repository"
   get_repo <- function(){
@@ -71,7 +76,7 @@ presets_analysis_electrode_selector2 <- function(
                           inline = TRUE, shiny::tags$small)
       ),
       shiny::div(
-        class = "rave-optional",
+        class = css_class_optional,
         shiny::selectInput(
           inputId = comp$get_sub_element_id(category_str,
                                             with_namespace = TRUE),
@@ -81,9 +86,9 @@ presets_analysis_electrode_selector2 <- function(
         shiny::selectInput(
           inputId = comp$get_sub_element_id(category_choices_str,
                                             with_namespace = TRUE),
-          label = "Select electrode by category (multi-select)",
+          label = sprintf("Select electrode by category (%s-select)", ifelse(multiple, "multi", "single")),
           choices = "",
-          multiple = TRUE
+          multiple = multiple
         ),
         shiny::checkboxInput(
           inputId = comp$get_sub_element_id(merge_hemisphere_str,
@@ -91,14 +96,44 @@ presets_analysis_electrode_selector2 <- function(
           label = "Merge LH/RH categories"
         )
       ),
-      shiny::textInput(
-        inputId = id,
-        label = "Select electrode by number",
-        value = "",
-        placeholder = "E.g. 1-30,55-60,88"
-      ),
+      local({
+        if(multiple) {
+          shiny::textInput(
+            inputId = id,
+            label = "Select electrode by number",
+            value = "",
+            placeholder = "E.g. 1-30,55-60,88"
+          )
+        } else {
+          shiny::tagList(
+            shiny::selectInput(
+              inputId = id,
+              label = "Select electrode by number",
+              choices = character()
+            ),
+            shiny::fluidRow(
+              shiny::column(
+                width = 6L,
+                shiny::actionButton(
+                  inputId = comp$get_sub_element_id(btn_previous_str,
+                                                    with_namespace = TRUE),
+                  label = shiny::tagList(shiny_icons$angle_double_left, " Previous")
+                )
+              ),
+              shiny::column(
+                width = 6L,
+                shiny::actionButton(
+                  inputId = comp$get_sub_element_id(btn_next_str,
+                                                    with_namespace = TRUE),
+                  label = shiny::tagList("Next ", shiny_icons$angle_double_right)
+                )
+              )
+            )
+          )
+        }
+      }),
       footer = shiny::div(
-        class = "rave-optional",
+        class = css_class_optional,
         shiny::div(
           class = "form-group",
           shiny::actionLink(
@@ -141,6 +176,9 @@ presets_analysis_electrode_selector2 <- function(
       if(!length(electrode_text)){
         electrode_text <- electrodes[[1]]
       }
+      if(!multiple) {
+        electrode_text <- electrode_text[[1]]
+      }
       electrode_text <- dipsaus::deparse_svec(electrode_text)
 
       # get category selector in the following sequence
@@ -163,11 +201,21 @@ presets_analysis_electrode_selector2 <- function(
       )
       electrode_list_text <- dipsaus::deparse_svec(repo$electrode_list, collapse = ", ")
       ravedash::logger("Updating `{id}`, value: {electrode_text}, label: Select electrode by number (currently loaded: {electrode_list_text})", level = "trace", use_glue = TRUE)
-      shiny::updateTextInput(
-        session = session, inputId = comp$get_sub_element_id(with_namespace = FALSE),
-        label = sprintf("Select electrode by number (currently loaded: %s)", electrode_list_text),
-        value = electrode_text
-      )
+
+      if(multiple) {
+        shiny::updateTextInput(
+          session = session, inputId = comp$get_sub_element_id(with_namespace = FALSE),
+          label = sprintf("Select electrode by number (currently loaded: %s)", electrode_list_text),
+          value = electrode_text
+        )
+      } else {
+        shiny::updateSelectInput(
+          session = session, inputId = comp$get_sub_element_id(with_namespace = FALSE),
+          label = sprintf("Select electrode by number (currently loaded: %s)", electrode_list_text),
+          choices = as.character(repo$electrode_list),
+          selected = electrode_text
+        )
+      }
 
     }
 
@@ -221,15 +269,25 @@ presets_analysis_electrode_selector2 <- function(
       updates = list(
         function(electrodes) {
           if(length(electrodes)){
-            new_value <- dipsaus::deparse_svec(electrodes)
-            if(!identical(new_value, comp$current_value)){
-              val <- dipsaus::deparse_svec(electrodes)
+            if(multiple) {
+              new_value <- dipsaus::deparse_svec(electrodes)
+              if(!identical(new_value, comp$current_value)){
+                val <- dipsaus::deparse_svec(electrodes)
+                ravedash::logger("Updating `{id}`, value: {val}", level = "trace", use_glue = TRUE)
+                shiny::updateTextInput(
+                  session = session, inputId = id,
+                  value = val
+                )
+              }
+            } else {
+              val <- as.character(electrodes[[1]])
               ravedash::logger("Updating `{id}`, value: {val}", level = "trace", use_glue = TRUE)
-              shiny::updateTextInput(
+              shiny::updateSelectInput(
                 session = session, inputId = id,
-                value = val
+                selected = val
               )
             }
+
           }
         },
         function(electrodes) {
@@ -332,8 +390,12 @@ presets_analysis_electrode_selector2 <- function(
         selected = character(0L)
       )
 
+      if(length(electrodes) && !multiple) {
+        electrodes <- electrodes[[1]]
+      }
+
       v <- dipsaus::deparse_svec(electrodes)
-      if(identical(v, comp$current_value)){
+      if(multiple && identical(v, comp$current_value)){
         v <- sprintf("%s ", v)
       }
       # ravedash::logger("Updating `{id}`, value: {v}", level = "trace", use_glue = TRUE)
@@ -345,13 +407,25 @@ presets_analysis_electrode_selector2 <- function(
 
       electrode_list_text <- dipsaus::deparse_svec(repository$electrode_list, collapse = ", ")
       ravedash::logger("Updating `{id}`, value: {v}, label: Select electrode by number (currently loaded: {electrode_list_text})", level = "trace", use_glue = TRUE)
-      shiny::updateTextInput(
-        session = session,
-        inputId = id,
-        label = sprintf("Select electrode by number (currently loaded: %s)",
-                        electrode_list_text),
-        value = v
-      )
+      if(multiple) {
+        shiny::updateTextInput(
+          session = session,
+          inputId = id,
+          label = sprintf("Select electrode by number (currently loaded: %s)",
+                          electrode_list_text),
+          value = v
+        )
+      } else {
+        shiny::updateSelectInput(
+          session = session,
+          inputId = id,
+          label = sprintf("Select electrode by number (currently loaded: %s)",
+                          electrode_list_text),
+          choices = as.character(repository$electrode_list),
+          selected = as.character(v)
+        )
+      }
+
     }
 
     shiny::bindEvent(
@@ -377,6 +451,62 @@ presets_analysis_electrode_selector2 <- function(
     )]] <- shiny::renderText({
       dipsaus::deparse_svec(dipsaus::parse_svec(comp$current_value))
     })
+
+    shiny::bindEvent(
+      observe({
+        repository <- get_repo()
+        if(is.null(repository)){ return(NULL) }
+        if(!length(repository$electrode_list)) { return(NULL) }
+        current_electrodes <- dipsaus::parse_svec(comp$current_value)
+        if(length(current_electrodes) || any(current_electrodes %in% repository$electrode_list)) {
+          elec <- current_electrodes[current_electrodes %in% repository$electrode_list]
+          elec <- elec[[1]]
+          idx <- which(repository$electrode_list == elec)
+          if(idx == 1) {
+            idx <- length(repository$electrode_list)
+          } else {
+            idx <- idx - 1
+          }
+          elec <- repository$electrode_list[[idx]]
+        } else {
+          elec <- repository$electrode_list[[1]]
+        }
+        shiny::updateSelectInput(
+          session = session, inputId = id,
+          selected = as.character(elec)
+        )
+      }),
+      comp$get_sub_element_input(btn_previous_str),
+      ignoreNULL = TRUE, ignoreInit = TRUE
+    )
+
+    shiny::bindEvent(
+      observe({
+        repository <- get_repo()
+        if(is.null(repository)){ return(NULL) }
+        if(!length(repository$electrode_list)) { return(NULL) }
+        current_electrodes <- dipsaus::parse_svec(comp$current_value)
+        if(length(current_electrodes) || any(current_electrodes %in% repository$electrode_list)) {
+          elec <- current_electrodes[current_electrodes %in% repository$electrode_list]
+          elec <- elec[[1]]
+          idx <- which(repository$electrode_list == elec)
+          if(idx == length(repository$electrode_list)) {
+            idx <- 1
+          } else {
+            idx <- idx + 1
+          }
+          elec <- repository$electrode_list[[idx]]
+        } else {
+          elec <- repository$electrode_list[[1]]
+        }
+        shiny::updateSelectInput(
+          session = session, inputId = id,
+          selected = as.character(elec)
+        )
+      }),
+      comp$get_sub_element_input(btn_next_str),
+      ignoreNULL = TRUE, ignoreInit = TRUE
+    )
 
     comp$set_tool("reset", reset, server_needed = TRUE)
     comp$set_tool("initialize_with_new_data", function(){

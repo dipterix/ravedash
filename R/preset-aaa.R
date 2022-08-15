@@ -38,6 +38,8 @@
 #' filters or 'Wavelet'; default is both.
 #' @param gadgets gadget types to include; see \code{type} argument in function
 #' \code{\link{output_gadget}}
+#' @param start_simple whether to start in simple view and hide optional inputs
+#' @param multiple whether to allow multiple inputs
 #' @returns A \code{'RAVEShinyComponent'} instance.
 #' @seealso \code{\link{new_rave_shiny_component_container}}
 NULL

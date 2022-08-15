@@ -31,7 +31,9 @@ presets_analysis_electrode_selector2(
   label = "Select Electrodes",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
-  pipeline_repository = "repository"
+  pipeline_repository = "repository",
+  start_simple = FALSE,
+  multiple = TRUE
 )
 
 presets_analysis_ranges(
@@ -156,6 +158,10 @@ different to the default}
 repository from functions such as \code{\link[raveio]{prepare_subject_bare}},
 \code{\link[raveio]{prepare_subject_with_epoch}}, and
 \code{\link[raveio]{prepare_subject_power}}}
+
+\item{start_simple}{whether to start in simple view and hide optional inputs}
+
+\item{multiple}{whether to allow multiple inputs}
 
 \item{max_components}{maximum number of components for compound inputs}
 

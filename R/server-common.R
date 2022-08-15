@@ -317,7 +317,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     }),
     get_rave_event("run_analysis"),
     ignoreNULL = FALSE, ignoreInit = FALSE
-  ), millis = 300, priority = 99)
+  ), millis = 150, priority = 99)
 
   shiny::bindEvent(
     observe({
@@ -420,7 +420,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   watch_input_changed <- shiny::debounce(shiny::reactive({
     local_reactives$watch_input_changed
-  }), millis = 100, priority = 100)
+  }), millis = 70, priority = 100)
 
   run_analysis_onchange <- function(inputIds){
     logger("run_analysis_onchange", level = "trace")
