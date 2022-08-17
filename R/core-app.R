@@ -269,15 +269,159 @@ launch_session <- function(
     port <- NULL
   }
 
+  # Set up configuration file
+  profile_path <- file.path(x$app_path, "config.R")
+  s <- NULL
+  if(file.exists(profile_path)) {
+    # make sure of no syntax error
+    tryCatch({
+      s0 <- readLines(profile_path)
+      parse(text = s0)
+      s <- trimws(s0)
+    }, error = function(e) {
+      unlink(profile_path)
+      logger("Detected syntax error in `config.R`... Reset succeed.")
+    })
+  }
+  anchors <- c(
+    "## <<<< Start: RAVE Global Settings",
+    "## >>>> End: RAVE Global Settings"
+  )
+  start_idx <- which(s %in% anchors[[1]])
+  end_idx <- which(s %in% anchors[[2]])
+
+  need_insert <- TRUE
+  if(length(start_idx) && length(end_idx)) {
+    start_idx <- start_idx[[1]]
+    end_idx <- end_idx[[1]]
+    if(start_idx < end_idx) {
+      need_insert <- FALSE
+    }
+  }
+  if( need_insert ) {
+    s <- c(
+      s, anchors[[1]],
+      deparse1(bquote(options(
+        ravedash.logger.max_bytes = 52428800,
+        ravedash.logger.max_files = 10
+      ))),
+      anchors[[2]]
+    )
+    writeLines(s, con = profile_path)
+  }
+
+
+
   shidashi::render(
     root_path = x$app_path,
     port = port,
     host = host,
     launch_browser = options$launch_browser,
     as_job = options$as_job,
-    test_mode = isTRUE(options$test_mode)
+    test_mode = isTRUE(options$test_mode),
+    prelaunch_quoted = TRUE,
+    prelaunch = bquote({
+      local({
+        if(file.exists(.(profile_path))) {
+          source(.(profile_path), local = TRUE)
+        }
+        sess_info <- utils::capture.output({ print(utils::sessionInfo()) })
+        ravedash <- asNamespace("ravedash")
+        ravedash$set_logger_path(root_path = .(file.path(x$app_path, "logs")))
+        ravedash$logger_threshold(level = "trace", type = "file")
+        ravedash$logger(sprintf("Session path: %s", ravedash$current_session_path(.(x$app_path))))
+        ravedash$logger(c(
+          "Current session information: ", sess_info, ""
+        ), .sep = "\n")
+      })
+    })
   )
 
+}
+
+current_session_path <- local({
+  ravedash_path0 <- NULL
+  function(v) {
+    if(!missing(v)) {
+      ravedash_path0 <<- normalizePath(v, winslash = "/")
+    }
+    ravedash_path0
+  }
+})
+
+#' @title Create a random temporary file path for current session
+#' @param persist persist level, choices are \code{'app-session'},
+#' \code{'package-cache'}, and \code{'process'}; see 'Details'.
+#' 'RAVE' application session, default), \code{'package-cache'} (package-level
+#' cache directory)
+#' @param check whether to create the temporary directory
+#' @param pattern,fileext see \code{\link{tempfile}}
+#' @returns A file or a directory path to persist temporary data cache
+#' @details R default \code{\link{tempdir}} usually gets removed once the R
+#' process ends. This behavior might not meet all the needs for 'RAVE' modules.
+#' For example, some data are 'RAVE' session-based, like current or last visited
+#' subject, project, or state data (like bookmarks, configurations). This
+#' session-based information will be useful when launching the same 'RAVE'
+#' instance next time, hence should not be removed when users close R.
+#' Other data, such as subject-related, or package-related should last even
+#' longer. These types of data may be cache of subject power,
+#' package-generated color schemes, often irrelevant from R or 'RAVE' sessions,
+#' and can be shared across different 'RAVE' instances.
+#'
+#' The default scheme is \code{persist='process'}. Under this mode, this
+#' function behaves the same as \code{\link{tempfile}}. To store data in 'RAVE'
+#' session-based manner, please use \code{persist='app-session'}.
+#' The actual path will be inside of 'RAVE' session folder, hence this option
+#' is valid only if 'RAVE' instance is running. When
+#' 'RAVE' instance is not running, the result falls back to
+#' \code{persist='process'}. When \code{persist='process'},
+#' To cache larger and session-irrelevant data, use \code{'package-cache'}.
+#'
+#' The 'RAVE' session and package cache are not cleared even when R process
+#' ends. Users need to clean the data by themselves. See
+#' \code{\link{remove_session}} or \code{\link{remove_all_sessions}} about
+#' removing session-based folders, or
+#' \code{\link[raveio]{clear_cached_files}} to remove package-based cache.
+#'
+#' @examples
+#'
+#' temp_dir()
+#' temp_dir(persist = "package-cache")
+#'
+#' @export
+temp_file <- function(
+    pattern = "file",
+    fileext = "",
+    persist = c("process", "app-session", "package-cache")) {
+  persist <- match.arg(persist)
+  tempfile(tmpdir = temp_dir(persist = persist, check = TRUE),
+           pattern = pattern, fileext = fileext)
+}
+
+#' @rdname temp_file
+#' @export
+temp_dir <- function(
+    check = FALSE,
+    persist = c("process", "app-session", "package-cache")) {
+  persist <- match.arg(persist)
+  if(persist == "app-session") {
+    root <- current_session_path()
+    if(!length(root) || !dir.exists(root)) {
+      persist <- "process"
+    } else {
+      root <- file.path(root, "tmp")
+    }
+  }
+  if(persist == "package-cache") {
+    root <- file.path(raveio::cache_root(), "app_tmp")
+  }
+  if(persist == "process") {
+    root <- tempdir()
+  }
+  if(check && !dir.exists(root)) {
+    dir.create(root, showWarnings = FALSE, recursive = TRUE)
+  }
+  root
 }
 
 
