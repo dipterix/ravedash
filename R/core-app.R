@@ -413,8 +413,17 @@ temp_dir <- function(
   persist <- match.arg(persist)
   if(persist == "app-session") {
     root <- current_session_path()
-    if(!length(root) || !dir.exists(root)) {
-      persist <- "process"
+    if(!length(root) || is.na(root) || !dir.exists(root)) {
+      session_id <- Sys.getenv("RAVEDASH_SESSION_ID", unset = "")
+      if(isTRUE(is.character(session_id)) && nchar(session_id) > 0) {
+        try({
+          sess <- use_session(session_id)
+          root <- sess$app_path
+        }, silent = TRUE)
+      }
+      if(!length(root) || is.na(root) || !dir.exists(root)) {
+        persist <- "process"
+      }
     } else {
       root <- file.path(root, "tmp")
     }
