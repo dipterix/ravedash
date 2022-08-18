@@ -5,6 +5,8 @@
 \alias{new_session}
 \alias{use_session}
 \alias{launch_session}
+\alias{session_getopt}
+\alias{session_setopt}
 \alias{remove_session}
 \alias{remove_all_sessions}
 \alias{list_session}
@@ -22,6 +24,10 @@ launch_session(
   options = list(jupyter = TRUE, jupyter_port = NULL, as_job = TRUE, launch_browser =
     TRUE)
 )
+
+session_getopt(key, default = NA, namespace = "default")
+
+session_setopt(..., .list = NULL, namespace = "default")
 
 remove_session(x)
 
@@ -49,6 +55,16 @@ start_session(
 
 \item{options}{additional options, including \code{jupyter},
 \code{jupyter_port}, \code{as_job}, and \code{launch_browser}}
+
+\item{key}{character, the key of which the values should be obtained}
+
+\item{default}{default value if key is missing}
+
+\item{namespace}{namespace of the option; default is \code{'default'}}
+
+\item{..., .list}{named list of key-value pairs of session options. The
+keys must be characters, and values must be simple data types (such as
+numeric vectors, characters)}
 
 \item{path}{root path to store the sessions; default is the
 \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}}

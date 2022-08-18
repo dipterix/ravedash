@@ -56,6 +56,12 @@ ensure_template <- function(path, use_cache = TRUE){
 #' one, default is false
 #' @param order whether to order the session by date created; choices are
 #' \code{'none'} (default), \code{'ascend'}, \code{'descend'}
+#' @param key character, the key of which the values should be obtained
+#' @param default default value if key is missing
+#' @param namespace namespace of the option; default is \code{'default'}
+#' @param ...,.list named list of key-value pairs of session options. The
+#' keys must be characters, and values must be simple data types (such as
+#' numeric vectors, characters)
 #' @return
 #' \describe{
 #' \item{\code{new_session}}{returns a session object with character
@@ -325,6 +331,7 @@ launch_session <- function(
         if(file.exists(.(profile_path))) {
           source(.(profile_path), local = TRUE)
         }
+        Sys.setenv("RAVEDASH_SESSION_ID" = .(x$session_id))
         sess_info <- utils::capture.output({ print(utils::sessionInfo()) })
         ravedash <- asNamespace("ravedash")
         ravedash$set_logger_path(root_path = .(file.path(x$app_path, "logs")))
@@ -424,6 +431,81 @@ temp_dir <- function(
   root
 }
 
+session_config_path <- function(namespace = "default") {
+  namespace <- as.character(namespace)
+  if(length(namespace) != 1 || is.na(namespace) || namespace %in% c("/", ".", "..", "")) {
+    namespace <- "default"
+  }
+  fname <- sprintf("ravedash-session-config-%s.yaml", namespace)
+  root <- current_session_path()
+  if(length(root) == 1 && !is.na(root) && dir.exists(root)) {
+    return(file.path(temp_dir(persist = "app-session"), fname))
+  }
+  session_id <- Sys.getenv("RAVEDASH_SESSION_ID", unset = "")
+  if(isTRUE(is.character(session_id)) && nchar(session_id) > 0) {
+    try({
+      sess <- use_session(session_id)
+      return(file.path(sess$app_path, "tmp", fname))
+    }, silent = TRUE)
+  }
+  return(file.path(temp_dir(persist = "app-session"), fname))
+}
+
+#' @rdname rave-session
+#' @export
+session_getopt <- function(key, default = NA, namespace = "default") {
+
+  conf_path <- session_config_path(namespace = namespace)
+
+  map <- dipsaus::fastmap2()
+  if(file.exists(conf_path)) {
+    try(silent = TRUE, expr = {
+      raveio::load_yaml(conf_path, map = map)
+    })
+  }
+
+  if(missing(key)) {
+    return(map)
+  }
+  return(map$`@get`(key, missing = default))
+}
+
+#' @rdname rave-session
+#' @export
+session_setopt <- function(..., .list = NULL, namespace = "default") {
+
+  conf_path <- session_config_path(namespace = namespace)
+
+  new_map <- c(list(...), .list)
+
+  nms <- names(new_map)
+
+  if(!length(nms)) {
+    return(invisible(FALSE))
+  }
+  nms <- nms[!nms %in% ""]
+  if(!length(nms)) {
+    return(invisible(FALSE))
+  }
+
+  map <- session_getopt(namespace = namespace)
+  for(k in nms) {
+    map[[k]] <- new_map[[k]]
+  }
+
+  tfile <- tempfile()
+  on.exit({
+    unlink(tfile, force = TRUE)
+  })
+  raveio::dir_create2(dirname(tfile))
+  raveio::save_yaml(map, file = tfile)
+
+  raveio::dir_create2(dirname(conf_path))
+
+  file.copy(from = tfile, to = conf_path, overwrite = TRUE, recursive = FALSE)
+
+  return(invisible(TRUE))
+}
 
 #' @export
 `use_session.rave-dash-session` <- function(x) {
