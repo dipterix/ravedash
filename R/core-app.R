@@ -63,9 +63,6 @@ ensure_template <- function(path, use_cache = TRUE){
 #' @param ...,.list named list of key-value pairs of session options. The
 #' keys must be characters, and values must be simple data types (such as
 #' numeric vectors, characters)
-#' @param from_module which module to extract input settings
-#' @param project_varname,subject_varname variable names that should be
-#' extracted from the settings file
 #' @return
 #' \describe{
 #' \item{\code{new_session}}{returns a session object with character

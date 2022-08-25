@@ -219,6 +219,11 @@ existing references}
 
 \item{checks}{whether to check if subject has been applied with 'Notch'
 filters or 'Wavelet'; default is both.}
+
+\item{from_module}{which module to extract input settings}
+
+\item{project_varname, subject_varname}{variable names that should be
+extracted from the settings file}
 }
 \value{
 A \code{'RAVEShinyComponent'} instance.

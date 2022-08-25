@@ -32,6 +32,9 @@
 #' \code{'exclude'} mode, \code{settings_entries} will be excluded from the
 #' pipeline settings; in \code{'include'} mode, only \code{settings_entries}
 #' can be imported.
+#' @param from_module which module to extract input settings
+#' @param project_varname,subject_varname variable names that should be
+#' extracted from the settings file
 #' @param mode whether to create new reference, or simply to choose from
 #' existing references
 #' @param checks whether to check if subject has been applied with 'Notch'

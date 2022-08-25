@@ -90,11 +90,6 @@ true if 'RStudio' is detected; when running without 'RStudio', this option
 is always false}
 
 \item{launch_browser}{whether to launch browser, default is true}
-
-\item{from_module}{which module to extract input settings}
-
-\item{project_varname, subject_varname}{variable names that should be
-extracted from the settings file}
 }
 \value{
 \describe{
