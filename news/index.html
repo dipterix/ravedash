@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9009</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,8 @@
 <li>Added stand-alone viewer support, allowing almost any outputs to be displayed in another session in full-screen, and synchronized with the main session</li>
 <li>Added <code>register_output</code> to register outputs, and <code>get_output_options</code> to obtain render details. This replaces the shiny output assign and facilitates the stand-alone viewer</li>
 <li>Added <code>output_gadget</code> and <code>output_gadget_container</code> to display built-in gadgets to outputs, allowing users to download outputs, and to display them in stand-alone viewers; needs little extra setups, must be used with <code>register_output</code>
+</li>
+<li>Added session-level (application) temporary directory and files (see <code>temp_dir</code> and <code>temp_file</code>), based on the application-level storage, created <code>session_setopt</code> and <code>session_getopt</code>
 </li>
 </ul></div>
     <div class="section level2">

@@ -12,7 +12,7 @@ new_rave_shiny_component_container."><!-- mathjax --><script src="https://cdnjs.
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9009</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,7 @@ new_rave_shiny_component_container."><!-- mathjax --><script src="https://cdnjs.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Preset reusable front-end components for 'RAVE' modules</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dipterix/ravedash/blob/HEAD/R/preset-aaa.R" class="external-link"><code>R/preset-aaa.R</code></a>, <a href="https://github.com/dipterix/ravedash/blob/HEAD/R/preset-analysis-electrode.R" class="external-link"><code>R/preset-analysis-electrode.R</code></a>, <a href="https://github.com/dipterix/ravedash/blob/HEAD/R/preset-analysis-range.R" class="external-link"><code>R/preset-analysis-range.R</code></a>, and 12 more</small>
+      <small class="dont-index">Source: <a href="https://github.com/dipterix/ravedash/blob/HEAD/R/preset-aaa.R" class="external-link"><code>R/preset-aaa.R</code></a>, <a href="https://github.com/dipterix/ravedash/blob/HEAD/R/preset-analysis-electrode.R" class="external-link"><code>R/preset-analysis-electrode.R</code></a>, <a href="https://github.com/dipterix/ravedash/blob/HEAD/R/preset-analysis-range.R" class="external-link"><code>R/preset-analysis-range.R</code></a>, and 13 more</small>
       <div class="d-none name"><code>rave-ui-preset.Rd</code></div>
     </div>
 
@@ -173,6 +173,24 @@ new_rave_shiny_component_container."><!-- mathjax --><script src="https://cdnjs.
 <span>  label <span class="op">=</span> <span class="st">"Subject"</span>,</span>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  checks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"notch"</span>, <span class="st">"wavelet"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">presets_loader_subject_only</span><span class="op">(</span></span>
+<span>  id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
+<span>  varname <span class="op">=</span> <span class="st">"subject_code"</span>,</span>
+<span>  label <span class="op">=</span> <span class="st">"Subject"</span>,</span>
+<span>  multiple <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">presets_loader_sync_project_subject</span><span class="op">(</span></span>
+<span>  id <span class="op">=</span> <span class="st">"loader_sync_project_subject"</span>,</span>
+<span>  label <span class="op">=</span> <span class="st">"Sync subject from most recently loaded"</span>,</span>
+<span>  varname <span class="op">=</span> <span class="st">"loader_sync_project_subject"</span>,</span>
+<span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
+<span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
+<span>  from_module <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  project_varname <span class="op">=</span> <span class="st">"project_name"</span>,</span>
+<span>  subject_varname <span class="op">=</span> <span class="st">"subject_code"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
