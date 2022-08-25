@@ -6,7 +6,7 @@
 %   R/preset-import-setup-subject.R, R/preset-loader-3dviewer.R,
 %   R/preset-loader-electrode.R, R/preset-loader-epoch.R,
 %   R/preset-loader-project.R, R/preset-loader-reference.R,
-%   R/preset-loader-subject.R
+%   R/preset-loader-subject.R, R/preset-sync-settings.R
 \name{rave-ui-preset}
 \alias{rave-ui-preset}
 \alias{presets_analysis_electrode_selector2}
@@ -23,6 +23,8 @@
 \alias{presets_loader_project}
 \alias{presets_loader_reference}
 \alias{presets_loader_subject}
+\alias{presets_loader_subject_only}
+\alias{presets_loader_sync_project_subject}
 \title{Preset reusable front-end components for 'RAVE' modules}
 \usage{
 presets_analysis_electrode_selector2(
@@ -138,6 +140,24 @@ presets_loader_subject(
   label = "Subject",
   loader_project_id = "loader_project_name",
   checks = c("notch", "wavelet")
+)
+
+presets_loader_subject_only(
+  id = "loader_subject_code",
+  varname = "subject_code",
+  label = "Subject",
+  multiple = FALSE
+)
+
+presets_loader_sync_project_subject(
+  id = "loader_sync_project_subject",
+  label = "Sync subject from most recently loaded",
+  varname = "loader_sync_project_subject",
+  loader_project_id = "loader_project_name",
+  loader_subject_id = "loader_subject_code",
+  from_module = NULL,
+  project_varname = "project_name",
+  subject_varname = "subject_code"
 )
 }
 \arguments{

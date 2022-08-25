@@ -25,7 +25,7 @@ launch_session(
     TRUE)
 )
 
-session_getopt(key, default = NA, namespace = "default")
+session_getopt(keys, default = NA, namespace = "default")
 
 session_setopt(..., .list = NULL, namespace = "default")
 
@@ -56,7 +56,8 @@ start_session(
 \item{options}{additional options, including \code{jupyter},
 \code{jupyter_port}, \code{as_job}, and \code{launch_browser}}
 
-\item{key}{character, the key of which the values should be obtained}
+\item{keys}{vector of characters, one or more keys of which the values
+should be obtained}
 
 \item{default}{default value if key is missing}
 
@@ -89,6 +90,11 @@ true if 'RStudio' is detected; when running without 'RStudio', this option
 is always false}
 
 \item{launch_browser}{whether to launch browser, default is true}
+
+\item{from_module}{which module to extract input settings}
+
+\item{project_varname, subject_varname}{variable names that should be
+extracted from the settings file}
 }
 \value{
 \describe{

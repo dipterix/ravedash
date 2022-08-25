@@ -16,6 +16,9 @@ RAVEShinyComponent <- R6::R6Class(
 
       deps_has_validator <- FALSE
       for(dep in depends){
+        if(!inherits(dep, "RAVEShinyComponent")) {
+          next
+        }
         if(!dep$initialized){
           dep$server_func(input = input, output = output, session = session)
         }

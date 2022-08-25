@@ -114,3 +114,38 @@ presets_loader_subject <- function(
   comp
 
 }
+
+
+#' @rdname rave-ui-preset
+#' @export
+presets_loader_subject_only <- function(
+    id = "loader_subject_code",
+    varname = "subject_code",
+    label = "Subject",
+    multiple = FALSE
+){
+  force(multiple)
+  comp <- RAVEShinyComponent$new(id = id, varname = varname)
+
+  comp$ui_func <- function(id, value, depends){
+    choices <- list.dirs(raveio::raveio_getopt("raw_data_dir"),
+                         full.names = FALSE, recursive = FALSE)
+    choices <- choices[grepl("^[a-zA-Z][a-zA-Z0-9_-]{0,}$", choices)]
+
+    if(multiple) {
+      value <- value[value %in% choices]
+    } else {
+      value <- value %OF% choices
+    }
+
+    shiny::selectInput(
+      inputId = id,
+      label = label,
+      choices = choices,
+      selected = value,
+      multiple = multiple
+    )
+  }
+  comp
+}
+

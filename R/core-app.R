@@ -56,12 +56,16 @@ ensure_template <- function(path, use_cache = TRUE){
 #' one, default is false
 #' @param order whether to order the session by date created; choices are
 #' \code{'none'} (default), \code{'ascend'}, \code{'descend'}
-#' @param key character, the key of which the values should be obtained
+#' @param keys vector of characters, one or more keys of which the values
+#' should be obtained
 #' @param default default value if key is missing
 #' @param namespace namespace of the option; default is \code{'default'}
 #' @param ...,.list named list of key-value pairs of session options. The
 #' keys must be characters, and values must be simple data types (such as
 #' numeric vectors, characters)
+#' @param from_module which module to extract input settings
+#' @param project_varname,subject_varname variable names that should be
+#' extracted from the settings file
 #' @return
 #' \describe{
 #' \item{\code{new_session}}{returns a session object with character
@@ -462,7 +466,7 @@ session_config_path <- function(namespace = "default") {
 
 #' @rdname rave-session
 #' @export
-session_getopt <- function(key, default = NA, namespace = "default") {
+session_getopt <- function(keys, default = NA, namespace = "default") {
 
   conf_path <- session_config_path(namespace = namespace)
 
@@ -473,10 +477,13 @@ session_getopt <- function(key, default = NA, namespace = "default") {
     })
   }
 
-  if(missing(key)) {
+  if(missing(keys)) {
     return(map)
   }
-  return(map$`@get`(key, missing = default))
+  if(length(keys) <= 1) {
+    return(map$`@get`(keys, missing = default))
+  }
+  return(map$`@mget`(keys, missing = default))
 }
 
 #' @rdname rave-session
