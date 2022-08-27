@@ -55,6 +55,7 @@ presets_loader_sync_project_subject <- function(
           subject_code <- pipeline$get_settings(key = subject_varname, default = NULL)
         }
 
+
         if(
           inherits(loader_project, "RAVEShinyComponent") &&
           length(project_name) == 1 && !is.na(project_name) &&
@@ -72,9 +73,14 @@ presets_loader_sync_project_subject <- function(
           !is.na(subject_code) &&
           is.character(subject_code)
         ) {
+          # get all subjects
+          all_subcodes <- list.dirs(raveio::raveio_getopt("raw_data_dir"),
+                                    full.names = FALSE, recursive = FALSE)
+          all_subcodes <- all_subcodes[grepl("^[a-zA-Z0-9]", all_subcodes)]
           shiny::updateSelectInput(
             session = session,
             inputId = loader_subject$get_sub_element_id(),
+            choices = all_subcodes,
             selected = subject_code
           )
         }
