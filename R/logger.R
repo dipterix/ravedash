@@ -27,6 +27,8 @@
 #' \code{'file'} or \code{'both'}. Default log level is \code{'info'} on
 #' console and \code{'debug'} on file.
 #' @param cond condition to log
+#' @param class 'HTML' class to use
+#' @param session shiny session
 #' @return The message without time-stamps
 #'
 #' @examples
@@ -600,3 +602,24 @@ logger_error_condition <- function(cond, level = "error"){
   }
 }
 
+#' @rdname logger
+#' @export
+error_notification <- function(
+    cond, class = "error_notif",
+    session = shiny::getDefaultReactiveDomain()
+) {
+  if(!inherits(cond, "condition")) {
+    cond <- simpleError(message = cond$message)
+  }
+  logger_error_condition(cond = cond)
+  shidashi::show_notification(
+    session = session,
+    message = cond$message,
+    title = "Error found!",
+    type = "danger",
+    close = TRUE,
+    autohide = TRUE, delay = 30000,
+    class = session$ns("error_notif"),
+    collapse = "\n"
+  )
+}

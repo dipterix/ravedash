@@ -5,6 +5,7 @@
 \alias{set_logger_path}
 \alias{logger_threshold}
 \alias{logger_error_condition}
+\alias{error_notification}
 \title{Logger system used by 'RAVE'}
 \usage{
 logger(
@@ -26,6 +27,12 @@ logger_threshold(
 )
 
 logger_error_condition(cond, level = "error")
+
+error_notification(
+  cond,
+  class = "error_notif",
+  session = shiny::getDefaultReactiveDomain()
+)
 }
 \arguments{
 \item{..., .envir, .sep}{passed to \code{\link[raveio]{glue}}, if
@@ -64,6 +71,10 @@ if file log is enabled through \code{set_logger_path}, \code{type} could be
 console and \code{'debug'} on file.}
 
 \item{cond}{condition to log}
+
+\item{class}{'HTML' class to use}
+
+\item{session}{shiny session}
 }
 \value{
 The message without time-stamps
