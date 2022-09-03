@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9012</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,9 +79,15 @@
 <span></span>
 <span><span class="fu">error_notification</span><span class="op">(</span></span>
 <span>  <span class="va">cond</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Error found!"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"danger"</span>,</span>
 <span>  class <span class="op">=</span> <span class="st">"error_notif"</span>,</span>
+<span>  delay <span class="op">=</span> <span class="fl">30000</span>,</span>
+<span>  autohide <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  session <span class="op">=</span> <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/domains.html" class="external-link">getDefaultReactiveDomain</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">with_error_notification</span><span class="op">(</span><span class="va">expr</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span>, quoted <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -145,12 +151,24 @@ console and <code>'debug'</code> on file.</p></dd>
 <dd><p>condition to log</p></dd>
 
 
-<dt>class</dt>
-<dd><p>'HTML' class to use</p></dd>
+<dt>class, title, delay, autohide</dt>
+<dd><p>passed to <code><a href="http://dipterix.org/shidashi/reference/notification.html" class="external-link">show_notification</a></code></p></dd>
 
 
 <dt>session</dt>
 <dd><p>shiny session</p></dd>
+
+
+<dt>expr</dt>
+<dd><p>expression to evaluate</p></dd>
+
+
+<dt>envir</dt>
+<dd><p>environment to evaluate <code>expr</code></p></dd>
+
+
+<dt>quoted</dt>
+<dd><p>whether <code>expr</code> is quoted; default is false</p></dd>
 
 </dl></div>
     <div class="section level2">
