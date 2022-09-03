@@ -9,8 +9,9 @@ run_analysis_button(
   icon = NULL,
   width = NULL,
   type = "primary",
-  btn_type = "button",
+  btn_type = c("button", "link"),
   class = "",
+  style = "",
   ...
 )
 }
@@ -19,9 +20,11 @@ run_analysis_button(
 
 \item{icon}{icon before the label}
 
-\item{width, btn_type, class, ...}{passed to 'HTML' \code{button} tag}
+\item{width, class, style, ...}{passed to 'HTML' tag}
 
 \item{type}{used to calculate \code{class}}
+
+\item{btn_type}{button style, choices are \code{'button'} or \code{'link'}}
 }
 \value{
 A 'HTML' button tag

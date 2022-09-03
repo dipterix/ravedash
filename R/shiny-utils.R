@@ -727,32 +727,51 @@ get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
 #' @param label label to display
 #' @param icon icon before the label
 #' @param type used to calculate \code{class}
-#' @param width,btn_type,class,... passed to 'HTML' \code{button} tag
+#' @param btn_type button style, choices are \code{'button'} or \code{'link'}
+#' @param width,class,style,... passed to 'HTML' tag
 #' @return A 'HTML' button tag
 #' @export
-run_analysis_button <- function(label = "Run analysis (Ctrl+Enter)",
-                                icon = NULL, width = NULL, type = "primary",
-                                btn_type = "button", class = "", ...){
+run_analysis_button <- function(
+    label = "Run analysis (Ctrl+Enter)",
+    icon = NULL, width = NULL, type = "primary",
+    btn_type = c("button", "link"), class = "", style = "", ...){
   if (length(type) > 1) {
     type <- type[[1]]
   }
-  stopifnot2(length(type) == 0 || type[[1]] %in% c("default",
-                                                   "primary", "info", "success", "warning", "danger"), msg = "type must be in 'default', 'primary', 'info', 'success', 'warning', 'danger'")
 
   args <- list(...)
-  style <- c(args[["style"]], "")[[1]]
   width <- c(width, "auto")[[1]]
   style <- paste0("width: ", shiny::validateCssUnit(width),
                   ";", style)
-  class <- dipsaus::combine_html_class(
-    sprintf("btn btn-%s rave-button %s", type, class))
 
-  shiny::tags$button(
-    class = class,
-    style = style,
-    type = btn_type,
-    "rave-action" = '{"type": "run_analysis"}',
-    list(shidashi::as_icon(icon), label),
-    ...
-  )
+  btn_type <- match.arg(btn_type)
+
+  if(btn_type == "button") {
+    stopifnot2(length(type) == 0 || type[[1]] %in% c("default",
+                                                     "primary", "info", "success", "warning", "danger"), msg = "type must be in 'default', 'primary', 'info', 'success', 'warning', 'danger'")
+    class <- dipsaus::combine_html_class(
+      sprintf("btn btn-%s rave-button %s", type, class))
+
+    shiny::tags$button(
+      class = class,
+      style = style,
+      type = "button",
+      "rave-action" = '{"type": "run_analysis"}',
+      list(shidashi::as_icon(icon), label),
+      ...
+    )
+  } else {
+
+    class <- dipsaus::combine_html_class("rave-button", class)
+    shiny::tags$a(
+      href = "#",
+      class = class,
+      style = style,
+      "rave-action" = '{"type": "run_analysis"}',
+      ...,
+      list(label, shidashi::as_icon(icon))
+    )
+  }
+
+
 }
