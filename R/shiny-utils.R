@@ -522,6 +522,8 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' @param label run-analysis button label; default is \code{"Run Analysis"}
 #' @param auto_recalculation whether to show the automatic calculation button;
 #' default is true
+#' @param class additional class for the footer
+#' @param style additional style for the footer
 #' @return 'HTML' tags
 #'
 #' @examples
@@ -556,11 +558,14 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' }
 #'
 #' @export
-ravedash_footer <- function(module_id = NULL, label = "Run Analysis",
-                            auto_recalculation = TRUE){
+ravedash_footer <- function(
+    module_id = NULL, label = "Run Analysis",
+    auto_recalculation = TRUE, class = NULL, style = NULL
+){
   ns <- shiny::NS(module_id)
   shiny::div(
-    class = "ravedash-back-to-top ravedash-footer",
+    class = dipsaus::combine_html_class("ravedash-back-to-top ravedash-footer", class),
+    style = style,
     shiny::div(
       class = "btn-group dropup",
       role="group",

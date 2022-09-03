@@ -6,6 +6,7 @@
 \alias{logger_threshold}
 \alias{logger_error_condition}
 \alias{error_notification}
+\alias{with_error_notification}
 \title{Logger system used by 'RAVE'}
 \usage{
 logger(
@@ -30,9 +31,15 @@ logger_error_condition(cond, level = "error")
 
 error_notification(
   cond,
+  title = "Error found!",
+  type = "danger",
   class = "error_notif",
+  delay = 30000,
+  autohide = TRUE,
   session = shiny::getDefaultReactiveDomain()
 )
+
+with_error_notification(expr, envir = parent.frame(), quoted = FALSE, ...)
 }
 \arguments{
 \item{..., .envir, .sep}{passed to \code{\link[raveio]{glue}}, if
@@ -72,9 +79,15 @@ console and \code{'debug'} on file.}
 
 \item{cond}{condition to log}
 
-\item{class}{'HTML' class to use}
+\item{class, title, delay, autohide}{passed to \code{\link[shidashi]{show_notification}}}
 
 \item{session}{shiny session}
+
+\item{expr}{expression to evaluate}
+
+\item{envir}{environment to evaluate \code{expr}}
+
+\item{quoted}{whether \code{expr} is quoted; default is false}
 }
 \value{
 The message without time-stamps

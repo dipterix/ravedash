@@ -7,7 +7,9 @@
 ravedash_footer(
   module_id = NULL,
   label = "Run Analysis",
-  auto_recalculation = TRUE
+  auto_recalculation = TRUE,
+  class = NULL,
+  style = NULL
 )
 }
 \arguments{
@@ -17,6 +19,10 @@ ravedash_footer(
 
 \item{auto_recalculation}{whether to show the automatic calculation button;
 default is true}
+
+\item{class}{additional class for the footer}
+
+\item{style}{additional style for the footer}
 }
 \value{
 'HTML' tags

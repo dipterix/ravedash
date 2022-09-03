@@ -27,8 +27,11 @@
 #' \code{'file'} or \code{'both'}. Default log level is \code{'info'} on
 #' console and \code{'debug'} on file.
 #' @param cond condition to log
-#' @param class 'HTML' class to use
+#' @param class,title,delay,autohide passed to \code{\link[shidashi]{show_notification}}
 #' @param session shiny session
+#' @param expr expression to evaluate
+#' @param envir environment to evaluate \code{expr}
+#' @param quoted whether \code{expr} is quoted; default is false
 #' @return The message without time-stamps
 #'
 #' @examples
@@ -605,21 +608,45 @@ logger_error_condition <- function(cond, level = "error"){
 #' @rdname logger
 #' @export
 error_notification <- function(
-    cond, class = "error_notif",
+    cond, title = "Error found!", type = "danger",
+    class = "error_notif", delay = 30000, autohide = TRUE,
     session = shiny::getDefaultReactiveDomain()
 ) {
   if(!inherits(cond, "condition")) {
     cond <- simpleError(message = cond$message)
   }
   logger_error_condition(cond = cond)
-  shidashi::show_notification(
-    session = session,
-    message = cond$message,
-    title = "Error found!",
-    type = "danger",
-    close = TRUE,
-    autohide = TRUE, delay = 30000,
-    class = session$ns("error_notif"),
-    collapse = "\n"
-  )
+  if(!is.null(session)) {
+    shidashi::show_notification(
+      session = session,
+      message = cond$message,
+      title = title,
+      type = type,
+      close = TRUE,
+      autohide = autohide, delay = delay,
+      class = session$ns("error_notif"),
+      collapse = "\n"
+    )
+  }
+}
+
+#' @rdname logger
+#' @export
+with_error_notification <- function(
+  expr, envir = parent.frame(), quoted = FALSE, ...
+) {
+  if(!quoted) {
+    expr <- substitute(expr)
+  }
+
+  args <- list(...)
+
+  tryCatch({
+    force(envir)
+    eval(expr, envir = envir)
+  }, error = function(e) {
+    args$cond = e
+    do.call(error_notification, args)
+    e
+  })
 }
