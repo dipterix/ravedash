@@ -65,8 +65,9 @@ see also <code><a href="rave-runtime-events.html">get_rave_event</a></code></p>
 <span>  icon <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"primary"</span>,</span>
-<span>  btn_type <span class="op">=</span> <span class="st">"button"</span>,</span>
+<span>  btn_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"button"</span>, <span class="st">"link"</span><span class="op">)</span>,</span>
 <span>  class <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  style <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -81,12 +82,16 @@ see also <code><a href="rave-runtime-events.html">get_rave_event</a></code></p>
 <dd><p>icon before the label</p></dd>
 
 
-<dt>width, btn_type, class, ...</dt>
-<dd><p>passed to 'HTML' <code>button</code> tag</p></dd>
+<dt>width, class, style, ...</dt>
+<dd><p>passed to 'HTML' tag</p></dd>
 
 
 <dt>type</dt>
 <dd><p>used to calculate <code>class</code></p></dd>
+
+
+<dt>btn_type</dt>
+<dd><p>button style, choices are <code>'button'</code> or <code>'link'</code></p></dd>
 
 </dl></div>
     <div class="section level2">
