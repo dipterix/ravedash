@@ -583,7 +583,7 @@ ravedash_footer <- function(
       ),
       shiny::tags$button(
         type="button",
-        class="btn btn-default border-right-1 border-left-1 rave-button",
+        class="btn btn-default border-right-1 border-left-1 rave-button rave-button-autorecalculate",
         `data-toggle` = "tooltip",
         title = "Keyboard shortcut: CTRL+Enter / Command+Return (OSX)",
         `rave-action` = '{"type": "run_analysis"}',
