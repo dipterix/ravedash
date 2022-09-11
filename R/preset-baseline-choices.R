@@ -54,7 +54,7 @@ presets_baseline_choices <- function(
 
   comp$ui_func <- function(id, value, depends){
 
-    ravedash::input_card(
+    input_card(
       class_header = "shidashi-anchor",
       title = label,
       class_body = "padding-5",

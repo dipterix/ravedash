@@ -48,7 +48,7 @@ presets_condition_groups <- function(
 
   comp$ui_func <- function(id, value, depends){
 
-    ravedash::input_card(
+    input_card(
       class_header = "shidashi-anchor",
       title = label,
       href = card_href(label, module_id = comp$container$module_id),

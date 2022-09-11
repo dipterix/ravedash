@@ -18,6 +18,7 @@
 \alias{presets_import_setup_channels}
 \alias{presets_import_setup_native}
 \alias{presets_loader_3dviewer}
+\alias{presets_loader_3dviewer2}
 \alias{presets_loader_electrodes}
 \alias{presets_loader_epoch}
 \alias{presets_loader_project}
@@ -99,6 +100,15 @@ presets_loader_3dviewer(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
+  loader_electrodes_id = "loader_electrode_text",
+  gadgets = c("standalone", "download")
+)
+
+presets_loader_3dviewer2(
+  id = "loader_3d_viewer",
+  height = "600px",
+  loader_project_id = "loader_project_name",
+  loader_subject_id = "loader_subject_code",
   loader_electrodes_id = "loader_electrode_text",
   gadgets = c("standalone", "download")
 )
