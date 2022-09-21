@@ -37,7 +37,7 @@ list_session(path = session_root(), order = c("none", "ascend", "descend"))
 
 start_session(
   session,
-  new = FALSE,
+  new = NA,
   host = "127.0.0.1",
   port = NULL,
   jupyter = NA,

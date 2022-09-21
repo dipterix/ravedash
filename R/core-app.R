@@ -613,11 +613,12 @@ list_session <- function(path = session_root(), order = c("none", "ascend", "des
 
 #' @rdname rave-session
 #' @export
-start_session <- function(session, new = FALSE, host = "127.0.0.1", port = NULL,
+start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
                           jupyter = NA, jupyter_port = NULL, as_job = TRUE,
                           launch_browser = TRUE) {
+
   if(!missing(session) && length(session)) {
-    if(new) {
+    if(isTRUE(new)) {
       stop("`start_session`: Please leave `session` blank or NULL if you want to create a new session (new=TRUE).")
     }
     if(!inherits(session, "rave-dash-session")) {
@@ -631,17 +632,36 @@ start_session <- function(session, new = FALSE, host = "127.0.0.1", port = NULL,
         stop(sprintf("`start_session`: Session [%s] cannot be found.", session))
       })
     }
-  } else if(new){
+  } else if(isTRUE(new)) {
     session <- new_session()
   } else {
     # find existing session (most recent)
     all_sessions <- list_session(order = "descend")
-    if(length(all_sessions)) {
-      session <- all_sessions[[1]]
-    } else {
+    if(!length(all_sessions)) {
       # start a new session
       session <- new_session()
+    } else {
+      session <- all_sessions[[1]]
+
+      if(is.na(new)) {
+        # try to guess
+        tryCatch({
+          last_updated <- file.path(R_user_dir(package = "ravemanager", which = "config"), "last_updates", "rave-family")
+          if(file.exists(last_updated)) {
+            last_updated <- readLines(last_updated, n = 1L)
+            last_updated <- as.POSIXlt(last_updated)
+            session_created <- strptime(substr(session$session_id, start = 9, 21), "%y%m%d-%H%M%S")
+            if( last_updated > session_created ) {
+              # RAVE dash just got updated
+              # start a new session
+              session <- new_session()
+            }
+          }
+        }, error = function(e){ NULL })
+      }
+
     }
+
   }
 
   rs_available <- dipsaus::rs_avail(child_ok = TRUE, shiny_ok = TRUE)
