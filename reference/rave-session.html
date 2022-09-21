@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9014</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9015</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,6 +88,11 @@
 <span>  jupyter_port <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  as_job <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">shutdown_session</span><span class="op">(</span></span>
+<span>  returnValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  session <span class="op">=</span> <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/domains.html" class="external-link">getDefaultReactiveDomain</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -167,6 +172,10 @@ is always false</p></dd>
 
 <dt>launch_browser</dt>
 <dd><p>whether to launch browser, default is true</p></dd>
+
+
+<dt>returnValue</dt>
+<dd><p>passed to <code><a href="https://rdrr.io/pkg/shiny/man/stopApp.html" class="external-link">stopApp</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
