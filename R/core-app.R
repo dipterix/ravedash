@@ -63,6 +63,7 @@ ensure_template <- function(path, use_cache = TRUE){
 #' @param ...,.list named list of key-value pairs of session options. The
 #' keys must be characters, and values must be simple data types (such as
 #' numeric vectors, characters)
+#' @param returnValue passed to \code{\link[shiny]{stopApp}}
 #' @return
 #' \describe{
 #' \item{\code{new_session}}{returns a session object with character
@@ -698,4 +699,15 @@ start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
       launch_browser = launch_browser
     )))
   }
+}
+
+#' @rdname rave-session
+#' @export
+shutdown_session <- function(
+    returnValue = invisible(),
+    session = shiny::getDefaultReactiveDomain()
+) {
+  if(is.null(session)) { return() }
+  session$sendCustomMessage("shidashi.shutdown_session", message = list())
+  shiny::stopApp(returnValue = returnValue)
 }

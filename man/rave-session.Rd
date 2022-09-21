@@ -11,6 +11,7 @@
 \alias{remove_all_sessions}
 \alias{list_session}
 \alias{start_session}
+\alias{shutdown_session}
 \title{Create, register, list, and remove 'RAVE' sessions}
 \usage{
 new_session(update = FALSE)
@@ -44,6 +45,11 @@ start_session(
   jupyter_port = NULL,
   as_job = TRUE,
   launch_browser = TRUE
+)
+
+shutdown_session(
+  returnValue = invisible(),
+  session = shiny::getDefaultReactiveDomain()
 )
 }
 \arguments{
@@ -90,6 +96,8 @@ true if 'RStudio' is detected; when running without 'RStudio', this option
 is always false}
 
 \item{launch_browser}{whether to launch browser, default is true}
+
+\item{returnValue}{passed to \code{\link[shiny]{stopApp}}}
 }
 \value{
 \describe{
