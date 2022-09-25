@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9015</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9016</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 <span>  host <span class="op">=</span> <span class="st">"127.0.0.1"</span>,</span>
 <span>  port <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>jupyter <span class="op">=</span> <span class="cn">TRUE</span>, jupyter_port <span class="op">=</span> <span class="cn">NULL</span>, as_job <span class="op">=</span> <span class="cn">TRUE</span>, launch_browser <span class="op">=</span></span>
-<span>    <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>    <span class="cn">TRUE</span>, single_session <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">session_getopt</span><span class="op">(</span><span class="va">keys</span>, default <span class="op">=</span> <span class="cn">NA</span>, namespace <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span></span>
@@ -87,7 +87,8 @@
 <span>  jupyter <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  jupyter_port <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  as_job <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  single_session <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">shutdown_session</span><span class="op">(</span></span>
@@ -172,6 +173,12 @@ is always false</p></dd>
 
 <dt>launch_browser</dt>
 <dd><p>whether to launch browser, default is true</p></dd>
+
+
+<dt>single_session</dt>
+<dd><p>whether to enable single-session mode. Under this
+mode, closing the main frame will terminate 'RAVE' run-time session,
+otherwise the 'RAVE' instance will still open in the background</p></dd>
 
 
 <dt>returnValue</dt>
