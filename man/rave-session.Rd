@@ -23,7 +23,7 @@ launch_session(
   host = "127.0.0.1",
   port = NULL,
   options = list(jupyter = TRUE, jupyter_port = NULL, as_job = TRUE, launch_browser =
-    TRUE)
+    TRUE, single_session = FALSE)
 )
 
 session_getopt(keys, default = NA, namespace = "default")
@@ -44,7 +44,8 @@ start_session(
   jupyter = NA,
   jupyter_port = NULL,
   as_job = TRUE,
-  launch_browser = TRUE
+  launch_browser = TRUE,
+  single_session = FALSE
 )
 
 shutdown_session(
@@ -96,6 +97,10 @@ true if 'RStudio' is detected; when running without 'RStudio', this option
 is always false}
 
 \item{launch_browser}{whether to launch browser, default is true}
+
+\item{single_session}{whether to enable single-session mode. Under this
+mode, closing the main frame will terminate 'RAVE' run-time session,
+otherwise the 'RAVE' instance will still open in the background}
 
 \item{returnValue}{passed to \code{\link[shiny]{stopApp}}}
 }

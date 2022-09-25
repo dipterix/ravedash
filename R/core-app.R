@@ -52,6 +52,9 @@ ensure_template <- function(path, use_cache = TRUE){
 #' true if 'RStudio' is detected; when running without 'RStudio', this option
 #' is always false
 #' @param launch_browser whether to launch browser, default is true
+#' @param single_session whether to enable single-session mode. Under this
+#' mode, closing the main frame will terminate 'RAVE' run-time session,
+#' otherwise the 'RAVE' instance will still open in the background
 #' @param new whether to create a new session instead of using the most recent
 #' one, default is false
 #' @param order whether to order the session by date created; choices are
@@ -226,7 +229,8 @@ launch_session <- function(
       jupyter = TRUE,
       jupyter_port = NULL,
       as_job = TRUE,
-      launch_browser = TRUE
+      launch_browser = TRUE,
+      single_session = FALSE
     )) {
   sess <- use_session(x)
 
@@ -234,7 +238,8 @@ launch_session <- function(
     jupyter = TRUE,
     jupyter_port = NULL,
     as_job = TRUE,
-    launch_browser = TRUE
+    launch_browser = TRUE,
+    single_session = FALSE
   )
 
   for(nm in names(options)) {
@@ -334,6 +339,8 @@ launch_session <- function(
           source(.(profile_path), local = TRUE)
         }
         Sys.setenv("RAVEDASH_SESSION_ID" = .(x$session_id))
+        options("ravedash.single.session" = .(!isFALSE(options$single_session)))
+        options("shiny.useragg" = FALSE)
         sess_info <- utils::capture.output({ print(utils::sessionInfo()) })
         ravedash <- asNamespace("ravedash")
         ravedash$set_logger_path(root_path = .(file.path(x$app_path, "logs")))
@@ -616,7 +623,7 @@ list_session <- function(path = session_root(), order = c("none", "ascend", "des
 #' @export
 start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
                           jupyter = NA, jupyter_port = NULL, as_job = TRUE,
-                          launch_browser = TRUE) {
+                          launch_browser = TRUE, single_session = FALSE) {
 
   if(!missing(session) && length(session)) {
     if(isTRUE(new)) {
@@ -681,7 +688,8 @@ start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
       jupyter = jupyter,
       jupyter_port = jupyter_port,
       as_job = as_job,
-      launch_browser = launch_browser
+      launch_browser = launch_browser,
+      single_session = single_session
     ))
     if(as_job) {
       logger("RAVE application [{session$session_id}] has been launched. Detailed information has been printed out in the `jobs` panel.", level = "info", use_glue = TRUE, .trim = FALSE)
@@ -696,7 +704,8 @@ start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
       jupyter = jupyter,
       jupyter_port = jupyter_port,
       as_job = as_job,
-      launch_browser = launch_browser
+      launch_browser = launch_browser,
+      single_session = single_session
     )))
   }
 }
@@ -707,7 +716,8 @@ shutdown_session <- function(
     returnValue = invisible(),
     session = shiny::getDefaultReactiveDomain()
 ) {
-  if(is.null(session)) { return() }
-  session$sendCustomMessage("shidashi.shutdown_session", message = list())
+  if(!is.null(session)) {
+    session$sendCustomMessage("shidashi.shutdown_session", message = list())
+  }
   shiny::stopApp(returnValue = returnValue)
 }
