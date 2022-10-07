@@ -310,7 +310,7 @@ presets_import_setup_channels <- function(
             tryCatch({
               brfile <- raveio::BlackrockFile$new(
                 path = file.path(preproc$raw_path, blocks[[1]], electrode_file[[1]]),
-                block = blocks[[1]]
+                block = blocks[[1]], nev_data = FALSE
               )
               elec_table <- brfile$electrode_table
               duration <- brfile$recording_duration
@@ -461,6 +461,16 @@ presets_import_setup_channels <- function(
         settings$skip_validation <- skip_validation
         raveio::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
 
+        dipsaus::shiny_alert2(
+          title = "Validating...",
+          text = "Validating the input data... (some might take a while)",
+          auto_close = FALSE, buttons = FALSE, icon = "info"
+        )
+        on.exit({
+          Sys.sleep(time = 0.5)
+          dipsaus::close_alert2()
+        }, add = TRUE)
+
         result <- raveio::pipeline_run(
           names = "validation_result",
           pipe_dir = comp$container$pipeline_path,
@@ -473,6 +483,9 @@ presets_import_setup_channels <- function(
           var_names = "validation_result",
           pipe_dir = comp$container$pipeline_path
         )
+
+        Sys.sleep(time = 0.5)
+        dipsaus::close_alert2()
 
         if(isFALSE(validation_result)) {
           reasons <- attr(validation_result,"reason")
@@ -618,7 +631,7 @@ presets_import_setup_channels <- function(
 
         dipsaus::shiny_alert2(
           title = "Importing in progress",
-          text = "It's time to stand up and stretch yourself. I will finish my job pretty soon (maybe)...",
+          text = "It's time to stand up and stretch yourself...",
           icon = "info",
           auto_close = FALSE,
           danger_mode = FALSE,
