@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9017</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,17 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="ravedash-012">ravedash 0.1.2<a class="anchor" aria-label="anchor" href="#ravedash-012"></a></h2>
-<ul><li>Added <code>start_session</code> to start a new/existing session with one function</li>
+<ul><li>Added presets to support importing <code>.nev</code> files with the most recent <code>raveio</code> updates</li>
+<li>Added shutdown function to allow users to shutdown instances from the interface, and added single-session mode to automatically shutdown the server once the session window is closed</li>
+<li>Fixed loader brain not updating issue when electrode table is empty</li>
+<li>Allowed run-analysis button to be placed on bottom-left with additional styles</li>
+<li>Added <code>error_notification</code> and <code>with_error_notification</code> to easily display error messages to the dashboard</li>
+<li>Allows modules to create session-based temporary files and options (experimental)</li>
+<li>Shorten response time needed to fire analysis event</li>
+<li>Moved <code>htmltools</code> to suggests</li>
+<li>Included free version of <code>fontawesome</code> into the build to avoid further changes</li>
+<li>Replaced <code>pickerInput</code> with native <code>selectInput</code> in condition builder</li>
+<li>Added <code>start_session</code> to start a new/existing session with one function</li>
 <li>Added stand-alone viewer support, allowing almost any outputs to be displayed in another session in full-screen, and synchronized with the main session</li>
 <li>Added <code>register_output</code> to register outputs, and <code>get_output_options</code> to obtain render details. This replaces the shiny output assign and facilitates the stand-alone viewer</li>
 <li>Added <code>output_gadget</code> and <code>output_gadget_container</code> to display built-in gadgets to outputs, allowing users to download outputs, and to display them in stand-alone viewers; needs little extra setups, must be used with <code>register_output</code>
