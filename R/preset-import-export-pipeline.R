@@ -35,7 +35,7 @@ presets_import_export_subject_pipeline <- function(
     } else {
       repository <- comp$container$data[[pipeline_repository]]
     }
-    if(!inherits(repository, "rave_prepare_subject")) {
+    if(!inherits(repository, "rave_repository")) {
       return(NULL)
     }
     repository
@@ -187,7 +187,7 @@ presets_import_export_subject_pipeline <- function(
       observe({
         tryCatch({
           repository <- get_repo()
-          if(inherits(repository, "rave_prepare_subject")){
+          if(inherits(repository, "rave_repository")){
             project <- repository$project
             subject_code <- repository$subject$subject_code
           } else {
@@ -275,7 +275,7 @@ presets_import_export_subject_pipeline <- function(
         subject_code <- comp$get_sub_element_input("load_subject")
 
         repository <- get_repo()
-        if(inherits(repository, "rave_prepare_subject")){
+        if(inherits(repository, "rave_repository")){
           project <- repository$project
           project_name <- project$name
         } else {
@@ -331,7 +331,7 @@ presets_import_export_subject_pipeline <- function(
           name <- comp$get_sub_element_input("load_name")
 
           repository <- get_repo()
-          if(inherits(repository, "rave_prepare_subject")){
+          if(inherits(repository, "rave_repository")){
             project <- repository$project
             project_name <- project$name
             subject <- repository$subject
@@ -440,7 +440,7 @@ presets_import_export_subject_pipeline <- function(
           remote_subject_code <- comp$get_sub_element_input("load_subject")
           name <- comp$get_sub_element_input("load_name")
           repository <- get_repo()
-          if(inherits(repository, "rave_prepare_subject")){
+          if(inherits(repository, "rave_repository")){
             project <- repository$project
             project_name <- project$name
             subject <- repository$subject

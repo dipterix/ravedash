@@ -645,7 +645,7 @@ with_error_notification <- function(
     force(envir)
     eval(expr, envir = envir)
   }, error = function(e) {
-    args$cond = e
+    args$cond <- e
     do.call(error_notification, args)
     e
   })

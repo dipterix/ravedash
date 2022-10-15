@@ -35,7 +35,7 @@ presets_analysis_electrode_selector2 <- function(
     } else {
       repository <- comp$container$data[[pipeline_repository]]
     }
-    if(!inherits(repository, "rave_prepare_subject")) {
+    if(!inherits(repository, "rave_repository")) {
       return(NULL)
     }
     repository
@@ -43,7 +43,7 @@ presets_analysis_electrode_selector2 <- function(
 
   get_subject <- function(){
     repo <- get_repo()
-    if(inherits(repo, "rave_prepare_subject")) {
+    if(inherits(repo, "rave_repository")) {
       subject <- repo$subject
       return(subject)
     }

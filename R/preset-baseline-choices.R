@@ -32,7 +32,7 @@ presets_baseline_choices <- function(
     } else {
       repository <- comp$container$data[[pipeline_repository]]
     }
-    if(!inherits(repository, "rave_prepare_subject")) {
+    if(!inherits(repository, "rave_repository")) {
       return(NULL)
     }
     repository
@@ -41,7 +41,7 @@ presets_baseline_choices <- function(
   get_default <- function(sub_id, missing = NULL, use_cache = TRUE, constraint = NULL) {
     vname <- comp$get_sub_element_varnames(sub_id)
     repo <- get_repo()
-    if(inherits(repo, "rave_prepare_subject")) {
+    if(inherits(repo, "rave_repository")) {
       subject <- repo$subject
       missing <- subject$get_default(vname,
                                      default_if_missing = missing, simplify = TRUE)

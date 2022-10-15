@@ -107,7 +107,7 @@ RAVEShinyComponent <- R6::R6Class(
 
     get_subject = function(){
       repo <- self$get_repository()
-      if(inherits(repo, "rave_prepare_subject")) {
+      if(inherits(repo, "rave_repository")) {
         subject <- repo$subject
         return(subject)
       }
