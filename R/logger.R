@@ -380,7 +380,8 @@ abbr_module_id <- function(module_id, ...){
     registered <- namespace %in% logger_data$registered_namespaces
     if(!registered){
       logger_data$registered_namespaces <- c(logger_data$registered_namespaces, namespace)
-      logger::log_formatter(logger::formatter_paste, namespace = namespace)
+      logger::log_formatter(logger::formatter_paste, namespace = namespace, index = 1)
+      logger::log_formatter(logger::formatter_paste, namespace = namespace, index = 2)
       logger::log_layout(layout = rave_logger_layout_generator(
         time_format = "%H:%M:%S", session_len = 4, abbrev = TRUE
       ), namespace = namespace, index = 1)
