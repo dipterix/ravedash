@@ -621,24 +621,61 @@ logger_error_condition.rlang_error <- function(cond, level = "error") {
 }
 
 #' @export
+logger_error_condition.callr_error <- function(cond, level = "error") {
+  if(inherits(cond$parent, "error")) {
+    re <- logger_error_condition(cond$parent)
+  } else {
+    re <- NextMethod(object = cond)
+  }
+  return(invisible(re))
+}
+
+#' @export
 logger_error_condition.tar_condition_targets <- function(cond, level = "error") {
+  # Find and extract <!--%s-->
+  raw_message <- paste(cond$message, collapse = "\n")
   msg <- gsub(pattern = "^.*Last error:[ ]{0, }", replacement = "",
-              x = strip_style(paste(cond$message, collapse = "\n")),
+              x = strip_style(gsub("[\n]{0,1}<!--[^>]*-->[\n]{0,1}", "", raw_message)),
               ignore.case = TRUE)
   cond$message <- msg
+  try({
+    m <- regexec(pattern = "<!--[^>]*-->", text = raw_message, perl = TRUE)[[1]]
+    ml <- attr(m, "match.length")
+    if(length(m) > 0 && m[[1]] >= 0 && ml[[1]] >= 0) {
+      m <- substr(raw_message, start = m[[1]], stop = m[[1]] + ml[[1]] - 1)
+      m <- substr(m, start = 5, stop = nchar(m) - 3)
+      if(nzchar(m)) {
+        logger(m, level = level, use_glue = FALSE)
+      }
+    }
+  }, silent = TRUE)
   NextMethod(object = cond)
 }
 
 
 #' @export
 logger_error_condition.rave_error <- function(cond, level = "error") {
+  raw_message <- paste(cond$message, collapse = "\n")
+  msg <- strip_style(gsub("[\n]{0,1}<!--[^>]*-->[\n]{0,1}", "", raw_message))
+  cond$message <- msg
   try({
-    info <- cond$rave_error
-    if(is.list(info) && length(info$message)) {
-      logger(paste(info$message, collapse = ""), level = level, use_glue = FALSE)
+    m <- regexec(pattern = "<!--[^>]*-->", text = raw_message, perl = TRUE)[[1]]
+    ml <- attr(m, "match.length")
+    if(length(m) > 0 && m[[1]] >= 0 && ml[[1]] >= 0) {
+      m <- substr(raw_message, start = m[[1]], stop = m[[1]] + ml[[1]] - 1)
+      m <- substr(m, start = 5, stop = nchar(m) - 3)
+      if(nzchar(m)) {
+        logger(m, level = level, use_glue = FALSE)
+      }
     }
   }, silent = TRUE)
-  NextMethod()
+  # try({
+  #   info <- cond$rave_error
+  #   if(is.list(info) && length(info$message)) {
+  #     logger(paste(info$message, collapse = ""), level = level, use_glue = FALSE)
+  #   }
+  # }, silent = TRUE)
+  NextMethod(object = cond)
 }
 
 #' @rdname logger
@@ -661,7 +698,7 @@ error_notification.default <- function(
     cond <- list(message = cond)
   }
   cond <- simpleError(message = cond$message)
-  logger_error_condition(cond = cond)
+  cond <- logger_error_condition(cond = cond)
   if(!is.null(session)) {
     shidashi::show_notification(
       session = session,
@@ -682,7 +719,7 @@ error_notification.condition <- function(
     class = "error_notif", delay = 30000, autohide = TRUE,
     session = shiny::getDefaultReactiveDomain()) {
 
-  logger_error_condition(cond = cond)
+  cond <- logger_error_condition(cond = cond)
   if(!is.null(session)) {
     shidashi::show_notification(
       session = session,
@@ -704,7 +741,7 @@ error_notification.rave_error <- function(
     class = "error_notif", delay = 30000, autohide = TRUE,
     session = shiny::getDefaultReactiveDomain()) {
 
-  logger_error_condition(cond = cond)
+  cond <- logger_error_condition(cond = cond)
   if(!is.null(session)) {
     msg <- paste(cond$rave_error$message, collapse = "")
     if(!length(msg) || is.na(msg) || !nzchar(msg)) {
