@@ -1,19 +1,56 @@
 
-safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {}, log_error = "error"){
+
+
+safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "error"){
+
+  # rlang::try_fetch({
+  #   force(expr)
+  # }, error = function(e){
+  #   expr_str <- deparse(expr_)
+  #   e <- rlang::error_cnd(
+  #     class = c("rave_eval_error", "rave_error"),
+  #     message = paste(c("Unable to evaluate the following expression: ", expr_str), collapse = "\n"),
+  #     rave_error = list(
+  #       name = "(safe-wrapped expression)",
+  #       message = c(
+  #         "Error found in code. Please inform module writers to fix it (details have been printed in console):",
+  #         e$message
+  #       )
+  #     ),
+  #     parent = e
+  #   )
+  #   if(is.function(onFailure)){
+  #     onFailure(e)
+  #   }
+  #
+  #   logger_error_condition(e)
+  #   # logger(paste(c("Wrapped expressions:", deparse(expr_)), collapse = "\n"),
+  #   #        .sep = "\n", level = log_error, use_glue = FALSE)
+  #
+  #   if(dipsaus::shiny_is_running()) {
+  #     try({
+  #       ravedash::error_notification(
+  #         cond = e, title = "Coding Error", type = "danger",
+  #         autohide = FALSE, class = "rave-notifications-coding-error"
+  #       )
+  #     }, silent = TRUE)
+  #   }
+
   expr_ <- substitute(expr)
 
   parent_frame <- parent.frame()
-  options(rlang_trace_top_env = parent_frame)
   current_env <- getOption('rlang_trace_top_env', NULL)
+  options(rlang_trace_top_env = parent_frame)
   on.exit({
     options(rlang_trace_top_env = current_env)
   })
 
   tryCatch({
-    force(expr)
+    # force(expr)
+    eval(expr_, envir = parent_frame)
   }, error = function(e){
     if(is.function(onFailure)){
-      onFailure(e)
+      try({ onFailure(e) })
     }
 
     if(dipsaus::shiny_is_running()) {
@@ -33,7 +70,9 @@ safe_wrap_expr <- function(expr, onFailure = NULL, onError = NULL, finally = {},
     logger(c("Wrapped expressions:", deparse(expr_)), .sep = "\n", level = log_error)
 
 
-  }, finally = finally)
+  }, finally = try({
+    finally
+  }))
 }
 
 observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...){

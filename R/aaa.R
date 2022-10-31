@@ -23,6 +23,10 @@ rand_string <- function (length = 20) {
         collapse = "")
 }
 
+deparse1 <- function (expr, collapse = " ") {
+  paste(deparse(expr), collapse = collapse)
+}
+
 R_user_dir <- function (package, which = c("data", "config", "cache"))
 {
   stopifnot(is.character(package), length(package) == 1L)

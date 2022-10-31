@@ -596,7 +596,7 @@ logger_error_condition.default <- function(cond, level = "error"){
   if(is.null(cond$call)){
     logger("Error: ", cond$message, "\nTraceback:\n", tback, level = level)
   } else {
-    logger("Error in ", cond$call, ": ", cond$message, "\nTraceback:\n", tback, level = level)
+    logger("Error in ", deparse1(cond$call), ": ", cond$message, "\nTraceback:\n", tback, level = level)
   }
   invisible(cond)
 }
@@ -615,7 +615,7 @@ logger_error_condition.rlang_error <- function(cond, level = "error") {
   if(is.null(cond$call)){
     logger("Error: ", cond$message, "\nTraceback:\n", tback, level = level)
   } else {
-    logger("Error in ", cond$call, ": ", cond$message, "\nTraceback:\n", tback, level = level)
+    logger("Error in ", deparse1(cond$call), ": ", cond$message, "\nTraceback:\n", tback, level = level)
   }
   invisible(cond)
 }
