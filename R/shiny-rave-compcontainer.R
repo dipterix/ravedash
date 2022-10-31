@@ -48,7 +48,8 @@ RAVEShinyComponentContainer <- R6::R6Class(
     .pipeline_name = character(0L),
     .pipeline_path = character(0L),
     .settings_path = character(0L),
-    .settings_file = character(0L)
+    .settings_file = character(0L),
+    .pipeline = NULL
   ),
   public = list(
     data = NULL,
@@ -75,6 +76,11 @@ RAVEShinyComponentContainer <- R6::R6Class(
       private$.pipeline_name <- pipeline_name
       private$.pipeline_path <- pipeline_path[[1]]
       private$.settings_path <- settings_path[[1]]
+      tryCatch({
+        private$.pipeline <- raveio::pipeline(pipeline_name = pipeline_name, settings_file = settings_file, paths = dirname(pipeline_path))
+      }, error = function(e) {
+        private$.pipeline <- NULL
+      })
       self$components <- dipsaus::fastmap2()
       self$cache <- dipsaus::fastmap2()
     },
@@ -168,6 +174,10 @@ RAVEShinyComponentContainer <- R6::R6Class(
     reset_data = function(){
       self$data[['@reset']]()
       self$cache[['@reset']]()
+    },
+
+    get_pipeline = function() {
+      private$.pipeline
     }
 
   ),
