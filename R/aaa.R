@@ -6,6 +6,12 @@ NULL
 
 gray_label_color <- "#c8c9ca"
 
+ansi_regex <- "(?:(?:\\x{001b}\\[)|\\x{009b})(?:(?:[0-9]{1,3})?(?:(?:;[0-9]{0,3})*)?[A-M|f-m])|\\x{001b}[A-M]"
+
+strip_style <- function(x, ...) {
+  gsub(ansi_regex, "", x, perl = TRUE, useBytes = TRUE)
+}
+
 stopifnot2 <- function (..., msg = "Condition not satisfied") {
   if (!all(c(...))) {
     stop(msg)

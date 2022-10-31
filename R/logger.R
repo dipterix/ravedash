@@ -101,17 +101,6 @@ appender_ravedash <- function (
   ensure_file()
 
 
-
-
-  if(as.logical(dipsaus::package_installed("crayon"))){
-    remove_style <- function(x){
-      crayon::strip_style(x)
-    }
-  } else {
-    remove_style <- function(x) { x }
-  }
-
-
   if(is.finite(max_bytes) && file != nullfile()) {
     structure(function(lines) {
       n_bytes <- ifelse(file.exists(file), file.info(file)$size, 0)
@@ -131,7 +120,7 @@ appender_ravedash <- function (
       }
 
       if(file.exists(file)){
-        cat(remove_style(lines), sep = "\n", file = file, append = append)
+        cat(strip_style(lines), sep = "\n", file = file, append = append)
       }
 
     }, generator = deparse(match.call()))
@@ -141,7 +130,7 @@ appender_ravedash <- function (
   } else {
     structure(function(lines) {
       if(file.exists(file)){
-        cat(remove_style(lines), sep = "\n", file = file, append = append)
+        cat(strip_style(lines), sep = "\n", file = file, append = append)
       }
     }, generator = deparse(match.call()))
   }
@@ -594,6 +583,11 @@ logger_threshold <- function(
 #' @rdname logger
 #' @export
 logger_error_condition <- function(cond, level = "error"){
+  UseMethod("logger_error_condition")
+}
+
+#' @export
+logger_error_condition.default <- function(cond, level = "error"){
   tback <- tryCatch({
     paste(utils::capture.output(traceback(cond)), collapse = "\n")
   }, error = function(e){
@@ -604,6 +598,47 @@ logger_error_condition <- function(cond, level = "error"){
   } else {
     logger("Error in ", cond$call, ": ", cond$message, "\nTraceback:\n", tback, level = level)
   }
+  invisible(cond)
+}
+
+#' @export
+logger_error_condition.rlang_error <- function(cond, level = "error") {
+  tback <- tryCatch({
+    paste(format(cond$trace, simplify = "branch"), collapse = "\n")
+  }, error = function(e){
+    tryCatch({
+      paste(utils::capture.output(traceback(cond)), collapse = "\n")
+    }, error = function(e) {
+      "(cannot obtain traceback info)"
+    })
+  })
+  if(is.null(cond$call)){
+    logger("Error: ", cond$message, "\nTraceback:\n", tback, level = level)
+  } else {
+    logger("Error in ", cond$call, ": ", cond$message, "\nTraceback:\n", tback, level = level)
+  }
+  invisible(cond)
+}
+
+#' @export
+logger_error_condition.tar_condition_targets <- function(cond, level = "error") {
+  msg <- gsub(pattern = "^.*Last error:[ ]{0, }", replacement = "",
+              x = strip_style(paste(cond$message, collapse = "\n")),
+              ignore.case = TRUE)
+  cond$message <- msg
+  NextMethod(object = cond)
+}
+
+
+#' @export
+logger_error_condition.rave_error <- function(cond, level = "error") {
+  try({
+    info <- cond$rave_error
+    if(is.list(info) && length(info$message)) {
+      logger(paste(info$message, collapse = ""), level = level, use_glue = FALSE)
+    }
+  }, silent = TRUE)
+  NextMethod()
 }
 
 #' @rdname logger
@@ -613,9 +648,19 @@ error_notification <- function(
     class = "error_notif", delay = 30000, autohide = TRUE,
     session = shiny::getDefaultReactiveDomain()
 ) {
-  if(!inherits(cond, "condition")) {
-    cond <- simpleError(message = cond$message)
+  UseMethod("error_notification")
+}
+
+#' @export
+error_notification.default <- function(
+    cond, title = "Error found!", type = "danger",
+    class = "error_notif", delay = 30000, autohide = TRUE,
+    session = shiny::getDefaultReactiveDomain()) {
+
+  if(is.character(cond)) {
+    cond <- list(message = cond)
   }
+  cond <- simpleError(message = cond$message)
   logger_error_condition(cond = cond)
   if(!is.null(session)) {
     shidashi::show_notification(
@@ -629,6 +674,54 @@ error_notification <- function(
       collapse = "\n"
     )
   }
+}
+
+#' @export
+error_notification.condition <- function(
+    cond, title = "Error found!", type = "danger",
+    class = "error_notif", delay = 30000, autohide = TRUE,
+    session = shiny::getDefaultReactiveDomain()) {
+
+  logger_error_condition(cond = cond)
+  if(!is.null(session)) {
+    shidashi::show_notification(
+      session = session,
+      message = cond$message,
+      title = title,
+      type = type,
+      close = TRUE,
+      autohide = autohide, delay = delay,
+      class = session$ns("error_notif"),
+      collapse = "\n"
+    )
+  }
+
+}
+
+#' @export
+error_notification.rave_error <- function(
+    cond, title = "Error found!", type = "danger",
+    class = "error_notif", delay = 30000, autohide = TRUE,
+    session = shiny::getDefaultReactiveDomain()) {
+
+  logger_error_condition(cond = cond)
+  if(!is.null(session)) {
+    msg <- paste(cond$rave_error$message, collapse = "")
+    if(!length(msg) || is.na(msg) || !nzchar(msg)) {
+      msg <- cond$message
+    }
+    shidashi::show_notification(
+      session = session,
+      message = msg,
+      title = title,
+      type = type,
+      close = TRUE,
+      autohide = autohide, delay = delay,
+      class = session$ns("error_notif"),
+      collapse = "\n"
+    )
+  }
+
 }
 
 #' @rdname logger
