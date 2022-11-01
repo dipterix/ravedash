@@ -11,7 +11,7 @@ safe_observe(
   priority = 0L,
   domain = NULL,
   ...,
-  wrapper = c("none", "notification", "alert")
+  error_wrapper = c("none", "notification", "alert")
 )
 }
 \arguments{

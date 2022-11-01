@@ -68,15 +68,15 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
 }
 
 observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...,
-                    wrapper = c("none", "notification", "alert")){
-  wrapper <- match.arg(wrapper)
+                    error_wrapper = c("none", "notification", "alert")){
+  error_wrapper <- match.arg(error_wrapper)
   if(!quoted){
     x <- substitute(x)
   }
 
   # Make sure shiny doesn't crash
   switch(
-    wrapper,
+    error_wrapper,
     "none" = {
       x <- bquote({
         asNamespace('ravedash')$safe_wrap_expr(.(x))

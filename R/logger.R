@@ -697,7 +697,7 @@ error_notification <- function(
     if(!is.null(session) && !inherits(cond, "rave_muffled")) {
       shidashi::show_notification(
         session = session,
-        message = paste(
+        message = paste0(
           paste(prefix, collapse = ""), "\n\n",
           paste(cond$message, collapse = "\n")
         ),
@@ -726,7 +726,7 @@ error_alert <- function(
       dipsaus::close_alert2()
       dipsaus::shiny_alert2(
         title = title,
-        text = paste(
+        text = paste0(
           paste(prefix, collapse = ""), "\n\n",
           paste(cond$message, collapse = "\n")
         ),
@@ -756,6 +756,8 @@ with_error_notification <- function(
     force(envir)
     eval(expr, envir = envir)
   }, error = function(e) {
+    logger(sprintf("Wrapped expression:\n%s", deparse1(expr, collapse = "\n")),
+           level = "error", use_glue = FALSE)
     args$cond <- e
     do.call(error_notification, args)
   })
@@ -776,6 +778,8 @@ with_error_alert <- function(
     force(envir)
     eval(expr, envir = envir)
   }, error = function(e) {
+    logger(sprintf("Wrapped expression:\n%s", deparse1(expr, collapse = "\n")),
+           level = "error", use_glue = FALSE)
     args$cond <- e
     do.call(error_alert, args)
   })
