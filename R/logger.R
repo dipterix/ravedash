@@ -602,6 +602,12 @@ logger_error_condition.default <- function(cond, level = "error"){
 }
 
 #' @export
+logger_error_condition.character <- function(cond, level = "error") {
+  cond <- simpleError(message = paste(cond, collapse = "\n"), call = NULL)
+  NextMethod(object = cond)
+}
+
+#' @export
 logger_error_condition.rlang_error <- function(cond, level = "error") {
   tback <- tryCatch({
     paste(format(cond$trace, simplify = "branch"), collapse = "\n")
@@ -682,83 +688,57 @@ logger_error_condition.rave_error <- function(cond, level = "error") {
 #' @export
 error_notification <- function(
     cond, title = "Error found!", type = "danger",
-    class = "error_notif", delay = 30000, autohide = TRUE,
+    class = "error_notif", delay = 30000, autohide = TRUE, collapse = "\n",
+    prefix = paste("Found the following error", "(details have been printed in the console):"),
     session = shiny::getDefaultReactiveDomain()
 ) {
-  UseMethod("error_notification")
-}
-
-#' @export
-error_notification.default <- function(
-    cond, title = "Error found!", type = "danger",
-    class = "error_notif", delay = 30000, autohide = TRUE,
-    session = shiny::getDefaultReactiveDomain()) {
-
-  if(is.character(cond)) {
-    cond <- list(message = cond)
-  }
-  cond <- simpleError(message = cond$message)
-  cond <- logger_error_condition(cond = cond)
-  if(!is.null(session)) {
-    shidashi::show_notification(
-      session = session,
-      message = cond$message,
-      title = title,
-      type = type,
-      close = TRUE,
-      autohide = autohide, delay = delay,
-      class = session$ns("error_notif"),
-      collapse = "\n"
-    )
-  }
-}
-
-#' @export
-error_notification.condition <- function(
-    cond, title = "Error found!", type = "danger",
-    class = "error_notif", delay = 30000, autohide = TRUE,
-    session = shiny::getDefaultReactiveDomain()) {
-
-  cond <- logger_error_condition(cond = cond)
-  if(!is.null(session)) {
-    shidashi::show_notification(
-      session = session,
-      message = cond$message,
-      title = title,
-      type = type,
-      close = TRUE,
-      autohide = autohide, delay = delay,
-      class = session$ns("error_notif"),
-      collapse = "\n"
-    )
-  }
-
-}
-
-#' @export
-error_notification.rave_error <- function(
-    cond, title = "Error found!", type = "danger",
-    class = "error_notif", delay = 30000, autohide = TRUE,
-    session = shiny::getDefaultReactiveDomain()) {
-
-  cond <- logger_error_condition(cond = cond)
-  if(!is.null(session)) {
-    msg <- paste(cond$rave_error$message, collapse = "")
-    if(!length(msg) || is.na(msg) || !nzchar(msg)) {
-      msg <- cond$message
+  try({
+    cond <- logger_error_condition(cond = cond)
+    if(!is.null(session) && !inherits(cond, "rave_muffled")) {
+      shidashi::show_notification(
+        session = session,
+        message = paste(
+          paste(prefix, collapse = ""), "\n\n",
+          paste(cond$message, collapse = "\n")
+        ),
+        title = title,
+        type = type,
+        close = TRUE,
+        autohide = autohide, delay = delay,
+        class = session$ns("error_notif"),
+        collapse = "\n"
+      )
     }
-    shidashi::show_notification(
-      session = session,
-      message = msg,
-      title = title,
-      type = type,
-      close = TRUE,
-      autohide = autohide, delay = delay,
-      class = session$ns("error_notif"),
-      collapse = "\n"
-    )
-  }
+  })
+  invisible(cond)
+}
 
+#' @rdname logger
+#' @export
+error_alert <- function(
+    cond, title = "Error found!", type = "error", danger_mode = TRUE, auto_close = FALSE,
+    prefix = paste("Found the following error", "(details have been printed in the console):"),
+    buttons = "Confirm", session = shiny::getDefaultReactiveDomain()) {
+
+  try({
+    cond <- logger_error_condition(cond = cond)
+    if(!is.null(session) && !inherits(cond, "rave_muffled")) {
+      dipsaus::close_alert2()
+      dipsaus::shiny_alert2(
+        title = title,
+        text = paste(
+          paste(prefix, collapse = ""), "\n\n",
+          paste(cond$message, collapse = "\n")
+        ),
+        icon = type,
+        danger_mode = danger_mode,
+        auto_close = auto_close,
+        session = session,
+        buttons = buttons
+      )
+    }
+  })
+  invisible(cond)
 }
 
 #' @rdname logger
@@ -778,6 +758,27 @@ with_error_notification <- function(
   }, error = function(e) {
     args$cond <- e
     do.call(error_notification, args)
-    e
   })
 }
+
+#' @rdname logger
+#' @export
+with_error_alert <- function(
+    expr, envir = parent.frame(), quoted = FALSE, ...
+) {
+  if(!quoted) {
+    expr <- substitute(expr)
+  }
+
+  args <- list(...)
+
+  tryCatch({
+    force(envir)
+    eval(expr, envir = envir)
+  }, error = function(e) {
+    args$cond <- e
+    do.call(error_alert, args)
+  })
+}
+
+

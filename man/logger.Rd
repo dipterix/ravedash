@@ -6,7 +6,9 @@
 \alias{logger_threshold}
 \alias{logger_error_condition}
 \alias{error_notification}
+\alias{error_alert}
 \alias{with_error_notification}
+\alias{with_error_alert}
 \title{Logger system used by 'RAVE'}
 \usage{
 logger(
@@ -36,10 +38,27 @@ error_notification(
   class = "error_notif",
   delay = 30000,
   autohide = TRUE,
+  collapse = "\\n",
+  prefix = paste("Found the following error",
+    "(details have been printed in the console):"),
+  session = shiny::getDefaultReactiveDomain()
+)
+
+error_alert(
+  cond,
+  title = "Error found!",
+  type = "error",
+  danger_mode = TRUE,
+  auto_close = FALSE,
+  prefix = paste("Found the following error",
+    "(details have been printed in the console):"),
+  buttons = "Confirm",
   session = shiny::getDefaultReactiveDomain()
 )
 
 with_error_notification(expr, envir = parent.frame(), quoted = FALSE, ...)
+
+with_error_alert(expr, envir = parent.frame(), quoted = FALSE, ...)
 }
 \arguments{
 \item{..., .envir, .sep}{passed to \code{\link[raveio]{glue}}, if

@@ -4,7 +4,15 @@
 \alias{safe_observe}
 \title{Safe-wrapper of 'shiny' \code{\link[shiny]{observe}} function}
 \usage{
-safe_observe(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...)
+safe_observe(
+  x,
+  env = NULL,
+  quoted = FALSE,
+  priority = 0L,
+  domain = NULL,
+  ...,
+  wrapper = c("none", "notification", "alert")
+)
 }
 \arguments{
 \item{x, env, quoted, priority, domain, ...}{passed to \code{\link[shiny]{observe}}}

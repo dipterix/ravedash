@@ -4,6 +4,10 @@
 \name{reexports}
 \alias{reexports}
 \alias{\%OF\%}
+\alias{shiny_alert2}
+\alias{close_alert2}
+\alias{show_notification}
+\alias{clear_notifications}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -11,6 +15,8 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dipsaus}{\code{\link[dipsaus:grapes-OF-grapes]{\%OF\%}}}
+  \item{dipsaus}{\code{\link[dipsaus:grapes-OF-grapes]{\%OF\%}}, \code{\link[dipsaus:shiny_alert2]{close_alert2}}, \code{\link[dipsaus]{shiny_alert2}}}
+
+  \item{shidashi}{\code{\link[shidashi:notification]{clear_notifications}}, \code{\link[shidashi:notification]{show_notification}}}
 }}
 

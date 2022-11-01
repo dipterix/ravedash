@@ -53,20 +53,12 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
       try({ onFailure(e) })
     }
 
-    if(dipsaus::shiny_is_running()) {
-      try({
-        shidashi::show_notification(
-          title = "Coding Error", type = "danger",
-          autohide = FALSE, collapse = "\n", class = "rave-notifications-coding-error",
-          message = c(
-            "Error found in code. Please inform module writers to fix it (details have been printed in console):",
-            e$message
-          )
-        )
-      }, silent = TRUE)
-    }
-
-    logger_error_condition(e)
+    error_notification(
+      cond = e,
+      title = "Coding Error",
+      class = "rave-notifications-coding-error",
+      prefix = "Error found in code. Please inform module writers to fix it (details have been printed in console):"
+    )
     logger(c("Wrapped expressions:", deparse(expr_)), .sep = "\n", level = log_error)
 
 
@@ -75,15 +67,37 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
   }))
 }
 
-observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...){
+observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...,
+                    wrapper = c("none", "notification", "alert")){
+  wrapper <- match.arg(wrapper)
   if(!quoted){
     x <- substitute(x)
   }
 
   # Make sure shiny doesn't crash
-  x <- bquote({
-    asNamespace('ravedash')$safe_wrap_expr(.(x))
-  })
+  switch(
+    wrapper,
+    "none" = {
+      x <- bquote({
+        asNamespace('ravedash')$safe_wrap_expr(.(x))
+      })
+    },
+    "notification" = {
+      x <- bquote({
+        asNamespace('ravedash')$safe_wrap_expr({
+          asNamespace("ravedash")$with_error_notification(.(x))
+        })
+      })
+    },
+    "alert" = {
+      x <- bquote({
+        asNamespace('ravedash')$safe_wrap_expr({
+          asNamespace("ravedash")$with_error_alert(.(x))
+        })
+      })
+    }
+  )
+
 
   if(!is.environment(env)){
     env <- parent.frame()
