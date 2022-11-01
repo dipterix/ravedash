@@ -93,6 +93,22 @@ R_user_dir <- function (package, which = c("data", "config", "cache"))
 #' @export
 dipsaus::`%OF%`
 
+#' @importFrom dipsaus shiny_alert2
+#' @export
+dipsaus::shiny_alert2
+
+#' @importFrom dipsaus close_alert2
+#' @export
+dipsaus::close_alert2
+
+#' @importFrom shidashi show_notification
+#' @export
+shidashi::show_notification
+
+#' @importFrom shidashi clear_notifications
+#' @export
+shidashi::clear_notifications
+
 #' @name random-text
 #' @title Randomly choose a text from a list of strings
 #' @param candidates character vectors, a list of candidates
