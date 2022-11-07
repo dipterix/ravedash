@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +50,21 @@
       <small>Source: <a href="https://github.com/dipterix/ravedash/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.3" id="ravedash-013">ravedash 0.1.3<a class="anchor" aria-label="anchor" href="#ravedash-013"></a></h2>
+<ul><li>Allow preset-components to access to pipeline instance</li>
+<li>Added <code>strip_style</code> to remove <code>ansi</code> styles</li>
+<li>Changed <code>logger_error_condition</code> to <code>S3</code> generics</li>
+<li>Added <code>error_alert</code> similar to <code>error_notification</code>, but using <code><a href="https://rdrr.io/pkg/dipsaus/man/shiny_alert2.html" class="external-link">dipsaus::shiny_alert2</a></code>
+</li>
+<li>Fixed a preset that cannot fails correctly with validation errors when importing channels</li>
+<li>
+<code>safe_wrap_expr</code> wraps error handlers</li>
+<li>Reexported some <code>dipsaus</code> and <code>shidashi</code> functions so users do not have to import them</li>
+<li>
+<code>save_observe</code> has better error handling method</li>
+<li>Raising <code>rave_muffled</code> errors in <code>save_observe</code> will not trigger notifications nor error alerts, but will print out error details</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="ravedash-012">ravedash 0.1.2<a class="anchor" aria-label="anchor" href="#ravedash-012"></a></h2><p class="text-muted">CRAN release: 2022-10-15</p>
 <ul><li>Added presets to support importing <code>.nev</code> files with the most recent <code>raveio</code> updates</li>
