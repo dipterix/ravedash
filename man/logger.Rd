@@ -100,6 +100,12 @@ console and \code{'debug'} on file.}
 
 \item{class, title, delay, autohide}{passed to \code{\link[shidashi]{show_notification}}}
 
+\item{collapse, danger_mode, auto_close, buttons}{will be passed to
+\code{\link[dipsaus]{shiny_alert2}} or
+\code{\link[shidashi]{show_notification}}}
+
+\item{prefix}{additional messages to display in the notification or alert}
+
 \item{session}{shiny session}
 
 \item{expr}{expression to evaluate}

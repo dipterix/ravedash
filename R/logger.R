@@ -32,6 +32,10 @@
 #' @param expr expression to evaluate
 #' @param envir environment to evaluate \code{expr}
 #' @param quoted whether \code{expr} is quoted; default is false
+#' @param collapse,danger_mode,auto_close,buttons will be passed to
+#' \code{\link[dipsaus]{shiny_alert2}} or
+#' \code{\link[shidashi]{show_notification}}
+#' @param prefix additional messages to display in the notification or alert
 #' @return The message without time-stamps
 #'
 #' @examples

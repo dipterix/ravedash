@@ -119,6 +119,9 @@ observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL,
 #' @description Safely wrap expression \code{x} such that shiny application does
 #' no hang when when the expression raises error.
 #' @param x,env,quoted,priority,domain,... passed to \code{\link[shiny]{observe}}
+#' @param error_wrapper handler when error is encountered, choices are
+#' \code{'none'}, \code{'notification'} (see \code{\link{error_notification}}),
+#' or \code{'alert'} (see \code{\link{error_alert}})
 #' @return 'shiny' observer instance
 #'
 #' @examples

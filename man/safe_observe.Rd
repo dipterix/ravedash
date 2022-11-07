@@ -16,6 +16,10 @@ safe_observe(
 }
 \arguments{
 \item{x, env, quoted, priority, domain, ...}{passed to \code{\link[shiny]{observe}}}
+
+\item{error_wrapper}{handler when error is encountered, choices are
+\code{'none'}, \code{'notification'} (see \code{\link{error_notification}}),
+or \code{'alert'} (see \code{\link{error_alert}})}
 }
 \value{
 'shiny' observer instance

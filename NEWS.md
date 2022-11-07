@@ -1,3 +1,15 @@
+# ravedash 0.1.3
+
+* Allow preset-components to access to pipeline instance
+* Added `strip_style` to remove `ansi` styles
+* Changed `logger_error_condition` to `S3` generics
+* Added `error_alert` similar to `error_notification`, but using `dipsaus::shiny_alert2`
+* Fixed a preset that cannot fails correctly with validation errors when importing channels
+* `safe_wrap_expr` wraps error handlers
+* Reexported some `dipsaus` and `shidashi` functions so users do not have to import them
+* `save_observe` has better error handling method
+* Raising `rave_muffled` errors in `save_observe` will not trigger notifications nor error alerts, but will print out error details
+
 # ravedash 0.1.2
 
 * Added presets to support importing `.nev` files with the most recent `raveio` updates
