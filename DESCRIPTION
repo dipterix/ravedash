@@ -24,7 +24,9 @@ Imports:
     shinyWidgets (>= 0.6.2),
     threeBrain (>= 0.2.4),
     shinyvalidate,
-    htmlwidgets
+    htmlwidgets,
+    R6,
+    cachem (>= 1.0.6)
 Suggests: 
     htmltools,
     fastmap (>= 1.1.0),
@@ -33,8 +35,10 @@ Suggests:
     rstudioapi,
     knitr,
     httr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 RoxygenNote: 7.2.1
 URL: https://dipterix.org/ravedash/
 BugReports: https://github.com/dipterix/ravedash/issues
 VignetteBuilder: knitr
+Config/testthat/edition: 3

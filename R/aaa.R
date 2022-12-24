@@ -2,6 +2,7 @@
 #' @importFrom dipsaus %?<-%
 #' @importFrom dipsaus %OF%
 #' @importFrom shinyvalidate InputValidator
+#' @importFrom R6 R6Class
 NULL
 
 gray_label_color <- "#c8c9ca"
@@ -16,6 +17,14 @@ stopifnot2 <- function (..., msg = "Condition not satisfied") {
   if (!all(c(...))) {
     stop(msg)
   }
+}
+
+shiny_validation_error <- function(message, ..., error_class = NULL) {
+  e <- simpleError(message, ...)
+  cls <- unique(c("shiny.silent.error", error_class, "validation", class(e)))
+  class(e) <- cls
+  logger("Validation failed (not an error): ", message, level = "warning")
+  stop(e)
 }
 
 rand_string <- function (length = 20) {

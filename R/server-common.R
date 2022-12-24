@@ -101,8 +101,8 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   }
 
 
-  tools <- ravedash::register_rave_session(session = session)
-  reactive_handlers <- session$userData$ravedash_reactive_handlers
+  tools <- register_rave_session(session = session)
+  reactive_handlers <- session$userData$ravedash$handlers
   local_reactives <- shiny::reactiveValues(
     first_time = TRUE,
     auto_recalculate = 0L,
@@ -864,4 +864,30 @@ format_export_settings.custom <- function(settings) {
   }
 
   settings
+}
+
+
+#' Drive 'RAVE' browser to switch to another module
+#' @description Switch to another 'RAVE' module to continue the procedures.
+#' @param module_id the module ID, see \code{'modules.yaml'} in the pipeline
+#' directory
+#' @param title the module title to display
+#' @param session shiny session
+#' @return Nothing
+#' @export
+switch_module <- function(module_id, title,
+                          session = shiny::getDefaultReactiveDomain()) {
+  if(is.null(session)) {
+    stop("`switch_module`: must runs in a shiny module")
+  }
+  query_str <- shiny::isolate(shiny::getQueryString(session = session))
+  url <- sprintf("/?module=%s&shared_id=%s", module_id, paste(query_str$shared_id, collapse = ""))
+  session$sendCustomMessage(
+    type = "shidashi.open_iframe_tab",
+    message = list(
+      url = url,
+      title = title,
+      more = list(`shiny-module` = module_id)
+    )
+  )
 }

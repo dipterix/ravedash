@@ -356,14 +356,44 @@ launch_session <- function(
 }
 
 current_session_path <- local({
+  attempts <- 0L
   ravedash_path0 <- NULL
   function(v) {
     if(!missing(v)) {
       ravedash_path0 <<- normalizePath(v, winslash = "/")
+      attempts <<- 0L
     }
-    ravedash_path0
+    root <- ravedash_path0
+
+    if(length(root) != 1 || is.na(root) || !dir.exists(root)) {
+      session_id <- Sys.getenv("RAVEDASH_SESSION_ID", unset = "")
+      if(
+        length(session_id) == 1 &&
+        isTRUE(is.character(session_id)) &&
+        nchar(session_id) > 0 &&
+        attempts < 3L
+      ) {
+        try({
+          sess <- use_session(session_id)
+          root <- sess$app_path
+        }, silent = TRUE)
+        if(length(root) != 1 || is.na(root) || !dir.exists(root)) {
+          attempts <<- attempts + 1L
+          root <- NULL
+        }
+      } else {
+        root <- NULL
+      }
+
+    }
+
+    return(root)
   }
 })
+
+report_bugs <- function() {
+  sess_path <- current_session_path()
+}
 
 #' @title Create a random temporary file path for current session
 #' @param persist persist level, choices are \code{'app-session'},
@@ -422,19 +452,10 @@ temp_dir <- function(
   persist <- match.arg(persist)
   if(persist == "app-session") {
     root <- current_session_path()
-    if(!length(root) || is.na(root) || !dir.exists(root)) {
-      session_id <- Sys.getenv("RAVEDASH_SESSION_ID", unset = "")
-      if(isTRUE(is.character(session_id)) && nchar(session_id) > 0) {
-        try({
-          sess <- use_session(session_id)
-          root <- sess$app_path
-        }, silent = TRUE)
-      }
-      if(!length(root) || is.na(root) || !dir.exists(root)) {
-        persist <- "process"
-      }
-    } else {
+    if(length(root) == 1) {
       root <- file.path(root, "tmp")
+    } else {
+      persist <- "process"
     }
   }
   if(persist == "package-cache") {

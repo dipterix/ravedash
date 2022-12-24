@@ -266,16 +266,40 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
   if(is.null(session)){
     session <- shiny::MockShinySession$new()
   }
-  sync_tools <- shidashi::register_session_id(session = session)
-  event_data <- shidashi::register_session_events(session = session)
-  rave_event <- shidashi::register_global_reactiveValues(name = "rave_reactives", session = session)
-
   root_session <- session$rootScope()
 
-  if(!inherits(session$userData$ravedash_reactive_handlers, "fastmap2")){
+  # make sure ravedash is in `userData`
+  if(!inherits(root_session$userData$ravedash, "fastmap2")) {
+    root_session$userData$ravedash <- dipsaus::fastmap2()
+  }
+  map <- root_session$userData$ravedash
+
+  # register & reference to shidashi components
+
+  # sync tools to sync inputs across modules (are we using it?)
+  sync_tools <- shidashi::register_session_id(session = session)
+
+  # reactives to update theme
+  if(!shiny::is.reactivevalues(map$theme_event)) {
+    shidashi::register_session_events(session = session)
+    # TODO: make sure has the most updated shidashi
+    theme_event <- root_session$cache$get(
+      "shidashi_event_data",
+      root_session$userData$shidashi$event_data
+    )
+    map$theme_event <- theme_event
+  }
+
+  # ravedash event flags
+  if(!shiny::is.reactivevalues(map$rave_event)) {
+    map$rave_event <- shiny::reactiveValues()
+  }
+
+  # reactive event handlers
+  if(!inherits(map$handlers, "fastmap2")){
     handler_map <- dipsaus::fastmap2()
     handler_map$output_options <- dipsaus::fastmap2()
-    session$userData$ravedash_reactive_handlers <- handler_map
+    map$handlers <- handler_map
 
     # Probably first time registering session
     clean_shiny_sessions(active = FALSE)
@@ -284,7 +308,8 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
     })
   }
 
-  if(!root_session$cache$exists('rave_id')){
+  rave_id <- map$rave_id
+  if(length(rave_id) != 1 || !is.character(rave_id) || !nzchar(rave_id)) {
     if(!missing(.rave_id) && length(.rave_id)){
       rave_id <- paste(unlist(.rave_id), collapse = "")
       rave_id <- gsub("[^a-zA-Z0-9]", "", rave_id)
@@ -294,15 +319,16 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
     } else {
       rave_id <- rand_string()
     }
+    map$rave_id <- rave_id
     root_session$cache$set('rave_id', rave_id)
     root_session$userData$rave_id <- rave_id
   }
-  rave_id <- root_session$cache$get("rave_id")
-  if(!root_session$cache$exists('rave_loop_events')){
-    rave_loop_events <- dipsaus::fastqueue2()
-    root_session$cache$set('rave_loop_events', rave_loop_events)
+
+
+  # cache for modules and apps
+  if(!inherits(map$module_cache, "fastmap2")){
+    map$module_cache <- dipsaus::fastmap2()
   }
-  rave_loop_events <- root_session$cache$get("rave_loop_events")
 
   if(!inherits(session, "MockShinySession")){
     # register session
@@ -310,7 +336,7 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
       rave_id = rave_id,
       register_ns = session$ns(NULL),
       root_session = root_session,
-      rave_event = rave_event
+      rave_event = map$rave_event
     )
 
     sess <- get(x = '.sessions')
@@ -318,11 +344,11 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
   }
 
   list(
-    rave_id = rave_id,
+    rave_id = map$rave_id,
     sync_tools = sync_tools,
-    theme_event = event_data,
-    rave_event = rave_event,
-    loop_event = rave_loop_events
+    theme_event = map$theme_event,
+    rave_event = map$rave_event,
+    module_cache = map$module_cache
   )
 }
 
@@ -345,7 +371,8 @@ clean_shiny_sessions <- function(sessions = NULL, active = FALSE) {
   } else {
     rave_ids <- unlist(lapply(sessions, function(session) {
       tryCatch({
-        session$userData$rave_id
+        # session$userData$rave_id
+        session$userData$ravedash$rave_id
       }, error = function(e){ NULL })
     }))
   }
@@ -378,10 +405,10 @@ get_default_handlers <- function(session = shiny::getDefaultReactiveDomain()){
   if(is.null(session)){
     session <- shiny::MockShinySession$new()
   }
-  if(!inherits(session$userData$ravedash_reactive_handlers, "fastmap2")){
+  if(!inherits(session$userData$ravedash$handlers, "fastmap2")){
     register_rave_session(session = session)
   }
-  session$userData$ravedash_reactive_handlers
+  session$userData$ravedash$handlers
 }
 
 #' @rdname rave-runtime-events
@@ -705,14 +732,17 @@ ravedash_footer <- function(
 #' @export
 get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
   if(is.environment(session)){
-    rave_events <- session$cache$get("rave_reactives", missing = NULL)
-    if(shiny::is.reactivevalues(rave_events)){
+    # rave_events <- session$cache$get("rave_reactives", missing = NULL)
+    rave_event <- session$userData$ravedash$rave_event
+    if(shiny::is.reactivevalues(rave_event)){
       info <- shiny::isolate({
-        rave_events$active_module
+        rave_event$active_module
       })
       # make sure module_id is inside!!!
       if(!'id' %in% names(info)){ return(NULL) }
-      rave_id <- session$cache$get("rave_id", missing = "")
+
+      # rave_id <- session$cache$get("rave_id", missing = "")
+      rave_id <- session$userData$ravedash$rave_id
       info$rave_id <- rave_id
       return(info)
     }
@@ -773,5 +803,35 @@ run_analysis_button <- function(
     )
   }
 
+
+}
+
+
+#' Obtain caching object for current run-time shiny session
+#' @description Cache small objects such as inputs or configurations
+#' @param namespace characters, usually the module ID
+#' @param session shiny interactive context domain
+#' @returns A caching object. The caching object is identical within the same
+#' context and namespace.
+#' @export
+shiny_cache <- function(namespace, session = shiny::getDefaultReactiveDomain()) {
+  if(missing(namespace) || length(namespace) != 1) {
+    stop("`session_cache`: `namespace` (i.e. module ID) must be explicitly specified.")
+  }
+  if(!is.environment(session)) {
+    warning("`session_cache`: session must be a shiny reactive context. Are you running shiny application?")
+    return(cache_mem2())
+  }
+  module_cache <- session$userData$ravedash$module_cache
+  if(!inherits(module_cache, "fastmap2")) {
+    tools <- register_rave_session(session)
+    module_cache <- tools$module_cache
+  }
+
+  if(!inherits(module_cache[[namespace]], "cache_mem2")) {
+    module_cache[[namespace]] <- cache_mem2()
+  }
+
+  return(module_cache[[namespace]])
 
 }
