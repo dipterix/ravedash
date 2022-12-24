@@ -82,6 +82,9 @@
     <loc>https://dipterix.org/ravedash/reference/safe_observe.html</loc>
   </url>
   <url>
+    <loc>https://dipterix.org/ravedash/reference/shiny_cache.html</loc>
+  </url>
+  <url>
     <loc>https://dipterix.org/ravedash/reference/shiny_icons.html</loc>
   </url>
   <url>
@@ -89,6 +92,9 @@
   </url>
   <url>
     <loc>https://dipterix.org/ravedash/reference/standalone_viewer.html</loc>
+  </url>
+  <url>
+    <loc>https://dipterix.org/ravedash/reference/switch_module.html</loc>
   </url>
   <url>
     <loc>https://dipterix.org/ravedash/reference/temp_file.html</loc>
