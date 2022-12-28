@@ -49,7 +49,8 @@ start_session(
 )
 
 shutdown_session(
-  returnValue = invisible(),
+  returnValue = invisible(NULL),
+  jupyter = TRUE,
   session = shiny::getDefaultReactiveDomain()
 )
 }
@@ -86,8 +87,10 @@ numeric vectors, characters)}
 \item{new}{whether to create a new session instead of using the most recent
 one, default is false}
 
-\item{jupyter}{logical, whether to launch 'jupyter' instance as well. It
-requires additional setups to enable 'jupyter' lab}
+\item{jupyter}{logical, whether to launch 'jupyter' instances when starting
+'RAVE' sessions, or to stop the 'jupyter' instances when shutting down. It
+requires additional setups to enable 'jupyter' lab; see 'Installation Guide
+Step 3' in the 'RAVE' wiki page.}
 
 \item{jupyter_port}{port used by 'jupyter' lab, can be set by
 \code{'jupyter_port'} option in \code{\link[raveio]{raveio_setopt}}}

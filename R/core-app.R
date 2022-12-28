@@ -44,8 +44,10 @@ ensure_template <- function(path, use_cache = TRUE){
 #' @param port port to listen
 #' @param options additional options, including \code{jupyter},
 #' \code{jupyter_port}, \code{as_job}, and \code{launch_browser}
-#' @param jupyter logical, whether to launch 'jupyter' instance as well. It
-#' requires additional setups to enable 'jupyter' lab
+#' @param jupyter logical, whether to launch 'jupyter' instances when starting
+#' 'RAVE' sessions, or to stop the 'jupyter' instances when shutting down. It
+#' requires additional setups to enable 'jupyter' lab; see 'Installation Guide
+#' Step 3' in the 'RAVE' wiki page.
 #' @param jupyter_port port used by 'jupyter' lab, can be set by
 #' \code{'jupyter_port'} option in \code{\link[raveio]{raveio_setopt}}
 #' @param as_job whether to launch the application as 'RStudio' job, default is
@@ -734,11 +736,32 @@ start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
 #' @rdname rave-session
 #' @export
 shutdown_session <- function(
-    returnValue = invisible(),
+    returnValue = invisible(NULL),
+    jupyter = TRUE,
     session = shiny::getDefaultReactiveDomain()
 ) {
   if(!is.null(session)) {
     session$sendCustomMessage("shidashi.shutdown_session", message = list())
+
+    # shutdown jupyter
+    if( jupyter && dipsaus::package_installed("rpymat") ) {
+      try({
+        jupyter_confpath <- file.path(current_session_path(), "jupyter.yaml")
+        if(length(jupyter_confpath) == 1 && !is.na(jupyter_confpath) &&
+           file.exists(jupyter_confpath)) {
+          jupyter_conf <- raveio::load_yaml(jupyter_confpath)
+          unlink(jupyter_confpath)
+          if(length(jupyter_conf$port)) {
+            port <- as.integer(jupyter_conf$port)
+            port <- port[!is.na(port)]
+            if(length(port) && port[[1]] > 0) {
+              rpymat::jupyter_server_stop(port[[1]])
+            }
+          }
+        }
+      })
+    }
+
   }
   shiny::stopApp(returnValue = returnValue)
 }
