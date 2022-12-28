@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.9004</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,8 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">shutdown_session</span><span class="op">(</span></span>
-<span>  returnValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  returnValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>,</span>
+<span>  jupyter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  session <span class="op">=</span> <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/domains.html" class="external-link">getDefaultReactiveDomain</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -156,8 +157,10 @@ one, default is false</p></dd>
 
 
 <dt>jupyter</dt>
-<dd><p>logical, whether to launch 'jupyter' instance as well. It
-requires additional setups to enable 'jupyter' lab</p></dd>
+<dd><p>logical, whether to launch 'jupyter' instances when starting
+'RAVE' sessions, or to stop the 'jupyter' instances when shutting down. It
+requires additional setups to enable 'jupyter' lab; see 'Installation Guide
+Step 3' in the 'RAVE' wiki page.</p></dd>
 
 
 <dt>jupyter_port</dt>
