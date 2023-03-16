@@ -549,6 +549,8 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' @param label run-analysis button label; default is \code{"Run Analysis"}
 #' @param auto_recalculation whether to show the automatic calculation button;
 #' default is true
+#' @param message_action message to send when clicking on message button;
+#' default is \code{'toggle_loader'}, which opens up loading screen
 #' @param class additional class for the footer
 #' @param style additional style for the footer
 #' @return 'HTML' tags
@@ -587,7 +589,8 @@ current_shiny_theme <- function(default, session = shiny::getDefaultReactiveDoma
 #' @export
 ravedash_footer <- function(
     module_id = NULL, label = "Run Analysis",
-    auto_recalculation = TRUE, class = NULL, style = NULL
+    auto_recalculation = TRUE, message_action = "toggle_loader",
+    class = NULL, style = NULL
 ){
   ns <- shiny::NS(module_id)
   shiny::div(
@@ -606,7 +609,7 @@ ravedash_footer <- function(
         class="btn btn-default border-right-1 btn-go-top shiny-text-output rave-button",
         `data-toggle` = "tooltip",
         title = "Click to toggle the data loader",
-        `rave-action` = '{"type": "toggle_loader"}'
+        `rave-action` = sprintf('{"type": "%s"}', message_action)
       ),
       shiny::tags$button(
         type="button",

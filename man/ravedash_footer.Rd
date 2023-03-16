@@ -8,6 +8,7 @@ ravedash_footer(
   module_id = NULL,
   label = "Run Analysis",
   auto_recalculation = TRUE,
+  message_action = "toggle_loader",
   class = NULL,
   style = NULL
 )
@@ -19,6 +20,9 @@ ravedash_footer(
 
 \item{auto_recalculation}{whether to show the automatic calculation button;
 default is true}
+
+\item{message_action}{message to send when clicking on message button;
+default is \code{'toggle_loader'}, which opens up loading screen}
 
 \item{class}{additional class for the footer}
 
