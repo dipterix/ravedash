@@ -14,18 +14,19 @@
 
 }
 
-#' @export
-.Last.lib <- function(libpath){
+
+.onDetach <- function(libpath) {
   tryCatch({
     sess <- get0(x = '.sessions', ifnotfound = NULL)
     if(inherits(sess, 'fastmap')){
-      li <- sess$as_list()
+      # li <- sess$as_list()
       sess$reset()
-      lapply(li, function(item) {
-        # Finalize item
-      })
+      # lapply(li, function(item) {
+      #   # Finalize item
+      # })
     }
   }, error = function(e){
     warning(e)
   })
 }
+
