@@ -3,7 +3,7 @@
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/ravedash)](https://CRAN.R-project.org/package=ravedash)
-[![r-universe](https://beauchamplab.r-universe.dev/badges/ravedash)](https://beauchamplab.r-universe.dev/ui#builds)
+[![r-universe](https://rave-ieeg.r-universe.dev/badges/ravedash)](https://rave-ieeg.r-universe.dev)
 [![R-CMD-check](https://github.com/dipterix/ravedash/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dipterix/ravedash/actions/workflows/R-CMD-check.yaml)
 [![DOI](https://raw.githubusercontent.com/dipterix/threeBrain/master/inst/doi.svg)](https://doi.org/10.1016/j.neuroimage.2020.117341)
 <!-- badges: end -->
@@ -13,7 +13,7 @@
 To install `ravedash` alone, simply type R command:
 
 ``` r
-options(repos = c(ropensci = 'https://beauchamplab.r-universe.dev', 
+options(repos = c(ropensci = 'https://rave-ieeg.r-universe.dev', 
         CRAN = 'https://cloud.r-project.org'))
 install.packages("ravedash")
 ```
