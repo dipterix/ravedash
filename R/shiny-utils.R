@@ -283,10 +283,12 @@ register_rave_session <- function(session = shiny::getDefaultReactiveDomain(), .
   if(!shiny::is.reactivevalues(map$theme_event)) {
     shidashi::register_session_events(session = session)
     # TODO: make sure has the most updated shidashi
-    theme_event <- root_session$cache$get(
-      "shidashi_event_data",
-      root_session$userData$shidashi$event_data
-    )
+    theme_event <- root_session$userData$event_data
+
+    if(!shiny::is.reactivevalues(theme_event)){
+      theme_event <- root_session$cache$get( "shidashi_event_data" )
+    }
+
     map$theme_event <- theme_event
   }
 
