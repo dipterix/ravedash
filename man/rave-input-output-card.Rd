@@ -4,6 +4,7 @@
 \alias{rave-input-output-card}
 \alias{input_card}
 \alias{output_card}
+\alias{output_cardset}
 \title{Input and output card (front-end element)}
 \usage{
 input_card(
@@ -26,6 +27,18 @@ output_card(
   ...,
   class = "",
   class_body = "padding-10",
+  class_foot = "padding-10",
+  href = "auto",
+  tools = NULL,
+  append_tools = TRUE,
+  module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())
+)
+
+output_cardset(
+  title,
+  ...,
+  class = "",
+  class_body = "no-padding",
   class_foot = "padding-10",
   href = "auto",
   tools = NULL,

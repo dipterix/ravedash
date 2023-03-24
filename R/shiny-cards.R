@@ -225,3 +225,54 @@ output_card <- function(title, ..., class = "", class_body = "padding-10",
   class <- dipsaus::combine_html_class(class, "ravedash-output-card")
   shidashi::card(title = title, ..., class = class, tools = all_tools, class_body = class_body, class_foot = class_foot)
 }
+
+
+#' @rdname rave-input-output-card
+#' @export
+output_cardset <- function(title, ..., class = "", class_body = "no-padding",
+                        class_foot = "padding-10", href = "auto",
+                        tools = NULL, append_tools = TRUE,
+                        module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())){
+
+  if(identical(href, "auto")){
+    href <- card_href(title, type = "output", module_id = module_id)
+  }
+
+  if(href %in% c("", "#", "/")) {
+    if( append_tools ){
+      all_tools <- list(
+        shidashi::card_tool(widget = "collapse"),
+        shidashi::card_tool(widget = "maximize"),
+        tools
+      )
+    } else {
+      all_tools <- list(
+        tools,
+        shidashi::card_tool(widget = "collapse"),
+        shidashi::card_tool(widget = "maximize")
+      )
+    }
+
+  } else {
+    if( append_tools ){
+      all_tools <- list(
+        shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
+        shidashi::card_tool(widget = "collapse"),
+        shidashi::card_tool(widget = "maximize"),
+        tools
+      )
+    } else {
+      all_tools <- list(
+        tools,
+        shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
+        shidashi::card_tool(widget = "collapse"),
+        shidashi::card_tool(widget = "maximize")
+      )
+    }
+
+  }
+
+  class <- dipsaus::combine_html_class(class, "ravedash-output-card-tabs")
+
+  shidashi::card_tabset(title = title, tools = all_tools, class = class, class_body = class_body, class_foot = class_foot, ...)
+}
