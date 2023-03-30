@@ -118,6 +118,10 @@ shidashi::show_notification
 #' @export
 shidashi::clear_notifications
 
+get_function_from <- function(name, package) {
+  asNamespace(package)[[name]]
+}
+
 #' @name random-text
 #' @title Randomly choose a text from a list of strings
 #' @param candidates character vectors, a list of candidates

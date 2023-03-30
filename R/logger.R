@@ -790,3 +790,176 @@ with_error_alert <- function(
 }
 
 
+#' @title Evaluate script in the background and show the results from
+#' shiny modal dialogue
+#' @param expr R expression to evaluate The script must be standalone
+#' @param quoted whether the expression has been quoted
+#' @param callback callback function to run once the evaluate finishes; must
+#' take one argument. The passed variable will be the evaluation results or
+#' an error condition (if error occurs)
+#' @param title,size modal title and size, see \code{\link[shiny]{showModal}}
+#' @param session shiny session object
+#' @param ... ignored, reserved for future use
+#' @returns A promise object
+#'
+#' @examples
+#'
+#' # Shiny server function
+#' server <- function(input, output, session) {
+#'   with_log_modal(
+#'     title = "Roll the dice",
+#'     expr = {
+#'       for(i in 1:10) {
+#'         Sys.sleep(runif(1, min = 0.5, max = 2))
+#'         cat(sprintf("Rolling dice result: %.0f\n", sample(6, 1)))
+#'       }
+#'     }
+#'   )
+#' }
+#'
+#' if(interactive()) {
+#' shiny::shinyApp(
+#'   ui = shiny::basicPage(),
+#'   server = server
+#' )
+#' }
+#'
+#'
+#' @export
+with_log_modal <- function(
+    expr, quoted = FALSE, callback = NULL, title = "Running...", size = "l",
+    session = shiny::getDefaultReactiveDomain(), ...) {
+
+  ns <- session$ns
+  if(!quoted) {
+    expr <- substitute(expr)
+  }
+
+  shiny::showModal(shiny::modalDialog(
+    title = title,
+    size = size, easyClose = FALSE,
+    shidashi::flex_container(
+      class = "fill-width max-height-500 overflow-y-auto",
+      style = "flex-direction: column-reverse; max-width: 100%; max-height: 500px; overflow: auto",
+      shidashi::flex_item(
+        shiny::tags$pre(
+          id = ns("verbatim_log___"),
+          class = "shiny-text-output",
+          .noWS = c("outside", "after-begin", "before-end")
+        )
+      )
+    ),
+    footer = dipsaus::actionButtonStyled(ns("@dismiss_modal"), "Running...", disabled = "")
+  ), session = session)
+
+  shiny::bindEvent(
+    safe_observe({
+      shiny::removeModal(session = session)
+    }),
+    session$input[["@dismiss_modal"]],
+    once = TRUE,
+    ignoreNULL = TRUE, ignoreInit = TRUE
+  )
+
+  local_reactives <- shiny::reactiveValues()
+  session$output[["verbatim_log___"]] <- shiny::renderPrint({
+    cat(local_reactives$msg, sep = "\n")
+  })
+
+  renderMsg <- function(msg) {
+    local_reactives$msg <- msg
+    # msg <- paste(msg, collapse = "\n")
+    # session$sendCustomMessage(
+    #   "shidashi.set_html",
+    #   list(
+    #     selector = sprintf("pre#%s", ns("verbatim_log___")),
+    #     content = paste0(
+    #       '<code class="hljs-literal" style="word-wrap:break-word;width: 100%;white-space: pre-wrap;">',
+    #       msg,
+    #       '</code>'
+    #     )
+    #   )
+    # )
+  }
+
+  logfile <- normalizePath(tempfile(pattern = "ravetmplog_"), mustWork = FALSE)
+  logfile <- gsub("\\\\", "/", logfile)
+
+  check <- dipsaus::rs_exec(
+    expr = expr,
+    quoted = TRUE,
+    as_promise = FALSE,
+    focus_on_console = TRUE,
+    nested_ok = TRUE,
+    name = title,
+    rs = FALSE,
+    wait = FALSE,
+    args = sprintf("--no-save --no-restore > %s 2>&1", shQuote(logfile, type = "cmd"))
+  )
+
+  logger("Initalizing job: [{ title }]", level = "trace", use_glue = TRUE)
+  renderMsg("Initializing...")
+
+
+  final <- function(result, has_error = FALSE) {
+
+    dipsaus::updateActionButtonStyled(
+      session = session, inputId = '@dismiss_modal',
+      disabled = FALSE, label = "Dismiss")
+
+    unlink(logfile)
+
+    logger("Job done: [{ title }]", level = "trace", use_glue = TRUE)
+
+    if(is.function(callback)) {
+      callback( result )
+    }
+  }
+
+  promise_f <- get_function_from("promise", "promises")
+  then_f <- get_function_from("then", "promises")
+
+  promise <- promise_f(function(resolve, reject) {
+    listener <- function() {
+      if(is.function(check)) {
+        code <- check()
+      } else {
+        code <- check
+      }
+      if(length(logfile) != 1 || is.na(logfile) || !file.exists(logfile) || logfile == '') {
+        msg <- NULL
+      } else {
+        suppressWarnings({
+          msg <- readLines(logfile)
+        })
+        if(!length(msg) || isTRUE(msg == "")) {
+          msg <- "Waiting for outputs..."
+        }
+      }
+
+      if(code == 0) {
+        renderMsg(c(msg, "Finished."))
+        resolve(attr(code, "rs_exec_result"))
+      } else if(code < 0) {
+        renderMsg(c(msg, "An error is detected."))
+        reject(attr(code, "rs_exec_error"))
+      } else {
+        renderMsg(msg)
+        later::later(listener, delay = 0.5)
+      }
+
+    }
+    listener()
+  })
+
+  then_f(
+    promise,
+    onFulfilled = function(result) {
+      final(result = result, has_error = FALSE)
+    },
+    onRejected = function(e) {
+      final(result = e, has_error = TRUE)
+    }
+  )
+}
+
