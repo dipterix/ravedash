@@ -867,19 +867,19 @@ with_log_modal <- function(
   })
 
   renderMsg <- function(msg) {
+    msg <- paste(msg, collapse = "\n")
     local_reactives$msg <- msg
-    # msg <- paste(msg, collapse = "\n")
-    # session$sendCustomMessage(
-    #   "shidashi.set_html",
-    #   list(
-    #     selector = sprintf("pre#%s", ns("verbatim_log___")),
-    #     content = paste0(
-    #       '<code class="hljs-literal" style="word-wrap:break-word;width: 100%;white-space: pre-wrap;">',
-    #       msg,
-    #       '</code>'
-    #     )
-    #   )
-    # )
+    session$sendCustomMessage(
+      "shidashi.set_html",
+      list(
+        selector = sprintf("pre#%s", ns("verbatim_log___")),
+        content = paste0(
+          '<code class="hljs-literal" style="word-wrap:break-word;width: 100%;white-space: pre-wrap;">',
+          msg,
+          '</code>'
+        )
+      )
+    )
   }
 
   logfile <- normalizePath(tempfile(pattern = "ravetmplog_"), mustWork = FALSE)
