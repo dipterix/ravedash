@@ -920,6 +920,9 @@ with_log_modal <- function(
   then_f <- get_function_from("then", "promises")
 
   promise <- promise_f(function(resolve, reject) {
+
+    later <- get_function_from("later", "later")
+
     listener <- function() {
       if(is.function(check)) {
         code <- check()
@@ -945,7 +948,7 @@ with_log_modal <- function(
         reject(attr(code, "rs_exec_error"))
       } else {
         renderMsg(msg)
-        later::later(listener, delay = 0.5)
+        later(listener, delay = 0.5)
       }
 
     }
