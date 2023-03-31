@@ -843,9 +843,13 @@ with_log_modal <- function(
       style = "flex-direction: column-reverse; max-width: 100%; max-height: 500px; overflow: auto",
       shidashi::flex_item(
         shiny::tags$pre(
-          id = ns("verbatim_log___"),
-          class = "shiny-text-output",
-          .noWS = c("outside", "after-begin", "before-end")
+          .noWS = c("outside", "after-begin", "before-end"),
+          shiny::tags$code(
+            id = ns("verbatim_log___"),
+            class = "shiny-text-output hljs-literal",
+            style = "word-wrap:break-word;width: 100%;white-space: pre-wrap;",
+            .noWS = c("outside", "after-begin", "before-end")
+          )
         )
       )
     ),
@@ -872,12 +876,8 @@ with_log_modal <- function(
     session$sendCustomMessage(
       "shidashi.set_html",
       list(
-        selector = sprintf("pre#%s", ns("verbatim_log___")),
-        content = paste0(
-          '<code class="hljs-literal" style="word-wrap:break-word;width: 100%;white-space: pre-wrap;">',
-          msg,
-          '</code>'
-        )
+        selector = sprintf("code#%s", ns("verbatim_log___")),
+        content = msg
       )
     )
   }
