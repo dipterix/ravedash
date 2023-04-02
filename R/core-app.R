@@ -263,6 +263,8 @@ launch_session <- function(
       }
     }
     jupyter_wd <- raveio::raveio_getopt('data_dir')
+    logger("Trying to launch JupyterLab from port [{ jupyter_port }]",
+           level = "info", use_glue = TRUE)
     rpymat::jupyter_check_launch(
       open_browser = FALSE, workdir = jupyter_wd, port = jupyter_port,
       host = host, async = TRUE)
@@ -699,8 +701,8 @@ start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
   if(is.na(jupyter)) {
     jupyter <- rs_available
   } else if(isTRUE(jupyter) && !rs_available) {
-    warning("RStudio is not available. Please manually launch Jupyter lab")
-    jupyter <- FALSE
+    # warning("RStudio is not available. Please manually launch Jupyter lab")
+    # jupyter <- FALSE
   }
   if(!rs_available) {
     as_job <- FALSE
