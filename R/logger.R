@@ -806,22 +806,32 @@ with_error_alert <- function(
 #'
 #' # Shiny server function
 #' server <- function(input, output, session) {
-#'   with_log_modal(
-#'     title = "Roll the dice",
-#'     expr = {
-#'       for(i in 1:10) {
-#'         Sys.sleep(runif(1, min = 0.5, max = 2))
-#'         cat(sprintf("Rolling dice result: %.0f\n", sample(6, 1)))
-#'       }
-#'     }
+#'   shiny::bindEvent(
+#'     shiny::observe({
+#'       with_log_modal(
+#'         title = "Roll the dice",
+#'         expr = {
+#'           for(i in 1:10) {
+#'             Sys.sleep(runif(1, min = 0.5, max = 2))
+#'             cat(sprintf("Rolling dice result: %.0f\n", sample(6, 1)))
+#'           }
+#'         }
+#'       )
+#'       return()
+#'     }),
+#'     input$btn,
+#'     ignoreNULL = TRUE, ignoreInit = TRUE
 #'   )
 #' }
 #'
 #' if(interactive()) {
-#' shiny::shinyApp(
-#'   ui = shiny::basicPage(),
-#'   server = server
-#' )
+#'   shiny::shinyApp(
+#'     ui = shiny::basicPage(
+#'       shiny::actionButton('btn', "Click me")
+#'     ),
+#'     server = server,
+#'     options = list(launch.browser = TRUE)
+#'   )
 #' }
 #'
 #'
@@ -883,7 +893,7 @@ with_log_modal <- function(
   }
 
   logfile <- normalizePath(tempfile(pattern = "ravetmplog_"), mustWork = FALSE)
-  logfile <- gsub("\\\\", "/", logfile)
+  logfile2 <- paste0(logfile, ".bak")
 
   check <- dipsaus::rs_exec(
     expr = expr,
@@ -894,7 +904,9 @@ with_log_modal <- function(
     name = title,
     rs = FALSE,
     wait = FALSE,
-    args = sprintf("--no-save --no-restore > %s 2>&1", shQuote(logfile, type = "cmd"))
+    args = "--no-save --no-restore --slave",
+    stdout = logfile,
+    stderr = logfile
   )
 
   logger("Initalizing job: [{ title }]", level = "trace", use_glue = TRUE)
@@ -908,6 +920,7 @@ with_log_modal <- function(
       disabled = FALSE, label = "Dismiss")
 
     unlink(logfile)
+    unlink(logfile2)
 
     logger("Job done: [{ title }]", level = "trace", use_glue = TRUE)
 
@@ -932,8 +945,9 @@ with_log_modal <- function(
       if(length(logfile) != 1 || is.na(logfile) || !file.exists(logfile) || logfile == '') {
         msg <- NULL
       } else {
+        file.copy(logfile, logfile2, overwrite = TRUE)
         suppressWarnings({
-          msg <- readLines(logfile)
+          msg <- readLines(logfile2)
         })
         if(!length(msg) || isTRUE(msg == "")) {
           msg <- "Waiting for outputs..."
@@ -965,4 +979,5 @@ with_log_modal <- function(
     }
   )
 }
+
 

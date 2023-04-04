@@ -41,22 +41,32 @@ shiny modal dialogue
 
 # Shiny server function
 server <- function(input, output, session) {
-  with_log_modal(
-    title = "Roll the dice",
-    expr = {
-      for(i in 1:10) {
-        Sys.sleep(runif(1, min = 0.5, max = 2))
-        cat(sprintf("Rolling dice result: \%.0f\n", sample(6, 1)))
-      }
-    }
+  shiny::bindEvent(
+    shiny::observe({
+      with_log_modal(
+        title = "Roll the dice",
+        expr = {
+          for(i in 1:10) {
+            Sys.sleep(runif(1, min = 0.5, max = 2))
+            cat(sprintf("Rolling dice result: \%.0f\n", sample(6, 1)))
+          }
+        }
+      )
+      return()
+    }),
+    input$btn,
+    ignoreNULL = TRUE, ignoreInit = TRUE
   )
 }
 
 if(interactive()) {
-shiny::shinyApp(
-  ui = shiny::basicPage(),
-  server = server
-)
+  shiny::shinyApp(
+    ui = shiny::basicPage(
+      shiny::actionButton('btn', "Click me")
+    ),
+    server = server,
+    options = list(launch.browser = TRUE)
+  )
 }
 
 
