@@ -81,6 +81,11 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       output <- session$output
     }
   } else {
+
+    # Sys.setenv("RAVEDASH_SESSION_ID" = .(x$session_id))
+    # options("ravedash.single.session" = .(!isFALSE(options$single_session)))
+    options("shiny.useragg" = FALSE)
+
     root_session <- session$rootScope()
     if(!identical(session$ns(NULL), module_id)){
       logger("`module_server_common`: session scope is inconsistent (expected: {module_id}, actual: {session$ns(NULL)}).", level = "warning", use_glue = TRUE)
@@ -492,6 +497,123 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     }),
     ravedash::get_rave_event("simplify_toggle"),
     ignoreInit = FALSE, ignoreNULL = TRUE
+  )
+
+  shiny::bindEvent(
+    safe_observe({
+
+      shiny::showModal(shiny::modalDialog(
+        title = "Interactive Terminal",
+        size = "xl",
+        easyClose = FALSE,
+        shidashi::flex_container(
+          class = "fill-width max-height-500 overflow-y-auto",
+          style = "flex-direction: column-reverse",
+          shidashi::flex_item(
+            style = "font-family: monospace!important;",
+            shiny::verbatimTextOutput(session$ns("_interactive_debugging_output_"), placeholder = TRUE)
+          )
+        ),
+        shiny::hr(),
+        shiny::fluidRow(
+          shiny::column(
+            width = 12L,
+            shiny::div(
+              style = 'font-family: "DejaVu Sans Mono", "Droid Sans Mono", "Lucida Console", Consolas, Monaco, monospace;',
+              class = "fill-width",
+              shiny::textAreaInput(
+                inputId = session$ns("_interactive_debugging_input_"),
+                label = "Write R command and hit enter/return button:",
+                resize = "vertical",
+                width = "100%"
+              )
+            )
+          ),
+          shiny::column(
+            width = 12L,
+            dipsaus::actionButtonStyled(
+              session$ns("_interactive_debugging_input_done_"),
+              label = "Execute debugging command"
+            )
+          )
+        )
+
+
+      ))
+
+    }),
+    ravedash::get_rave_event("interactive_debugging"),
+    ignoreInit = FALSE, ignoreNULL = TRUE
+  )
+
+  output[["_interactive_debugging_output_"]] <- shiny::renderPrint({
+    text <- local_reactives$debug_outputs
+    if(!length(text)) {
+      cat("(No output yet. Please enter R commands...)\n")
+    } else {
+      cat(text, sep = "\n")
+    }
+  })
+
+  shiny::bindEvent(
+    safe_observe({
+
+      clear_notifications()
+
+      command <- input[["_interactive_debugging_input_"]]
+      if(!length(command)) { return() }
+      command <- trimws(paste(command, collapse = "\n"))
+      if( command == "" ) { return() }
+
+      auto_clear <- TRUE
+      if(startsWith(command, "@keep")) {
+        auto_clear <- FALSE
+        command <- gsub("^@keep", "", command)
+      }
+
+      expr <- parse(text = command)
+
+      success <- FALSE
+
+      if(!is.environment(local_data$debug_env)) {
+        local_data$debug_env <- new.env(parent = globalenv())
+      }
+
+      outputs <- utils::capture.output({
+        msg <- utils::capture.output({
+          tryCatch({
+            res <- eval(expr, envir = local_data$debug_env)
+            print(res)
+            success <- TRUE
+          }, error = function(e) {
+            message(e)
+            traceback(e)
+          })
+        }, type = "message")
+        cat(msg, sep = "\n")
+      }, type = "output")
+
+      if(success && auto_clear) {
+        shiny::updateTextAreaInput(
+          session = session,
+          inputId = "_interactive_debugging_input_",
+          value = "")
+      }
+
+      command <- c("", strsplit(command, "\n")[[1]])
+      outputs <- paste("#> ", strsplit(paste(outputs, collapse = "\n"), "\n")[[1]])
+
+      shiny::isolate({
+        text <- c(local_reactives$debug_outputs, command, outputs)
+        if(length(text) > 1000) {
+          text <- utils::tail(text, 1000)
+        }
+        local_reactives$debug_outputs <- text
+      })
+
+    }, error_wrapper = "notification"),
+    input[["_interactive_debugging_input_done_"]],
+    ignoreNULL = TRUE, ignoreInit = TRUE
   )
 
   simplify_view <- function(action = c("toggle", "yes", "no")) {

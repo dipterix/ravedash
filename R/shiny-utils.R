@@ -696,6 +696,21 @@ ravedash_footer <- function(
             title = "Show more/fewer options"
           )
         ),
+        local({
+          if( raveio::raveio_getopt("interactive_debugging", default = FALSE) ) {
+            shiny::div(
+              class = "px-3 py-1",
+              shiny::a(
+                class = "btn btn-default rave-button",
+                href = "#",
+                `rave-action` = '{"type": "interactive_debugging"}',
+                shiny_icons['terminal'],
+                `data-toggle` = "tooltip",
+                title = "Interactive debugging"
+              )
+            )
+          } else { NULL }
+        }),
         # shiny::a(
         #   class = "dropdown-item shidashi-button",
         #   href = "#",
