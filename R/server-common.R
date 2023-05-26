@@ -122,6 +122,10 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     )
   )
   local_data <- dipsaus::fastmap2()
+  local_data$debug_env <- new.env(parent = globalenv())
+  local_data$debug_env$input <- input
+  local_data$debug_env$output <- output
+  local_data$debug_env$session <- session
 
   session$sendCustomMessage("shidashi.set_current_module", list(
     module_id = module_id,
@@ -575,13 +579,6 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
       success <- FALSE
 
-      if(!is.environment(local_data$debug_env)) {
-        local_data$debug_env <- new.env(parent = globalenv())
-        local_data$debug_env$input <- input
-        local_data$debug_env$output <- output
-        local_data$debug_env$session <- session
-      }
-
       outputs <- utils::capture.output({
         msg <- utils::capture.output({
           tryCatch({
@@ -728,6 +725,16 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       'server_tools$module_is_active("another_module")   # whether another module is active'
     )
   )
+
+  reactive_handlers$debug_env <- structure(
+    local_data$debug_env, class = c("ravedash_printable", class(local_data$debug_env)),
+    docs = paste(
+      sep = "\n",
+      "RAVE module debugging environment. \n",
+      "PLEASE DO NOT rely on this environment! It's for debugging ONLY!!!"
+    )
+  )
+
 
   # Add-on, register preset components
   if(is.environment(parse_env) || is.list(parse_env)){
