@@ -577,6 +577,9 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
       if(!is.environment(local_data$debug_env)) {
         local_data$debug_env <- new.env(parent = globalenv())
+        local_data$debug_env$input <- input
+        local_data$debug_env$output <- output
+        local_data$debug_env$session <- session
       }
 
       outputs <- utils::capture.output({
