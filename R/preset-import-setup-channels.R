@@ -439,128 +439,77 @@ presets_import_setup_channels <- function(
           auto_close = FALSE, buttons = FALSE, icon = "info"
         )
 
-        on.exit({
+        tryCatch({
+          result <- pipeline$run(
+            names = "validation_result",
+            scheduler = "none",
+            type = "smart",
+            async = FALSE,
+            as_promise = FALSE
+          )
           Sys.sleep(time = 0.5)
           dipsaus::close_alert2()
-        }, add = TRUE, after = TRUE)
-
-        result <- pipeline$run(
-          names = "validation_result",
-          scheduler = "none",
-          type = "smart",
-          async = FALSE,
-          as_promise = TRUE
-        )
-
-        result$promise$then(
-          onFulfilled = function(...){
-
-            Sys.sleep(time = 0.5)
-            dipsaus::close_alert2()
-            #
-            # validation_result <- raveio::pipeline_read(
-            #   var_names = "validation_result",
-            #   pipe_dir = comp$container$pipeline_path
-            # )
-            #
-            #
-            #
-            # if(isFALSE(validation_result)) {
-            #   reasons <- attr(validation_result,"reason")
-            #   shidashi::show_notification(
-            #     title = "Validation failure",
-            #     type = "danger",
-            #     autohide = FALSE, close = TRUE,
-            #     message = shiny::div(
-            #       shiny::p(
-            #         "Found the following issues in the data. Please correct them."
-            #       ),
-            #       shiny::tagList(
-            #         lapply(names(reasons), function(nm){
-            #           items <- reasons[[nm]]
-            #           if(length(items)) {
-            #             shiny::p(
-            #               nm,
-            #               shiny::tags$ul(
-            #                 lapply(items, shiny::tags$li)
-            #               )
-            #             )
-            #           } else {
-            #             shiny::p(nm)
-            #           }
-            #
-            #         })
-            #       )
-            #     )
-            #   )
-            #   return()
-            # }
-
-            shiny::showModal(
-              shiny::modalDialog(
-                title = "Ready to import data",
-                easyClose = FALSE, size = "l",
-                footer = shiny::tagList(
-                  shiny::modalButton("Cancel"),
-                  dipsaus::actionButtonStyled(
-                    inputId = comp$get_sub_element_id("do_import", TRUE),
-                    label = "Import data"
+          shiny::showModal(
+            shiny::modalDialog(
+              title = "Ready to import data",
+              easyClose = FALSE, size = "l",
+              footer = shiny::tagList(
+                shiny::modalButton("Cancel"),
+                dipsaus::actionButtonStyled(
+                  inputId = comp$get_sub_element_id("do_import", TRUE),
+                  label = "Import data"
+                )
+              ),
+              shiny::div(
+                "Please make sure the following information is correct before proceeding: ",
+                shiny::tags$ul(
+                  shiny::tags$li(
+                    "Subject: ", preproc$subject$subject_id
+                  ),
+                  shiny::tags$li(
+                    "Session blocks: ", paste(blocks, collapse = ", ")
+                  ),
+                  shiny::tags$li(
+                    sprintf("Session format: %s (%s)",
+                            all_formats[[format]],
+                            names(all_formats)[[format]])
+                  ),
+                  shiny::tags$li(
+                    "Electrode channels: ", dipsaus::deparse_svec(electrodes)
+                  ),
+                  shiny::tags$li(
+                    sprintf("Sample rate: %.4f Hz", sample_rate)
+                  ),
+                  shiny::tags$li(
+                    sprintf("Physical unit: %s", physical_unit)
                   )
                 ),
-                shiny::div(
-                  "Please make sure the following information is correct before proceeding: ",
-                  shiny::tags$ul(
-                    shiny::tags$li(
-                      "Subject: ", preproc$subject$subject_id
-                    ),
-                    shiny::tags$li(
-                      "Session blocks: ", paste(blocks, collapse = ", ")
-                    ),
-                    shiny::tags$li(
-                      sprintf("Session format: %s (%s)",
-                              all_formats[[format]],
-                              names(all_formats)[[format]])
-                    ),
-                    shiny::tags$li(
-                      "Electrode channels: ", dipsaus::deparse_svec(electrodes)
-                    ),
-                    shiny::tags$li(
-                      sprintf("Sample rate: %.4f Hz", sample_rate)
-                    ),
-                    shiny::tags$li(
-                      sprintf("Physical unit: %s", physical_unit)
-                    )
-                  ),
 
-                  {
-                    if(any_imported){
-                      "* The subject has been imported before. Proceed and you will need to re-process all other modules, including Wavelet."
-                    } else {
-                      NULL
-                    }
+                {
+                  if(any_imported){
+                    "* The subject has been imported before. Proceed and you will need to re-process all other modules, including Wavelet."
+                  } else {
+                    NULL
                   }
+                }
 
-                )
               )
             )
-          },
-          onRejected = function(e) {
-            dipsaus::close_alert2()
+          )
+        }, error = function(e) {
+          Sys.sleep(time = 0.5)
+          dipsaus::close_alert2()
 
-            e <- logger_error_condition(e)
-            dipsaus::shiny_alert2(
-              title = "Validation failure",
-              icon = "error",
-              text = e$message,
-              buttons = "Gotcha",
-              danger_mode = TRUE,
-              auto_close = FALSE
-            )
-
-            # print(class(e))
-            # error_notification(e, title = "Validation failure", autohide = FALSE)
-          }
-        )
+          e <- logger_error_condition(e)
+          dipsaus::shiny_alert2(
+            title = "Validation failure",
+            icon = "error",
+            text = e$message,
+            buttons = "Gotcha",
+            danger_mode = TRUE,
+            auto_close = FALSE
+          )
+        })
 
       })
 
@@ -621,57 +570,40 @@ presets_import_setup_channels <- function(
           buttons = FALSE
         )
 
-        result <- pipeline$run(
-          scheduler = "none",
-          type = "smart",
-          async = FALSE,
-          as_promise = TRUE
-        )
-        # result <- raveio::pipeline_run(
-        #   pipe_dir = comp$container$pipeline_path,
-        #   scheduler = "none",
-        #   type = "smart"
-        # )
-
-        result$promise$then(
-          onFulfilled = function(...){
-            dipsaus::close_alert2()
-            shiny::removeModal()
-            dipsaus::shiny_alert2(
-              title = "Success!",
-              text = "Finished importing the data. Please proceed to the next modules.",
-              icon = "success",
-              danger_mode = FALSE,
-              auto_close = TRUE,
-              buttons = "Got it!"
-            )
-          },
-          onRejected = function(e) {
-            dipsaus::close_alert2()
-            ravedash::logger_error_condition(e)
-            dipsaus::shiny_alert2(
-              title = "Error",
-              text = paste(c(
-                "Found errors while trying to import data: ",
-                e$message
-              ), collapse = "\n"),
-              icon = "error",
-              danger_mode = TRUE,
-              auto_close = TRUE,
-              buttons = "Dismiss"
-            )
-          }
-        )
-        # pipeline_set(.list = settings)
-
-        # raveio::rave_import(
-        #   project_name = preproc$subject$project_name,
-        #   subject_code = preproc$subject$subject_code,
-        #   blocks = blocks, electrodes = electrodes,
-        #   sample_rate = sample_rate, format = format,
-        #   conversion = ifelse(isTRUE(physical_unit == "NA"), NA, physical_unit),
-        #   data_type = "LFP", add = FALSE, skip_validation = TRUE
-        # )
+        tryCatch({
+          result <- pipeline$run(
+            scheduler = "none",
+            type = "smart",
+            async = FALSE,
+            as_promise = FALSE
+          )
+          Sys.sleep(0.5)
+          dipsaus::close_alert2()
+          shiny::removeModal()
+          dipsaus::shiny_alert2(
+            title = "Success!",
+            text = "Finished importing the data. Please proceed to the next modules.",
+            icon = "success",
+            danger_mode = FALSE,
+            auto_close = TRUE,
+            buttons = "Got it!"
+          )
+        }, error = function(e) {
+          Sys.sleep(0.5)
+          dipsaus::close_alert2()
+          ravedash::logger_error_condition(e)
+          dipsaus::shiny_alert2(
+            title = "Error",
+            text = paste(c(
+              "Found errors while trying to import data: ",
+              e$message
+            ), collapse = "\n"),
+            icon = "error",
+            danger_mode = TRUE,
+            auto_close = TRUE,
+            buttons = "Dismiss"
+          )
+        })
       }),
       comp$get_sub_element_input("do_import"),
       ignoreNULL = TRUE, ignoreInit = TRUE
