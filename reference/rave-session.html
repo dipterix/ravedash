@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.9</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,8 +65,9 @@
 <span>  <span class="va">x</span>,</span>
 <span>  host <span class="op">=</span> <span class="st">"127.0.0.1"</span>,</span>
 <span>  port <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  modules <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>jupyter <span class="op">=</span> <span class="cn">TRUE</span>, jupyter_port <span class="op">=</span> <span class="cn">NULL</span>, as_job <span class="op">=</span> <span class="cn">TRUE</span>, launch_browser <span class="op">=</span></span>
-<span>    <span class="cn">TRUE</span>, single_session <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>    <span class="cn">TRUE</span>, single_session <span class="op">=</span> <span class="cn">FALSE</span>, page_title <span class="op">=</span> <span class="cn">NULL</span>, sidebar_open <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">session_getopt</span><span class="op">(</span><span class="va">keys</span>, default <span class="op">=</span> <span class="cn">NA</span>, namespace <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span></span>
@@ -82,6 +83,9 @@
 <span><span class="fu">start_session</span><span class="op">(</span></span>
 <span>  <span class="va">session</span>,</span>
 <span>  new <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  modules <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  page_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sidebar_open <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  host <span class="op">=</span> <span class="st">"127.0.0.1"</span>,</span>
 <span>  port <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  jupyter <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -110,6 +114,12 @@
 
 <dt>port</dt>
 <dd><p>port to listen</p></dd>
+
+
+<dt>modules</dt>
+<dd><p>selected module ID to launch; used to only show a subset of
+modules; default is <code>NULL</code> (select all modules); hidden modules are
+always selected</p></dd>
 
 
 <dt>options</dt>
@@ -154,6 +164,17 @@ numeric vectors, characters)</p></dd>
 <dt>new</dt>
 <dd><p>whether to create a new session instead of using the most recent
 one, default is false</p></dd>
+
+
+<dt>page_title</dt>
+<dd><p>session web page title and logo text; can have length
+of either one (page title and logo text are the same); or length of two,
+with page title be the first element and logo text be the second.</p></dd>
+
+
+<dt>sidebar_open</dt>
+<dd><p>whether to open the side-bar by default; default <code>TRUE</code>
+when more than one module is to be displayed</p></dd>
 
 
 <dt>jupyter</dt>
