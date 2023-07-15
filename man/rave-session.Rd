@@ -22,8 +22,9 @@ launch_session(
   x,
   host = "127.0.0.1",
   port = NULL,
+  modules = NULL,
   options = list(jupyter = TRUE, jupyter_port = NULL, as_job = TRUE, launch_browser =
-    TRUE, single_session = FALSE)
+    TRUE, single_session = FALSE, page_title = NULL, sidebar_open = TRUE)
 )
 
 session_getopt(keys, default = NA, namespace = "default")
@@ -39,6 +40,9 @@ list_session(path = session_root(), order = c("none", "ascend", "descend"))
 start_session(
   session,
   new = NA,
+  modules = NULL,
+  page_title = NULL,
+  sidebar_open = TRUE,
   host = "127.0.0.1",
   port = NULL,
   jupyter = NA,
@@ -60,6 +64,10 @@ shutdown_session(
 \item{host}{host 'IP' address, default is 'localhost'}
 
 \item{port}{port to listen}
+
+\item{modules}{selected module ID to launch; used to only show a subset of
+modules; default is \code{NULL} (select all modules); hidden modules are
+always selected}
 
 \item{options}{additional options, including \code{jupyter},
 \code{jupyter_port}, \code{as_job}, and \code{launch_browser}}
@@ -86,6 +94,13 @@ numeric vectors, characters)}
 
 \item{new}{whether to create a new session instead of using the most recent
 one, default is false}
+
+\item{page_title}{session web page title and logo text; can have length
+of either one (page title and logo text are the same); or length of two,
+with page title be the first element and logo text be the second.}
+
+\item{sidebar_open}{whether to open the side-bar by default; default \code{TRUE}
+when more than one module is to be displayed}
 
 \item{jupyter}{logical, whether to launch 'jupyter' instances when starting
 'RAVE' sessions, or to stop the 'jupyter' instances when shutting down. It

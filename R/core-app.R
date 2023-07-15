@@ -65,6 +65,14 @@ ensure_template <- function(path, use_cache = TRUE){
 #' should be obtained
 #' @param default default value if key is missing
 #' @param namespace namespace of the option; default is \code{'default'}
+#' @param modules selected module ID to launch; used to only show a subset of
+#' modules; default is \code{NULL} (select all modules); hidden modules are
+#' always selected
+#' @param page_title session web page title and logo text; can have length
+#' of either one (page title and logo text are the same); or length of two,
+#' with page title be the first element and logo text be the second.
+#' @param sidebar_open whether to open the side-bar by default; default \code{TRUE}
+#' when more than one module is to be displayed
 #' @param ...,.list named list of key-value pairs of session options. The
 #' keys must be characters, and values must be simple data types (such as
 #' numeric vectors, characters)
@@ -182,6 +190,7 @@ new_session <- function(update = FALSE) {
   module_conf$divider[["Add-ons"]] <- list(order = 99.99)
 
   raveio::save_yaml(module_conf, file = file.path(app_path, "modules.yaml"))
+  raveio::save_yaml(module_conf, file = file.path(app_path, "modules_backup.yaml"))
   # file.copy(
   #   from = file.path(module_root_path, "modules.yaml"),
   #   to = file.path(app_path, "modules.yaml"),
@@ -227,21 +236,78 @@ use_session.default <- function(x) {
 #' @rdname rave-session
 #' @export
 launch_session <- function(
-    x, host = "127.0.0.1", port = NULL, options = list(
+    x,
+    host = "127.0.0.1",
+    port = NULL,
+    modules = NULL,
+    options = list(
       jupyter = TRUE,
       jupyter_port = NULL,
       as_job = TRUE,
       launch_browser = TRUE,
-      single_session = FALSE
+      single_session = FALSE,
+      page_title = NULL,
+      sidebar_open = TRUE
     )) {
   sess <- use_session(x)
+
+  path_module_config <- file.path(sess$app_path, "modules.yaml")
+  path_module_config_backup <- file.path(sess$app_path, "modules_backup.yaml")
+
+  if(!file.exists(path_module_config_backup)) {
+    file.copy(path_module_config, path_module_config_backup)
+  }
+
+  sidebar_open <- options$sidebar_open
+  if(length(sidebar_open) != 1) {
+    sidebar_open <- NA
+  } else {
+    sidebar_open <- as.logical(sidebar_open)
+  }
+  if(length(modules)) {
+    if( inherits(modules, "fastmap2") ) {
+      module_config <- modules
+    } else {
+      module_config <- raveio::load_yaml(path_module_config_backup)
+      sel <- modules %in% names(module_config$modules)
+      if(!all(sel)) {
+        warning("The following modules are not available: ", paste(modules[!sel], collapse = ", "))
+        modules <- modules[sel]
+      }
+
+      module_config$modules <- structure(
+        lapply(seq_along(modules), function(ii) {
+          module_info <- module_config$modules[[ modules[[ii]] ]]
+          module_info$group <- NULL
+
+          if(isTRUE(module_info$hidden)) { return(module_info) }
+          module_info$order <- ii
+          module_info
+        }),
+        names = modules
+      )
+      module_config$`@remove`(c("groups", "divider"))
+    }
+    raveio::save_yaml(module_config, path_module_config, sorted = TRUE)
+
+    if(!isTRUE(sidebar_open) && length(module_config$modules) == 1) {
+      sidebar_open <- FALSE
+    }
+  } else {
+    file.copy( path_module_config_backup, path_module_config, overwrite = TRUE )
+  }
+
+  if(!isFALSE(sidebar_open)) {
+    sidebar_open <- TRUE
+  }
 
   default_options <- list(
     jupyter = TRUE,
     jupyter_port = NULL,
     as_job = TRUE,
     launch_browser = TRUE,
-    single_session = FALSE
+    single_session = FALSE,
+    page_title = NULL
   )
 
   for(nm in names(options)) {
@@ -249,6 +315,31 @@ launch_session <- function(
   }
 
   options <- default_options
+
+
+  zzz_path <- file.path(sess$app_path, "R", "zzz.R")
+  site_config <- ""
+  if(!sidebar_open) {
+    site_config <- c(site_config, "additional_body_class <- 'sidebar-collapse'")
+  }
+  if(length(options$page_title)) {
+    if(length(options$page_title) == 1) {
+      options$page_title <- c(options$page_title, options$page_title)
+    }
+    site_config <- c(site_config, c(
+      'page_title <- function(complete = TRUE){',
+      '  if(complete){',
+      sprintf('    re <- "%s"', options$page_title[[1]]),
+      '  } else {',
+      sprintf('    re <- "%s"', options$page_title[[2]]),
+      '  }',
+      '  re',
+      '}'
+    ))
+  }
+  writeLines(site_config, zzz_path)
+
+
 
   jupyter_port <- options$jupyter_port
 
@@ -646,9 +737,10 @@ list_session <- function(path = session_root(), order = c("none", "ascend", "des
 
 #' @rdname rave-session
 #' @export
-start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
-                          jupyter = NA, jupyter_port = NULL, as_job = TRUE,
-                          launch_browser = TRUE, single_session = FALSE) {
+start_session <- function(
+    session, new = NA, modules = NULL, page_title = NULL, sidebar_open = TRUE,
+    host = "127.0.0.1", port = NULL, jupyter = NA, jupyter_port = NULL,
+    as_job = TRUE, launch_browser = TRUE, single_session = FALSE) {
 
   if(!missing(session) && length(session)) {
     if(isTRUE(new)) {
@@ -709,13 +801,21 @@ start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
   }
 
   if(as_job) {
-    job_id <- launch_session(x = session, host = host, port = port, options = list(
-      jupyter = jupyter,
-      jupyter_port = jupyter_port,
-      as_job = as_job,
-      launch_browser = launch_browser,
-      single_session = single_session
-    ))
+    job_id <- launch_session(
+      x = session,
+      host = host,
+      port = port,
+      modules = modules,
+      options = list(
+        jupyter = jupyter,
+        jupyter_port = jupyter_port,
+        as_job = as_job,
+        launch_browser = launch_browser,
+        single_session = single_session,
+        page_title = page_title,
+        sidebar_open = sidebar_open
+      )
+    )
     if(as_job) {
       logger("RAVE application [{session$session_id}] has been launched. Detailed information has been printed out in the `jobs` panel.", level = "info", use_glue = TRUE, .trim = FALSE)
     }
@@ -725,13 +825,21 @@ start_session <- function(session, new = NA, host = "127.0.0.1", port = NULL,
       job_id = job_id
     )))
   } else {
-    return(launch_session(x = session, host = host, port = port, options = list(
-      jupyter = jupyter,
-      jupyter_port = jupyter_port,
-      as_job = as_job,
-      launch_browser = launch_browser,
-      single_session = single_session
-    )))
+    return(launch_session(
+      x = session,
+      host = host,
+      port = port,
+      modules = modules,
+      options = list(
+        jupyter = jupyter,
+        jupyter_port = jupyter_port,
+        as_job = as_job,
+        launch_browser = launch_browser,
+        single_session = single_session,
+        page_title = page_title,
+        sidebar_open = sidebar_open
+      )
+    ))
   }
 }
 
