@@ -149,7 +149,8 @@ presets_loader_subject(
   varname = "subject_code",
   label = "Subject",
   loader_project_id = "loader_project_name",
-  checks = c("notch", "wavelet")
+  checks = c("notch", "wavelet"),
+  allow_new = FALSE
 )
 
 presets_loader_subject_only(
@@ -229,6 +230,9 @@ existing references}
 
 \item{checks}{whether to check if subject has been applied with 'Notch'
 filters or 'Wavelet'; default is both.}
+
+\item{allow_new}{whether to allow new subject to be created; ignored when
+checks exist}
 
 \item{from_module}{which module to extract input settings}
 
