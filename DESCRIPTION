@@ -26,6 +26,7 @@ Imports:
     shinyvalidate,
     htmlwidgets,
     R6,
+    checkmate,
     cachem (>= 1.0.6)
 Suggests: 
     htmltools,

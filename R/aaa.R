@@ -3,6 +3,7 @@
 #' @importFrom dipsaus %OF%
 #' @importFrom shinyvalidate InputValidator
 #' @importFrom R6 R6Class
+#' @importFrom checkmate assert
 NULL
 
 gray_label_color <- "#c8c9ca"
