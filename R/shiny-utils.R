@@ -874,6 +874,8 @@ shiny_cache <- function(namespace, session = shiny::getDefaultReactiveDomain()) 
 #' @returns A shiny observe instance
 #' @examples
 #'
+#' if(interactive()) {
+#'
 #' library(ravedash)
 #' shiny::shinyApp(
 #'   ui = shiny::basicPage(
@@ -896,6 +898,8 @@ shiny_cache <- function(namespace, session = shiny::getDefaultReactiveDomain()) 
 #'     })
 #'   }
 #' )
+#'
+#' }
 #'
 #' @export
 shiny_check_input <- function(

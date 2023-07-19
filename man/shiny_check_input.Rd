@@ -45,6 +45,8 @@ Check shiny inputs and modify if validation fails
 }
 \examples{
 
+if(interactive()) {
+
 library(ravedash)
 shiny::shinyApp(
   ui = shiny::basicPage(
@@ -67,5 +69,7 @@ shiny::shinyApp(
     })
   }
 )
+
+}
 
 }
