@@ -272,6 +272,33 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
         )
       })
 
+      render_url <- function(url, keyword) {
+        if(!length(url)) { return() }
+
+        urls <- trimws(unlist(strsplit(url, "(^|[, \n\t]{1,})http")))
+        urls <- urls[urls != ""]
+        if(!length(urls)) { return() }
+
+        urls <- sprintf("http%s", urls)
+
+        shiny::tagList(
+          shiny::tags$dt(keyword),
+          shiny::tags$dd(
+            shiny::tags$ul(
+              shiny::tagList(lapply(urls, function(url) {
+                shiny::tags$li(
+                  shiny::a(
+                    href = url,
+                    target = "_blank",
+                    url, shiny_icons[["external-link"]]
+                  )
+                )
+              }))
+            )
+          ),
+        )
+      }
+
       shiny::showModal(
         shiny::modalDialog(
           title = "Module Information",
@@ -295,25 +322,10 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
                 shiny::tags$dt("License: "),
                 shiny::tags$dd(desc$License),
 
-                shiny::tags$dt("Website & Bug Reports: "),
-                shiny::tags$dd(
-                  shiny::tags$ul(
-                    lapply(unlist(strsplit(
-                      c(desc$URL, desc$BugReports), "(^|[, \n\t]{1,})http"
-                    )), function(url) {
-                      url <- trimws(url)
-                      if(!nzchar(url)) { return() }
-                      url <- sprintf("http%s", url)
-                      shiny::tags$li(
-                        shiny::a(
-                          href = url,
-                          target = "_blank",
-                          url, shiny_icons[["external-link"]]
-                        )
-                      )
-                    })
-                  )
-                ),
+
+                render_url(desc$URL, "Website: "),
+
+                render_url(desc$BugReports, "Bug Reports: "),
 
                 shiny::tags$dt("Author list: "),
                 shiny::tags$dd(shiny::tags$ul(
