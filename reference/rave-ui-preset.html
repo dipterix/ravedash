@@ -12,7 +12,7 @@ new_rave_shiny_component_container."><!-- mathjax --><script src="https://cdnjs.
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.12</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -181,7 +181,8 @@ new_rave_shiny_component_container."><!-- mathjax --><script src="https://cdnjs.
 <span>  varname <span class="op">=</span> <span class="st">"subject_code"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Subject"</span>,</span>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
-<span>  checks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"notch"</span>, <span class="st">"wavelet"</span><span class="op">)</span></span>
+<span>  checks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"notch"</span>, <span class="st">"wavelet"</span><span class="op">)</span>,</span>
+<span>  allow_new <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_subject_only</span><span class="op">(</span></span>
@@ -304,6 +305,11 @@ existing references</p></dd>
 <dt>checks</dt>
 <dd><p>whether to check if subject has been applied with 'Notch'
 filters or 'Wavelet'; default is both.</p></dd>
+
+
+<dt>allow_new</dt>
+<dd><p>whether to allow new subject to be created; ignored when
+checks exist</p></dd>
 
 
 <dt>from_module</dt>
