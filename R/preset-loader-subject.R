@@ -15,6 +15,7 @@ presets_loader_subject <- function(
   }
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- loader_project_id
+  comp$no_save <- c("create_new", "cancel_new", "new_subject_code")
 
   comp$ui_func <- function(id, value, depends){
     shiny::selectInput(

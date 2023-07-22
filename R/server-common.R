@@ -254,6 +254,118 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     ignoreInit = FALSE, ignoreNULL = TRUE
   )
 
+
+  shiny::bindEvent(
+    observe({
+      # get
+      if(!module_is_active()) { return() }
+      module_info <- get_active_module_info()
+
+      desc <- tryCatch({
+        raveio::get_module_description(module_info$path)
+      }, error = function(e) {
+        list(
+          Package = module_info$id,
+          title = "N/A",
+          Description = "(No description)",
+          License = "No license found"
+        )
+      })
+
+      shiny::showModal(
+        shiny::modalDialog(
+          title = "Module Information",
+          footer = shiny::modalButton("Dismiss"),
+          size = "l",
+          easyClose = FALSE,
+          shiny::fluidRow(
+            shiny::column(
+              width = 12L,
+              shiny::tags$dl(
+
+                shiny::tags$dt("Module ID: "),
+                shiny::tags$dd(desc$Package, sprintf(" (version %s)", desc$Version)),
+
+                shiny::tags$dt("Title: "),
+                shiny::tags$dd(desc$Title),
+
+                shiny::tags$dt("Description: "),
+                shiny::tags$dd(desc$Description),
+
+                shiny::tags$dt("License: "),
+                shiny::tags$dd(desc$License),
+
+                shiny::tags$dt("Website & Bug Reports: "),
+                shiny::tags$dd(
+                  shiny::tags$ul(
+                    lapply(unlist(strsplit(
+                      c(desc$URL, desc$BugReports), "(^|[, \n\t]{1,})http"
+                    )), function(url) {
+                      url <- trimws(url)
+                      if(!nzchar(url)) { return() }
+                      url <- sprintf("http%s", url)
+                      shiny::tags$li(
+                        shiny::a(
+                          href = url,
+                          target = "_blank",
+                          url, shiny_icons[["external-link"]]
+                        )
+                      )
+                    })
+                  )
+                ),
+
+                shiny::tags$dt("Author list: "),
+                shiny::tags$dd(shiny::tags$ul(
+                  lapply(desc$Author, function(aut) {
+                    shiny::tags$li(format(aut))
+                  })
+                )),
+
+                local({
+                  if(length(desc$Citations)) {
+                    shiny::tagList(
+                      shiny::tags$dt("Citation list: "),
+                      shiny::tags$dd(
+                        shiny::tags$ol(
+                          lapply(desc$Citations, function(citation) {
+                            header <- attr(.subset2(citation, 1), "header")
+                            if(length(header)) {
+                              header <- shiny::tags$small(header)
+                            } else {
+                              header <- NULL
+                            }
+                            shiny::tags$li(
+                              header,
+                              shiny::HTML(
+                                gsub(
+                                  "<a ([^>]{0,})>",
+                                  "<a target='_blank' \\1>",
+                                  format(citation, style = "html"),
+                                  ignore.case = TRUE
+                                )
+                              )
+                            )
+                          })
+                        )
+                      )
+                    )
+                  } else {
+                    NULL
+                  }
+                })
+
+              )
+            )
+          )
+        )
+      )
+
+    }),
+    ravedash::get_rave_event("citation_information"),
+    ignoreInit = FALSE, ignoreNULL = TRUE
+  )
+
   output[["__loader_short_message__"]] <- shiny::renderText({
     msg <- trimws(paste(ravedash::get_rave_event('loader_message'), collapse = ""))
     if(msg == "") {

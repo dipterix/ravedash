@@ -764,6 +764,14 @@ get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
       # rave_id <- session$cache$get("rave_id", missing = "")
       rave_id <- session$userData$ravedash$rave_id
       info$rave_id <- rave_id
+
+      # get session information
+      session_path <- current_session_path()
+      if(is.null(session_path)) {
+        session_path <- "."
+      }
+      info$path <- normalizePath(file.path(session_path, "modules", info$id), mustWork = FALSE)
+
       return(info)
     }
   }
