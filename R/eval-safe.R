@@ -217,6 +217,7 @@ standalone_viewer <- function(
 ) {
 
   root_session <- session$rootScope()
+  local_data <- dipsaus::fastmap2()
 
   # query_string <- "/?type=widget&output_id=plot_overall&rave_id=Pnd8MuxNVsZGcbrRWn8G&module=standalone_viewer"
 
@@ -289,7 +290,17 @@ standalone_viewer <- function(
       nms <- nms[startsWith(nms, ns2("")) & !startsWith(nms, "@")]
       if(length(nms)) {
         for(nm in nms) {
-          dipsaus::set_shiny_input(session = module_session, inputId = nm, value = inputs[[nm]], priority = "event", method = "proxy")
+          signature <- dipsaus::digest(inputs[[nm]])
+          if(!identical(signature, local_data[[nm]])) {
+            dipsaus::set_shiny_input(
+              session = module_session,
+              inputId = nm,
+              value = inputs[[nm]],
+              priority = "event",
+              method = "proxy"
+            )
+            local_data[[nm]] <- signature
+          }
         }
       }
     })
