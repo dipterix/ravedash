@@ -12,7 +12,7 @@ in another browser window, or downloading the rendered data."><!-- mathjax --><s
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.17</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,10 +73,17 @@ in another browser window, or downloading the rendered data.</p>
 <span><span class="fu">register_output</span><span class="op">(</span></span>
 <span>  <span class="va">render_function</span>,</span>
 <span>  <span class="va">outputId</span>,</span>
-<span>  export_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"custom"</span>, <span class="st">"pdf"</span>, <span class="st">"csv"</span>, <span class="st">"3dviewer"</span>, <span class="st">"htmlwidget"</span><span class="op">)</span>,</span>
-<span>  export_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  quoted <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span>,</span>
 <span>  output_opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  quoted <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  download_function <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  download_fileformat <span class="op">=</span></span>
+<span>    <span class="st">"{ outputId }-{ format(Sys.time(), '%b_%d_%Y_%H_%M_%S') }.{ extension }"</span>,</span>
+<span>  output_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"image"</span>, <span class="st">"data"</span>, <span class="st">"threeBrain"</span>, <span class="st">"no-download"</span><span class="op">)</span>,</span>
+<span>  extensions <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Download widget"</span>,</span>
+<span>  cancel_btn <span class="op">=</span> <span class="st">"Cancel"</span>,</span>
+<span>  confirm_btn <span class="op">=</span> <span class="st">"Download"</span>,</span>
 <span>  session <span class="op">=</span> <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/domains.html" class="external-link">getDefaultReactiveDomain</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -105,20 +112,40 @@ in another browser window, or downloading the rendered data.</p>
 <dd><p>shiny render function</p></dd>
 
 
-<dt>export_type</dt>
-<dd><p>type of export file formats supported, options are
-<code>'none'</code> (do not export), <code>'custom'</code>, <code>'pdf'</code> (for figures),
-<code>'csv'</code> (for tables), <code>'3dviewer'</code> (for 'RAVE' 3D viewers),
-<code>'htmlwidget'</code> (for 'HTML' widgets).</p></dd>
-
-
-<dt>export_settings</dt>
-<dd><p>a list of settings, depending on export type; see
-'Details'.</p></dd>
-
-
 <dt>quoted</dt>
 <dd><p>whether <code>render_function</code> is quoted; default is false</p></dd>
+
+
+<dt>download_function</dt>
+<dd><p>core function that writes the data into the files;
+default is set for <code>'image'</code> and <code>'threeBrain'</code> automatically;
+see 'Default' and 'Examples'.</p></dd>
+
+
+<dt>download_fileformat</dt>
+<dd><p>download file format, supports 'glue'</p></dd>
+
+
+<dt>output_type</dt>
+<dd><p>type of export file formats supported, options are
+<code>'image'</code> (for figures, default), <code>'data'</code>,
+<code>'threeBrain'</code> (for 'RAVE' 3D viewers), and
+<code>'no-download'</code> (do not export).</p></dd>
+
+
+<dt>extensions</dt>
+<dd><p>a list of file extensions and their descriptions;
+the names will be used to display the modal selectors, and values are the
+underlying extension read by <code>download_fileformat</code></p></dd>
+
+
+<dt>title, cancel_btn, confirm_btn, ...</dt>
+<dd><p>title, button labels, and additional
+UI elements that are to be shown in the modal</p></dd>
+
+
+<dt>...</dt>
+<dd><p>other 'HTML' elements to show in the modal</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -129,9 +156,24 @@ in another browser window, or downloading the rendered data.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Default shiny output does not provide handlers for downloading the
-figures or data, and is often limited to the 'HTML' layouts. 'RAVE' dashboard
-provides such mechanisms automatically with few extra configurations.</p>
+    <p>The following steps are done when <code>register_output</code> is called:</p>
+<p>* Register the render function to shiny output <code>output[[outputId]]</code>
+* Register the render information to session which can be retrieved via <code>get_output</code>
+* Register (if <code>download_function</code> is a function) a download handler that listen to the shiny event. The event ID is <code>paste0(outputId, '__download2')</code>.</p>
+<p>When downloading event is triggered, a modal will pop up asking for exporting
+format (always exists) and image dimensions (if output type is <code>'image'</code>)
+or title (when output type is <code>'threeBrain'</code>). Users will choose the
+proper inputs, which will be passed into <code>download_function</code>.</p>
+<p>The file <code>extensions</code> is a named list. Its names are printable
+descriptions of the formats, and values are the file extensions (without the
+leading <code>'.'</code>). for example, <code>list("compressed CSV" = "csv")</code>.
+Users will see <code>"compressed CSV"</code> in the format selector, and
+<code>download_function</code> sees <code>"csv"</code>.</p>
+<p>When output type is image, users will be asked to enter the image size in
+inches; default width is <code>7</code>, and height is calculated based on
+current image aspect ratio.</p>
+<p>If you would like to show more on the modal, pass 'HTML' elements to <code>...</code></p>
+<p>Function <code>download_function</code> is a function containing</p>
     </div>
 
     <div class="section level2">
