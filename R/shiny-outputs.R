@@ -4,7 +4,7 @@
 #' in another browser window, or downloading the rendered data.
 #' @param outputId output ID in the scope of current shiny session
 #' @param session shiny session instance
-#' @param ...,output_opts,.opt output options
+#' @param output_opts,.opt output options
 #' @param extras extra information to store
 #' @param render_function shiny render function
 #' @param output_type type of export file formats supported, options are
@@ -16,12 +16,11 @@
 #' the names will be used to display the modal selectors, and values are the
 #' underlying extension read by \code{download_fileformat}
 #' @param title,cancel_btn,confirm_btn,... title, button labels, and additional
-#' UI elements that are to be shown in the modal
+#' 'HTML' elements that are to be shown in the modal
 #' @param download_function core function that writes the data into the files;
 #' default is set for \code{'image'} and \code{'threeBrain'} automatically;
 #' see 'Default' and 'Examples'.
 #' @param quoted whether \code{render_function} is quoted; default is false
-#' @param ... other 'HTML' elements to show in the modal
 #' @returns Registered output or output options.
 #' @details
 #'
@@ -48,7 +47,14 @@
 #'
 #' If you would like to show more on the modal, pass 'HTML' elements to \code{...}
 #'
-#' Function \code{download_function} is a function containing
+#' Function \code{download_function} is a function containing four inputs:
+#'
+#' * \code{con}: file where the data should be written into
+#' * \code{params}: a named list of \code{params$extension} (file extension), \code{width}, \code{height} (type is image), or \code{title} (3D viewer)
+#' * \code{render_expr} a quoted rendering expression of the rendering function
+#' * \code{render_env} the rendering environment of the rendering function.
+#'
+#' Default \code{download_function} is provided when not specified.
 #'
 #' @examples
 #'
@@ -57,6 +63,27 @@
 #'
 #' library(shiny)
 #' library(ravedash)
+#'
+#' # ---- Use this in RAVE --------
+#'
+#' # UI
+#' output_gadget_container(
+#'   plotOutput("plot", brush = shiny::brushOpts("plot__brush")),
+#' )
+#'
+#' # server
+#' server <- function(input, output, session) {
+#'   register_output(
+#'     renderPlot({
+#'       # ... plot it
+#'     }),
+#'     outputId = "plot",
+#'     output_opts = list(brush = shiny::brushOpts("plot__brush"))
+#'   )
+#' }
+#'
+#'
+#' # ---- Low-level method ------------
 #'
 #' rave_id <- paste(sample(c(letters, LETTERS, 0:9), 20, replace = TRUE),
 #'                  collapse = "")
@@ -93,15 +120,12 @@
 #'         register_rave_session(session = session, .rave_id = rave_id)
 #'         register_output(
 #'           renderPlot({
-#'             plot(1:100, pch = 16)
+#'             input$btn
+#'             plot(rnorm(100), pch = 16)
 #'           }),
-#'           outputId = "plot", export_type = "pdf",
+#'           outputId = "plot",
 #'           output_opts = list(brush = shiny::brushOpts("plot__brush"))
 #'         )
-#'         output$plot <- renderPlot({
-#'           input$btn
-#'           plot(rnorm(100), pch = 16)
-#'         })
 #'       } else {
 #'         # standalone viewer
 #'         standalone_viewer(outputId = "plot", rave_id = rave_id)
