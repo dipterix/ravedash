@@ -20,10 +20,17 @@ get_output_options(outputId, session = shiny::getDefaultReactiveDomain())
 register_output(
   render_function,
   outputId,
-  export_type = c("none", "custom", "pdf", "csv", "3dviewer", "htmlwidget"),
-  export_settings = list(),
-  quoted = FALSE,
+  ...,
   output_opts = list(),
+  quoted = FALSE,
+  download_function = NULL,
+  download_fileformat =
+    "{ outputId }-{ format(Sys.time(), '\%b_\%d_\%Y_\%H_\%M_\%S') }.{ extension }",
+  output_type = c("image", "data", "threeBrain", "no-download"),
+  extensions = NULL,
+  title = "Download widget",
+  cancel_btn = "Cancel",
+  confirm_btn = "Download",
   session = shiny::getDefaultReactiveDomain()
 )
 
@@ -40,15 +47,27 @@ get_output(outputId, session = shiny::getDefaultReactiveDomain())
 
 \item{render_function}{shiny render function}
 
-\item{export_type}{type of export file formats supported, options are
-\code{'none'} (do not export), \code{'custom'}, \code{'pdf'} (for figures),
-\code{'csv'} (for tables), \code{'3dviewer'} (for 'RAVE' 3D viewers),
-\code{'htmlwidget'} (for 'HTML' widgets).}
-
-\item{export_settings}{a list of settings, depending on export type; see
-'Details'.}
-
 \item{quoted}{whether \code{render_function} is quoted; default is false}
+
+\item{download_function}{core function that writes the data into the files;
+default is set for \code{'image'} and \code{'threeBrain'} automatically;
+see 'Default' and 'Examples'.}
+
+\item{download_fileformat}{download file format, supports 'glue'}
+
+\item{output_type}{type of export file formats supported, options are
+\code{'image'} (for figures, default), \code{'data'},
+\code{'threeBrain'} (for 'RAVE' 3D viewers), and
+\code{'no-download'} (do not export).}
+
+\item{extensions}{a list of file extensions and their descriptions;
+the names will be used to display the modal selectors, and values are the
+underlying extension read by \code{download_fileformat}}
+
+\item{title, cancel_btn, confirm_btn, ...}{title, button labels, and additional
+UI elements that are to be shown in the modal}
+
+\item{...}{other 'HTML' elements to show in the modal}
 }
 \value{
 Registered output or output options.
@@ -58,9 +77,30 @@ Enable advanced output gadgets such as expanding the output
 in another browser window, or downloading the rendered data.
 }
 \details{
-Default shiny output does not provide handlers for downloading the
-figures or data, and is often limited to the 'HTML' layouts. 'RAVE' dashboard
-provides such mechanisms automatically with few extra configurations.
+The following steps are done when \code{register_output} is called:
+
+* Register the render function to shiny output \code{output[[outputId]]}
+* Register the render information to session which can be retrieved via \code{get_output}
+* Register (if \code{download_function} is a function) a download handler that listen to the shiny event. The event ID is \code{paste0(outputId, '__download2')}.
+
+When downloading event is triggered, a modal will pop up asking for exporting
+format (always exists) and image dimensions (if output type is \code{'image'})
+or title (when output type is \code{'threeBrain'}). Users will choose the
+proper inputs, which will be passed into \code{download_function}.
+
+The file \code{extensions} is a named list. Its names are printable
+descriptions of the formats, and values are the file extensions (without the
+leading \code{'.'}). for example, \code{list("compressed CSV" = "csv")}.
+Users will see \code{"compressed CSV"} in the format selector, and
+\code{download_function} sees \code{"csv"}.
+
+When output type is image, users will be asked to enter the image size in
+inches; default width is \code{7}, and height is calculated based on
+current image aspect ratio.
+
+If you would like to show more on the modal, pass 'HTML' elements to \code{...}
+
+Function \code{download_function} is a function containing
 }
 \examples{
 

@@ -18,7 +18,7 @@
 #' @export
 output_gadget <- function(
   outputId, icon = NULL,
-  type = c("standalone", "download", 'actionbutton', 'custom'),
+  type = c("standalone", "download", "download2", 'actionbutton', 'custom'),
   class = NULL, inputId = NULL, ...
 ) {
   type <- match.arg(type)
@@ -27,6 +27,7 @@ output_gadget <- function(
     icon <- switch (
       type,
       standalone = shiny_icons$external_link,
+      download2 = shiny_icons$download,
       download = shiny_icons$download,
       {
         shiny_icons$puzzle
@@ -38,12 +39,13 @@ output_gadget <- function(
     type,
     standalone = "Open in a new tab",
     download = "Download",
+    download2 = "Download",
     {
       ""
     }
   )
 
-  if(type %in% c('actionbutton', 'download')) {
+  if(type %in% c('actionbutton', 'download', 'download2')) {
     if(length(inputId) != 1) {
       inputId <- sprintf("%s__%s", outputId, type)
     }
@@ -55,6 +57,7 @@ output_gadget <- function(
       type,
       actionbutton = "action-button shiny-bound-input",
       download = "shiny-download-link",
+      download2 = "action-button shiny-bound-input",
       {NULL}
     ),
     class
@@ -70,7 +73,7 @@ output_gadget <- function(
     ...
   )
   args$id <- inputId
-  if(type %in% c("download")) {
+  if(type == "download") {
     args$target <- "_blank"
     args$download <- ""
     args$href <- ""
@@ -82,7 +85,7 @@ output_gadget <- function(
 #' @rdname output_gadget
 #' @export
 output_gadget_container <- function(
-    expr, gadgets = c("standalone", "download"),
+    expr, gadgets = c("standalone", "download2"),
     quoted = FALSE, env = parent.frame(), outputId = NULL,
     class = NULL, container = NULL, wrapper = TRUE) {
 

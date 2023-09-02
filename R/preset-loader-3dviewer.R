@@ -14,7 +14,7 @@ presets_loader_3dviewer <- function(
   comp$depends <- c(loader_project_id, loader_subject_id, loader_electrodes_id, loader_reference_id)
   comp$no_save <- TRUE
 
-  gadgets <- gadgets[gadgets %in% c("standalone", "download")]
+  gadgets <- gadgets[gadgets %in% c("standalone", "download2")]
 
   comp$ui_func <- function(id, value, depends){
     output_gadget_container(
@@ -185,7 +185,7 @@ presets_loader_3dviewer2 <- function(
   comp$depends <- c(loader_project_id, loader_subject_id, loader_electrodes_id)
   comp$no_save <- TRUE
 
-  gadgets <- gadgets[gadgets %in% c("standalone", "download")]
+  gadgets <- gadgets[gadgets %in% c("standalone", "download2")]
 
   comp$ui_func <- function(id, value, depends){
     output_gadget_container(

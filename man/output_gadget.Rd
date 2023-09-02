@@ -8,7 +8,7 @@
 output_gadget(
   outputId,
   icon = NULL,
-  type = c("standalone", "download", "actionbutton", "custom"),
+  type = c("standalone", "download", "download2", "actionbutton", "custom"),
   class = NULL,
   inputId = NULL,
   ...
@@ -16,7 +16,7 @@ output_gadget(
 
 output_gadget_container(
   expr,
-  gadgets = c("standalone", "download"),
+  gadgets = c("standalone", "download2"),
   quoted = FALSE,
   env = parent.frame(),
   outputId = NULL,
