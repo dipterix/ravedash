@@ -260,7 +260,13 @@ Remove data
 \subsection{Method \code{set_derivative()}}{
 Store a derivative
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RAVEPlotContainer$set_derivative(key, value, use_glue = FALSE, validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{RAVEPlotContainer$set_derivative(
+  key,
+  value,
+  use_glue = FALSE,
+  validate = TRUE,
+  order = 0
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -276,6 +282,9 @@ special treatments will be done to characters and functions. See
 
 \item{\code{validate}}{whether to validate data; default is true; when error
 occurs, the container state will be restored to previous state}
+
+\item{\code{order}}{order of the derivative, other derivatives with smaller
+order will be available during evaluation}
 }
 \if{html}{\out{</div>}}
 }
@@ -288,7 +297,7 @@ Get derivative
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{RAVEPlotContainer$get_derivative(
   key,
-  if_missing,
+  if_missing = NULL,
   env = parent.frame(),
   .internal = FALSE
 )}\if{html}{\out{</div>}}

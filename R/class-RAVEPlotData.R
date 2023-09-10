@@ -219,14 +219,26 @@ RAVEPlotContainer <- R6::R6Class(
     #' @param use_glue whether to glue the derivative; default is false
     #' @param validate whether to validate data; default is true; when error
     #' occurs, the container state will be restored to previous state
-    set_derivative = function(key, value, use_glue = FALSE, validate = TRUE) {
+    #' @param order order of the derivative, other derivatives with smaller
+    #' order will be available during evaluation
+    set_derivative = function(key, value, use_glue = FALSE, validate = TRUE, order = 0) {
       stopifnot(length(key) == 1)
 
       if(use_glue) {
-        attr(value, ".use_glue") <- TRUE
+        use_glue <- TRUE
+      } else {
+        use_glue <- FALSE
+      }
+      order <- as.numeric(order)
+      if(length(order) != 1 || is.na(order)) {
+        order <- 0
       }
 
-      self$mset(.list = structure(list(value), names = key), type = "derivative", validate = validate)
+      self$mset(.list = structure(list(list(
+        order = order,
+        use_glue = use_glue,
+        value = value
+      )), names = key), type = "derivative", validate = validate)
     },
 
     #' @description
@@ -256,28 +268,63 @@ RAVEPlotContainer <- R6::R6Class(
     #' container$get_derivative("xlen")
     #' container$get_derivative("xlab")
     #'
-    get_derivative = function(key, if_missing, env = parent.frame(), .internal = FALSE) {
+    get_derivative = function(key, if_missing = NULL, env = parent.frame(), .internal = FALSE) {
       stopifnot(length(key) == 1)
-      if(missing(if_missing)) {
-        re <- private$.derivative$`@get`(key)
-      } else {
-        re <- private$.derivative$`@get`(key, missing = if_missing)
+      if( !private$.derivative$`@has`(key) ) { return(if_missing) }
+      re <- private$.derivative$`@get`(key, missing = if_missing)
+
+      force(env)
+      if( !.internal ) {
+        env <- list2env(private$.data$`@as_list`(), parent = env)
       }
-      use_glue <- isTRUE(attr(re, ".use_glue"))
+      if(!"..matured_derivative" %in% names(env)) {
+        env$..matured_derivative <- NULL
+      }
+      if(key %in% env$..matured_derivative) { return(env[[key]]) }
+
+      # find all the order less than this derivative
+      if(length(re$order) == 1 && !is.na(re$order)) {
+
+        keys <- names(private$.derivative)
+        keys <- keys[vapply(keys, function(k) {
+          isTRUE(private$.derivative[[k]]$order < re$order)
+        }, FALSE)]
+        keys <- keys[!keys %in% key]
+
+        if(length(keys)) {
+          lapply(keys, function(key) {
+            self$get_derivative(key = key, if_missing = NULL, env = env, .internal = TRUE)
+          })
+
+        }
+
+      }
+
+      use_glue <- re$use_glue
+      re <- re$value
       if(is.function(re)) {
         nms <- names(formals(re))
-        if('...' %in% nms) {
-          args <- private$.data$`@as_list`()
+        nms <- nms[nms %in% c(names(private$.data), names(env))]
+        if(length(nms)) {
+          dnames <- nms[private$.data$`@has`(nms)]
+          enames <- nms[!nms %in% dnames]
+          dl <- NULL
+          de <- NULL
+          if(length(dnames)) {
+            dl <- private$.data[dnames]
+          }
+          if(length(enames)) {
+            de <- as.list(env, all.names = TRUE)[enames]
+          }
+          args <- c(dl, de)
         } else {
-          args <- private$.data[nms]
+          args <- list()
         }
         re <- do.call(re, args)
       }
 
       if( use_glue ) {
-        if( !.internal ) {
-          env <- list2env(private$.data$`@as_list`(), parent = env)
-        }
+
         re <- raveio::glue(
           re,
           .trim = FALSE,
@@ -288,6 +335,9 @@ RAVEPlotContainer <- R6::R6Class(
           .comment = "##"
         )
       }
+
+      env[[key]] <- re
+      env$..matured_derivative <- c(env$..matured_derivative, key)
       return(re)
     },
 
@@ -299,8 +349,8 @@ RAVEPlotContainer <- R6::R6Class(
     get_all_derivative = function(env = parent.frame(), .internal = FALSE) {
       force(env)
       nms <- self$derivative_names
-      env2 <- new.env(parent = env)
-      env3 <- list2env(private$.data$`@as_list`(), parent = env2)
+      env2 <- list2env(private$.data$`@as_list`(), parent = env)
+      env3 <- new.env(parent = env2)
 
       re <- structure(
         lapply(nms, function(nm) {
@@ -310,7 +360,7 @@ RAVEPlotContainer <- R6::R6Class(
       )
 
       if( .internal ) {
-        list2env(re, envir = env2)
+        # list2env(re, envir = env2)
         return(env3)
       }
       return(re)
@@ -430,7 +480,8 @@ RAVEPlotContainer <- R6::R6Class(
           )),
           sprintf("  Derivative: %s\n", length(private$.derivative)),
           unlist(lapply(names(private$.derivative), function(nm) {
-            fmt <- format(private$.derivative[[ nm ]])
+            item <- private$.derivative[[ nm ]]
+            fmt <- format(item$value)
             if(length(fmt) > 1) {
               fmt <- sprintf("%s ...", fmt[[1]])
             }
