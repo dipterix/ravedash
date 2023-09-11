@@ -487,7 +487,7 @@ Render the container
 \if{html}{\out{<div class="r">}}\preformatted{RAVEPlotContainer$render(
   ...,
   .list = list(),
-  order_range = c(-1, 100),
+  order_range = c(-10, 100),
   env = parent.frame(),
   validate = TRUE,
   strict = FALSE

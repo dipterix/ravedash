@@ -538,7 +538,7 @@ RAVEPlotContainer <- R6::R6Class(
     #' @param strict whether to be strict: if true, then stops
     #' when any render function error out; or keep rendering regardless of
     #' errors
-    render = function(..., .list = list(), order_range = c(-1, 100),
+    render = function(..., .list = list(), order_range = c(-10, 100),
                       env = parent.frame(), validate = TRUE, strict = FALSE) {
 
       force(strict)
