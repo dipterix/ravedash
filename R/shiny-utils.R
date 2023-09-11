@@ -778,6 +778,20 @@ get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
   return(NULL)
 }
 
+#' @rdname get_active_module_info
+#' @export
+get_active_pipeline <- function(
+    session = shiny::getDefaultReactiveDomain()) {
+
+  module_info <- get_active_module_info(session = session)
+  if(!is.list(module_info) || is.null(module_info$id)) {
+    return(NULL)
+  }
+
+  raveio::pipeline(pipeline_name = module_info$id,
+                   paths = dirname(module_info$path))
+
+}
 
 #' Button to trigger analysis
 #' @description A button that triggers \code{'run_analysis'} event;

@@ -2,9 +2,12 @@
 % Please edit documentation in R/shiny-utils.R
 \name{get_active_module_info}
 \alias{get_active_module_info}
+\alias{get_active_pipeline}
 \title{Get current active module information, internally used}
 \usage{
 get_active_module_info(session = shiny::getDefaultReactiveDomain())
+
+get_active_pipeline(session = shiny::getDefaultReactiveDomain())
 }
 \arguments{
 \item{session}{shiny reactive domain, default is current domain}
