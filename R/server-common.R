@@ -995,7 +995,7 @@ format_export_settings.3dviewer <- function(settings) {
 
   settings <- as.list(settings)
   settings$title %?<-% "RAVE 3D Viewer"
-  settings$extension <- "zip"
+  settings$extension <- "html"
 
   pre_func <- settings$pre
   post_func <- settings$post
@@ -1030,8 +1030,8 @@ format_export_settings.3dviewer <- function(settings) {
       }
     })
 
-    threeBrain::save_brain(data, directory = tf, as_zip = TRUE, title = settings$title)
-    file.copy(file.path(tf, "compressed.zip"), con)
+    path <- threeBrain::save_brain(data, directory = tf, as_zip = FALSE, title = settings$title)
+    file.copy(path, con)
   }
 
   settings

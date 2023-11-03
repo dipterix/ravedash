@@ -389,7 +389,7 @@ register_output <- function(
         },
         "threeBrain" = {
           extensions <- list(
-            "Packaged ZIP" = "zip"
+            "Static Web" = "html"
           )
         },
         {
@@ -463,8 +463,8 @@ register_output <- function(
           tf <- tempfile()
           on.exit({ unlink(tf, recursive = TRUE) }, add = TRUE)
 
-          threeBrain::save_brain(widget, directory = tf, as_zip = TRUE, title = title)
-          file.copy(file.path(tf, "compressed.zip"), con)
+          path <- threeBrain::save_brain(widget, path = tf, as_zip = FALSE, title = title)
+          file.copy(path, con)
 
         },
         {
