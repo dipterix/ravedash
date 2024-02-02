@@ -12,6 +12,7 @@
 \alias{list_session}
 \alias{start_session}
 \alias{shutdown_session}
+\alias{session_log}
 \title{Create, register, list, and remove 'RAVE' sessions}
 \usage{
 new_session(update = FALSE)
@@ -57,6 +58,8 @@ shutdown_session(
   jupyter = TRUE,
   session = shiny::getDefaultReactiveDomain()
 )
+
+session_log(x, max_lines = 200, modules = NULL)
 }
 \arguments{
 \item{update}{logical, whether to update to latest 'RAVE' template}
@@ -121,6 +124,8 @@ mode, closing the main frame will terminate 'RAVE' run-time session,
 otherwise the 'RAVE' instance will still open in the background}
 
 \item{returnValue}{passed to \code{\link[shiny]{stopApp}}}
+
+\item{max_lines}{maximum number of log entries to return; default is 200}
 }
 \value{
 \describe{

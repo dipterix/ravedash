@@ -68,6 +68,7 @@ ensure_template <- function(path, use_cache = TRUE){
 #' @param modules selected module ID to launch; used to only show a subset of
 #' modules; default is \code{NULL} (select all modules); hidden modules are
 #' always selected
+#' @param max_lines maximum number of log entries to return; default is 200
 #' @param page_title session web page title and logo text; can have length
 #' of either one (page title and logo text are the same); or length of two,
 #' with page title be the first element and logo text be the second.
@@ -874,4 +875,85 @@ shutdown_session <- function(
 
   }
   shiny::stopApp(returnValue = returnValue)
+}
+
+
+#' @rdname rave-session
+#' @export
+session_log <- function(x, max_lines = 200, modules = NULL) {
+  n <- as.integer(max_lines)
+  if(n <= 0) { n <- 5000L }
+  if(missing(x) || is.null(x)) {
+    x <- list_session(order = "descend")
+    if(!length(x)) {
+      return(structure(character(0L), class = "ravedash_session_log_string", max_lines = n, session_id = NULL))
+    }
+    x <- x[[1]]
+  }
+  session <- use_session(x)
+  log_dir <- file.path(session$app_path, "logs")
+  if(!dir.exists(log_dir)) {
+    return(structure(character(0L), class = "ravedash_session_log_string", max_lines = n, session_id = session$session_id))
+  }
+  all_modules <- list.files(log_dir, pattern = "\\.log", all.files = FALSE, full.names = FALSE, recursive = FALSE, include.dirs = FALSE)
+  modules <- all_modules
+  if(length(modules)) {
+    modules <- gsub("\\(.log|)$", ".log", x = modules, ignore.case = TRUE)
+    modules <- c(modules[modules %in% all_modules], "ravedash.log")
+  }
+  modules <- unique(modules)
+  modules <- modules[file.exists(file.path(log_dir, modules))]
+  if(!length(modules)) {
+    return(structure(character(0L), class = "ravedash_session_log_string", max_lines = n, session_id = session$session_id))
+  }
+  logs <- lapply(modules, function(module) {
+    s <- trimws(readLines(file.path(log_dir, module)))
+    if(length(s) > n) {
+      s <- s[ -seq_len(length(s) - n) ]
+    }
+    timestamp <- substring(gsub("^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)[ ]{0, }", "", s), 1, 19)
+    timestamp <- strptime(timestamp, format = "%Y-%m-%d %H:%M:%S")
+    nas <- dipsaus::deparse_svec( which(is.na(timestamp)), concatenate = FALSE)
+
+    for(ns_idx in nas) {
+      idx <- dipsaus::parse_svec(ns_idx)
+      if(length(idx)) {
+        midx <- idx[[1]]
+        if(midx > 1) {
+          timestamp[ idx ] <- timestamp[[ midx - 1 ]]
+        }
+      }
+    }
+    data.frame(
+      time = timestamp,
+      string = s
+    )
+  })
+  logs_combined <- do.call("rbind", logs)
+  timestamps <- logs_combined$time[!is.na(logs_combined$time)]
+
+  if(length(timestamps) > n) {
+    tmp <- timestamps[[ order(timestamps, decreasing = TRUE)[[n]] ]]
+    logs <- lapply(logs, function(log) {
+      log[log$time >= tmp, ]
+    })
+    logs_combined <- do.call("rbind", logs)
+  }
+  return(structure(logs_combined$string[order(logs_combined$time, decreasing = FALSE)],
+                   class = "ravedash_session_log_string", max_lines = n, session_id = session$session_id))
+
+}
+
+#' @export
+print.ravedash_session_log_string <- function(x, ...) {
+  x_ <- unclass(x)
+  session_id <- attr(x_, "session_id")
+  if(is.null(session_id)) {
+    cat("<RAVE Module Session Logs> (empty session ID)\n")
+    return(invisible(x))
+  }
+  cat(sprintf("<RAVE Module Session Logs> (%s)\n", session_id))
+  cat(x_, sep = "\n")
+  cat(sprintf("<Max lines: %s>\n", attr(x_, "max_lines")))
+  return(invisible(x))
 }
