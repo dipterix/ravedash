@@ -55,9 +55,9 @@ output_gadget <- function(
     "ravedash-output-widget",
     switch (
       type,
-      actionbutton = "action-button shiny-bound-input",
+      actionbutton = "action-button",
       download = "shiny-download-link",
-      download2 = "action-button shiny-bound-input",
+      download2 = "action-button",
       {NULL}
     ),
     class
