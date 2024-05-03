@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 
 To download the template, simply run the following one-time command:
 
-```{r}
+```{r, eval=FALSE}
 raveio::pipeline_install_github('dipterix/rave-pipelines')
 ```
 
@@ -39,14 +39,14 @@ raveio::pipeline_install_github('dipterix/rave-pipelines')
 
 To start a `ravedash` application, you need to create a session first.
 
-```{r}
+```{r, eval=FALSE}
 sess <- ravedash::new_session()
 sess
 ```
 
 To launch the session
 
-```{r}
+```{r, eval=FALSE}
 sess$launch_session()
 ```
 
@@ -56,7 +56,7 @@ For example, it might take very long time to visually inspect hundreds of electr
 
 To resume the session, you can use `use_session` with the session ID, or simply list all the sessions using `list_session`.
 
-```{r}
+```{r, eval=FALSE}
 ravedash::list_session()
 #> [[1]]
 #> RAVE session <session-220619-155630-EDT-PB0P>
