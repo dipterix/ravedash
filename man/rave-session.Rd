@@ -51,7 +51,9 @@ start_session(
   jupyter_port = NULL,
   as_job = TRUE,
   launch_browser = TRUE,
-  single_session = FALSE
+  single_session = FALSE,
+  app_root = NULL,
+  dry_run = FALSE
 )
 
 shutdown_session(
@@ -77,6 +79,8 @@ numeric vectors, characters)}
 modules; default is \code{NULL} (select all modules); hidden modules are
 always selected}
 
+\item{dry_run}{whether to dry-run (do not launch) the 'RAVE' session}
+
 \item{options}{additional options, including \code{jupyter},
 \code{jupyter_port}, \code{as_job}, and \code{launch_browser}}
 
@@ -87,7 +91,7 @@ should be obtained}
 
 \item{namespace}{namespace of the option; default is \code{'default'}}
 
-\item{path}{root path to store the sessions; default is the
+\item{path, app_root}{root path to store the sessions; default is the
 \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}}
 
 \item{order}{whether to order the session by date created; choices are

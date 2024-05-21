@@ -38,7 +38,7 @@ ensure_template <- function(path, use_cache = TRUE){
 #' @param update logical, whether to update to latest 'RAVE' template
 #' @param session,x session identification string, or session object; use
 #' \code{list_session} to list all existing sessions
-#' @param path root path to store the sessions; default is the
+#' @param path,app_root root path to store the sessions; default is the
 #' \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}
 #' @param host host 'IP' address, default is 'localhost'
 #' @param port port to listen
@@ -74,6 +74,7 @@ ensure_template <- function(path, use_cache = TRUE){
 #' with page title be the first element and logo text be the second.
 #' @param sidebar_open whether to open the side-bar by default; default \code{TRUE}
 #' when more than one module is to be displayed
+#' @param dry_run whether to dry-run (do not launch) the 'RAVE' session
 #' @param ...,.list named list of key-value pairs of session options. The
 #' keys must be characters, and values must be simple data types (such as
 #' numeric vectors, characters)
@@ -788,7 +789,8 @@ list_session <- function(path = session_root(), order = c("none", "ascend", "des
 start_session <- function(
     session, new = NA, modules = NULL, page_title = NULL, sidebar_open = TRUE,
     host = "127.0.0.1", port = NULL, jupyter = NA, jupyter_port = NULL,
-    as_job = TRUE, launch_browser = TRUE, single_session = FALSE) {
+    as_job = TRUE, launch_browser = TRUE, single_session = FALSE,
+    app_root = NULL, dry_run = FALSE) {
 
   if(!missing(session) && length(session)) {
     if(isTRUE(new)) {
@@ -806,13 +808,13 @@ start_session <- function(
       })
     }
   } else if(isTRUE(new)) {
-    session <- new_session()
+    session <- new_session(app_root = app_root)
   } else {
     # find existing session (most recent)
-    all_sessions <- list_session(order = "descend")
+    all_sessions <- list_session(order = "descend", path = app_root)
     if(!length(all_sessions)) {
       # start a new session
-      session <- new_session()
+      session <- new_session(app_root = app_root)
     } else {
       session <- all_sessions[[1]]
 
@@ -827,7 +829,7 @@ start_session <- function(
             if( last_updated > session_created ) {
               # RAVE dash just got updated
               # start a new session
-              session <- new_session()
+              session <- new_session(app_root = app_root)
             }
           }
         }, error = function(e){ NULL })
@@ -854,6 +856,7 @@ start_session <- function(
       host = host,
       port = port,
       modules = modules,
+      dry_run = dry_run,
       options = list(
         jupyter = jupyter,
         jupyter_port = jupyter_port,
@@ -878,6 +881,7 @@ start_session <- function(
       host = host,
       port = port,
       modules = modules,
+      dry_run = dry_run,
       options = list(
         jupyter = jupyter,
         jupyter_port = jupyter_port,
