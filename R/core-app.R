@@ -113,7 +113,7 @@ ensure_template <- function(path, use_cache = TRUE){
 #' }
 #'
 #' @export
-new_session <- function(update = FALSE) {
+new_session <- function(update = FALSE, app_root = NULL) {
 
   # o <- raveio::pipeline_root()
   # on.exit({
@@ -133,9 +133,13 @@ new_session <- function(update = FALSE) {
 
   # create a temporary repository
   session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-%Z-"), toupper(rand_string(4)))
-  cache_path <- session_root(ensure = TRUE)
-  cache_path <- normalizePath(cache_path)
-  app_path <- file.path(cache_path, session_id)
+  if( length(app_root) == 1 ) {
+    app_root <- normalizePath(app_root, mustWork = TRUE)
+  } else {
+    app_root <- session_root(ensure = TRUE)
+    app_root <- normalizePath(app_root)
+  }
+  app_path <- file.path(app_root, session_id)
 
   # raveio::dir_create2(app_path)
   ensure_template(app_path, use_cache = !update)
@@ -199,26 +203,32 @@ new_session <- function(update = FALSE) {
   # )
 
   logger("A new RAVE session has been created [session ID: { session_id }]", level = "info", use_glue = TRUE)
-  use_session(session_id)
+  use_session(session_id, app_root = app_root)
 
 }
 
+
+
 #' @rdname rave-session
 #' @export
-use_session <- function(x) {
+use_session <- function(x, ...) {
   UseMethod("use_session")
 }
 
 #' @export
-use_session.default <- function(x) {
+use_session.default <- function(x, app_root = NULL, ...) {
   force(x)
 
   if(length(x) != 1 || is.na(x) || !grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", x)) {
     stop("Invalid session ID")
   }
 
-  cache_path <- session_root()
-  app_path <- file.path(cache_path, x)
+  if(length(app_root)) {
+    app_root <- normalizePath(app_root, mustWork = TRUE)
+  } else {
+    app_root <- session_root()
+  }
+  app_path <- file.path(app_root, x)
   app_path <- normalizePath(app_path, mustWork = TRUE)
 
   x <- structure(
@@ -241,6 +251,7 @@ launch_session <- function(
     host = "127.0.0.1",
     port = NULL,
     modules = NULL,
+    dry_run = FALSE,
     options = list(
       jupyter = TRUE,
       jupyter_port = NULL,
@@ -357,9 +368,12 @@ launch_session <- function(
     jupyter_wd <- raveio::raveio_getopt('data_dir')
     logger("Trying to launch JupyterLab from port [{ jupyter_port }]",
            level = "info", use_glue = TRUE)
-    rpymat::jupyter_check_launch(
-      open_browser = FALSE, workdir = jupyter_wd, port = jupyter_port,
-      host = host, async = TRUE)
+
+    if( !dry_run ) {
+      rpymat::jupyter_check_launch(
+        open_browser = FALSE, workdir = jupyter_wd, port = jupyter_port,
+        host = host, async = TRUE)
+    }
 
     raveio::save_yaml(
       list(
@@ -419,35 +433,68 @@ launch_session <- function(
     writeLines(s, con = profile_path)
   }
 
-
-
-  shidashi::render(
-    root_path = x$app_path,
-    port = port,
-    host = host,
-    launch_browser = options$launch_browser,
-    as_job = options$as_job,
-    test_mode = isTRUE(options$test_mode),
-    prelaunch_quoted = TRUE,
-    prelaunch = bquote({
-      local({
-        if(file.exists(.(profile_path))) {
-          source(.(profile_path), local = TRUE)
-        }
-        Sys.setenv("RAVEDASH_SESSION_ID" = .(x$session_id))
-        options("ravedash.single.session" = .(!isFALSE(options$single_session)))
-        options("shiny.useragg" = FALSE)
-        sess_info <- utils::capture.output({ print(utils::sessionInfo()) })
-        ravedash <- asNamespace("ravedash")
-        ravedash$set_logger_path(root_path = .(file.path(x$app_path, "logs")))
-        ravedash$logger_threshold(level = "trace", type = "file")
-        ravedash$logger(sprintf("Session path: %s", ravedash$current_session_path(.(x$app_path))))
-        ravedash$logger(c(
-          "Current session information: ", sess_info, ""
-        ), .sep = "\n")
-      })
+  prelaunch_expr <- bquote({
+    local({
+      if(file.exists(.(profile_path))) {
+        source(.(profile_path), local = TRUE)
+      }
+      shidashi::template_settings$set(root_path = .(x$app_path))
+      Sys.setenv("RAVEDASH_SESSION_ID" = .(x$session_id))
+      options("ravedash.single.session" = .(!isFALSE(options$single_session)))
+      options("shiny.useragg" = FALSE)
+      sess_info <- utils::capture.output({ print(utils::sessionInfo()) })
+      ravedash <- asNamespace("ravedash")
+      ravedash$set_logger_path(root_path = .(file.path(x$app_path, "logs")))
+      ravedash$logger_threshold(level = "trace", type = "file")
+      ravedash$logger(sprintf("Session path: %s", ravedash$current_session_path(.(x$app_path))))
+      ravedash$logger(c(
+        "Current session information: ", sess_info, ""
+      ), .sep = "\n")
     })
+  })
+  writeLines(
+    format(prelaunch_expr),
+    file.path(x$app_path, "prelaunch.R")
   )
+
+  writeLines(c(
+    sprintf(
+      "shidashi::template_settings$set('root_path' = '%s')",
+      x$app_path
+    ),
+    "shidashi::adminlte_ui()"
+  ),
+  file.path(x$app_path, "ui.R"))
+
+  if( !dry_run ) {
+    shidashi::render(
+      root_path = x$app_path,
+      port = port,
+      host = host,
+      launch_browser = options$launch_browser,
+      as_job = options$as_job,
+      test_mode = isTRUE(options$test_mode)
+      # prelaunch_quoted = TRUE,
+      # prelaunch = bquote({
+      #   local({
+      #     if(file.exists(.(profile_path))) {
+      #       source(.(profile_path), local = TRUE)
+      #     }
+      #     Sys.setenv("RAVEDASH_SESSION_ID" = .(x$session_id))
+      #     options("ravedash.single.session" = .(!isFALSE(options$single_session)))
+      #     options("shiny.useragg" = FALSE)
+      #     sess_info <- utils::capture.output({ print(utils::sessionInfo()) })
+      #     ravedash <- asNamespace("ravedash")
+      #     ravedash$set_logger_path(root_path = .(file.path(x$app_path, "logs")))
+      #     ravedash$logger_threshold(level = "trace", type = "file")
+      #     ravedash$logger(sprintf("Session path: %s", ravedash$current_session_path(.(x$app_path))))
+      #     ravedash$logger(c(
+      #       "Current session information: ", sess_info, ""
+      #     ), .sep = "\n")
+      #   })
+      # })
+    )
+  }
 
 }
 
@@ -646,7 +693,7 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
 }
 
 #' @export
-`use_session.rave-dash-session` <- function(x) {
+`use_session.rave-dash-session` <- function(x, ...) {
   x
 }
 

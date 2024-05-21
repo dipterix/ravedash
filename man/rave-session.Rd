@@ -15,15 +15,16 @@
 \alias{session_log}
 \title{Create, register, list, and remove 'RAVE' sessions}
 \usage{
-new_session(update = FALSE)
+new_session(update = FALSE, app_root = NULL)
 
-use_session(x)
+use_session(x, ...)
 
 launch_session(
   x,
   host = "127.0.0.1",
   port = NULL,
   modules = NULL,
+  dry_run = FALSE,
   options = list(jupyter = TRUE, jupyter_port = NULL, as_job = TRUE, launch_browser =
     TRUE, single_session = FALSE, page_title = NULL, sidebar_open = TRUE)
 )
@@ -64,6 +65,10 @@ session_log(x, max_lines = 200, modules = NULL)
 \arguments{
 \item{update}{logical, whether to update to latest 'RAVE' template}
 
+\item{..., .list}{named list of key-value pairs of session options. The
+keys must be characters, and values must be simple data types (such as
+numeric vectors, characters)}
+
 \item{host}{host 'IP' address, default is 'localhost'}
 
 \item{port}{port to listen}
@@ -81,10 +86,6 @@ should be obtained}
 \item{default}{default value if key is missing}
 
 \item{namespace}{namespace of the option; default is \code{'default'}}
-
-\item{..., .list}{named list of key-value pairs of session options. The
-keys must be characters, and values must be simple data types (such as
-numeric vectors, characters)}
 
 \item{path}{root path to store the sessions; default is the
 \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}}
