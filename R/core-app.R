@@ -204,7 +204,10 @@ new_session <- function(update = FALSE, app_root = NULL) {
   # )
 
   logger("A new RAVE session has been created [session ID: { session_id }]", level = "info", use_glue = TRUE)
-  use_session(session_id, app_root = app_root)
+  sess <- use_session(session_id, app_root = app_root)
+  start_session(session = sess, as_job = FALSE, jupyter = FALSE, dry_run = TRUE, launch_browser = FALSE)
+
+  sess
 
 }
 
@@ -374,15 +377,15 @@ launch_session <- function(
       rpymat::jupyter_check_launch(
         open_browser = FALSE, workdir = jupyter_wd, port = jupyter_port,
         host = host, async = TRUE)
+      raveio::save_yaml(
+        list(
+          host = host,
+          port = jupyter_port
+        ),
+        file = file.path(x$app_path, "jupyter.yaml")
+      )
     }
 
-    raveio::save_yaml(
-      list(
-        host = host,
-        port = jupyter_port
-      ),
-      file = file.path(x$app_path, "jupyter.yaml")
-    )
   }
   port <- as.integer(port)
   if(length(port)) {
@@ -425,7 +428,7 @@ launch_session <- function(
   if( need_insert ) {
     s <- c(
       s, anchors[[1]],
-      deparse1(bquote(options(
+      format(bquote(options(
         ravedash.logger.max_bytes = 52428800,
         ravedash.logger.max_files = 10
       ))),
@@ -839,7 +842,12 @@ start_session <- function(
 
   }
 
-  rs_available <- dipsaus::rs_avail(child_ok = TRUE, shiny_ok = TRUE)
+  if( dry_run ) {
+    rs_available <- FALSE
+  } else {
+    rs_available <- dipsaus::rs_avail(child_ok = TRUE, shiny_ok = TRUE)
+  }
+
   if(is.na(jupyter)) {
     jupyter <- rs_available
   } else if(isTRUE(jupyter) && !rs_available) {
