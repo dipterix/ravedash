@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.27</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.28</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,9 @@
 <span>  jupyter_port <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  as_job <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  single_session <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  single_session <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  app_root <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dry_run <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">shutdown_session</span><span class="op">(</span></span>
@@ -131,6 +133,10 @@ modules; default is <code>NULL</code> (select all modules); hidden modules are
 always selected</p></dd>
 
 
+<dt>dry_run</dt>
+<dd><p>whether to dry-run (do not launch) the 'RAVE' session</p></dd>
+
+
 <dt>options</dt>
 <dd><p>additional options, including <code>jupyter</code>,
 <code>jupyter_port</code>, <code>as_job</code>, and <code>launch_browser</code></p></dd>
@@ -149,7 +155,7 @@ should be obtained</p></dd>
 <dd><p>namespace of the option; default is <code>'default'</code></p></dd>
 
 
-<dt>path</dt>
+<dt>path, app_root</dt>
 <dd><p>root path to store the sessions; default is the
 <code>"tensor_temp_path"</code> in <code><a href="https://beauchamplab.github.io/raveio/reference/raveio-option.html" class="external-link">raveio_getopt</a></code></p></dd>
 
