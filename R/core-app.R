@@ -33,6 +33,15 @@ ensure_template <- function(path, use_cache = TRUE){
   normalizePath(path)
 }
 
+resolve_app_root <- function(app_root, ensure = FALSE) {
+  if(missing(app_root) || length(app_root) != 1) {
+    app_root <- normalizePath(session_root(ensure = ensure), mustWork = FALSE)
+  } else {
+    app_root <- normalizePath(app_root, mustWork = FALSE)
+  }
+  app_root
+}
+
 #' @name rave-session
 #' @title Create, register, list, and remove 'RAVE' sessions
 #' @param update logical, whether to update to latest 'RAVE' template
@@ -134,12 +143,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
 
   # create a temporary repository
   session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-%Z-"), toupper(rand_string(4)))
-  if( length(app_root) == 1 ) {
-    app_root <- normalizePath(app_root, mustWork = TRUE)
-  } else {
-    app_root <- session_root(ensure = TRUE)
-    app_root <- normalizePath(app_root)
-  }
+  app_root <- resolve_app_root(app_root, ensure = TRUE)
   app_path <- file.path(app_root, session_id)
 
   # raveio::dir_create2(app_path)
@@ -205,7 +209,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
 
   logger("A new RAVE session has been created [session ID: { session_id }]", level = "info", use_glue = TRUE)
   sess <- use_session(session_id, app_root = app_root)
-  start_session(session = sess, as_job = FALSE, jupyter = FALSE, dry_run = TRUE, launch_browser = FALSE)
+  start_session(session = sess, as_job = FALSE, jupyter = FALSE, dry_run = TRUE, launch_browser = FALSE, app_root = app_root)
 
   sess
 
@@ -227,11 +231,7 @@ use_session.default <- function(x, app_root = NULL, ...) {
     stop("Invalid session ID")
   }
 
-  if(length(app_root)) {
-    app_root <- normalizePath(app_root, mustWork = TRUE)
-  } else {
-    app_root <- session_root()
-  }
+  app_root <- resolve_app_root(app_root)
   app_path <- file.path(app_root, x)
   app_path <- normalizePath(app_path, mustWork = TRUE)
 
@@ -772,6 +772,8 @@ remove_all_sessions <- function() {
 #' @export
 list_session <- function(path = session_root(), order = c("none", "ascend", "descend")){
   order <- match.arg(order)
+
+  path <- resolve_app_root(path)
   dirs <- list.dirs(path = path, full.names = FALSE, recursive = FALSE)
   sel <- grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", dirs)
   session_ids <- dirs[sel]
@@ -794,6 +796,8 @@ start_session <- function(
     host = "127.0.0.1", port = NULL, jupyter = NA, jupyter_port = NULL,
     as_job = TRUE, launch_browser = TRUE, single_session = FALSE,
     app_root = NULL, dry_run = FALSE) {
+
+  app_root <- resolve_app_root(app_root)
 
   if(!missing(session) && length(session)) {
     if(isTRUE(new)) {
