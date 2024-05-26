@@ -705,7 +705,11 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
 `print.rave-dash-session` <- function(x, ...){
   vname <- substitute(x)
   session_id <- x$session_id
-  session_path <- file.path(session_root(), session_id)
+  if(is.list(x) && length(x$app_path) == 1) {
+    session_path <- x$app_path
+  } else {
+    session_path <- file.path(session_root(), session_id)
+  }
   cat(sprintf("RAVE session <%s>\n", session_id))
   timestamp <- sub("\\-[a-zA-Z0-9]{4}$", "", session_id)
   timestamp <- strsplit(timestamp, "-")[[1]]
@@ -785,7 +789,7 @@ list_session <- function(path = session_root(), order = c("none", "ascend", "des
     session_ids <- session_ids[order]
 
   }
-  re <- lapply(session_ids, use_session)
+  re <- lapply(session_ids, use_session, app_root = path)
   re
 }
 
