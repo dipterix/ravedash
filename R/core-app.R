@@ -182,14 +182,16 @@ new_session <- function(update = FALSE, app_root = NULL) {
     }
   })
   groups <- do.call("rbind", dipsaus::drop_nulls(groups))
-  groups <- lapply(split(groups, groups$group), function(item){
-    list(
-      name = item$group[[1]],
-      order = min(item$order),
-      open = FALSE
-    )
-  })
-  names(groups) <- sapply(groups, '[[', 'name')
+  if(length(groups)) {
+    groups <- lapply(split(groups, groups$group), function(item){
+      list(
+        name = item$group[[1]],
+        order = min(item$order),
+        open = FALSE
+      )
+    })
+    names(groups) <- sapply(groups, '[[', 'name')
+  }
   module_conf$groups <- groups
 
   if(!is.list(module_conf$divider)) {
