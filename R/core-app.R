@@ -142,7 +142,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
   }
 
   # create a temporary repository
-  session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-%Z-"), toupper(rand_string(4)))
+  session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-"), toupper(rand_string(4)))
   app_root <- resolve_app_root(app_root, ensure = TRUE)
   app_path <- file.path(app_root, session_id)
 
