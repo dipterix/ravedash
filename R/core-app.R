@@ -142,7 +142,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
   }
 
   # create a temporary repository
-  session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-"), toupper(rand_string(4)))
+  session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-%Z-"), toupper(rand_string(4)))
   app_root <- resolve_app_root(app_root, ensure = TRUE)
   app_path <- file.path(app_root, session_id)
 
@@ -229,7 +229,7 @@ use_session <- function(x, ...) {
 use_session.default <- function(x, app_root = NULL, ...) {
   force(x)
 
-  if(length(x) != 1 || is.na(x) || !grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", x)) {
+  if(length(x) != 1 || is.na(x) || !grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x)) {
     stop("Invalid session ID")
   }
 
@@ -742,7 +742,7 @@ remove_session <- function(x){
 
 #' @export
 remove_session.default <- function(x){
-  if(grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", x)){
+  if(grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x)){
     session_path <- file.path(session_root(), x)
     if(dir.exists(session_path)){
       unlink(session_path, recursive = TRUE)
@@ -754,7 +754,7 @@ remove_session.default <- function(x){
 
 #' @export
 `remove_session.rave-dash-session` <- function(x) {
-  if(grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", x$session_id)){
+  if(grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x$session_id)){
     session_path <- file.path(session_root(), x$session_id)
     if(dir.exists(session_path)){
       unlink(session_path, recursive = TRUE)
@@ -781,11 +781,11 @@ list_session <- function(path = session_root(), order = c("none", "ascend", "des
 
   path <- resolve_app_root(path)
   dirs <- list.dirs(path = path, full.names = FALSE, recursive = FALSE)
-  sel <- grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", dirs)
+  sel <- grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", dirs)
   session_ids <- dirs[sel]
   if(order != "none") {
 
-    timestamps <- sub("\\-[a-zA-Z]+\\-[a-zA-Z0-9]{4}$", "", session_ids)
+    timestamps <- sub("\\-[^\\-]+\\-[a-zA-Z0-9]{4}$", "", session_ids)
     timestamps <- strptime(timestamps, "session-%y%m%d-%H%M%S")
     order <- order(timestamps, decreasing = order == "descend", na.last = TRUE)
     session_ids <- session_ids[order]
@@ -811,7 +811,7 @@ start_session <- function(
     }
     if(!inherits(session, "rave-dash-session")) {
       if(length(session) != 1 || is.na(session) ||
-         !grepl("^session-[0-9]{6}-[0-9]{6}-[a-zA-Z]+-[A-Z0-9]{4}$", session)) {
+         !grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", session)) {
         stop("`start_session`: Invalid `session`.")
       }
       session <- tryCatch({
