@@ -27,12 +27,12 @@ knitr::opts_chunk$set(
 
 ## Set up the templates
 
-`ravedash` requires additional templates from [`RAVE` built-in pipelines](https://github.com/dipterix/rave-pipelines) (released under MIT license). You can always start with this template and expand from there.
+`ravedash` requires additional templates from [`RAVE` built-in pipelines](https://github.com/rave-ieeg/rave-pipelines) (released under MIT license). You can always start with this template and expand from there.
 
 To download the template, simply run the following one-time command:
 
 ```{r, eval=FALSE}
-raveio::pipeline_install_github('dipterix/rave-pipelines')
+raveio::pipeline_install_github('rave-ieeg/rave-pipelines')
 ```
 
 ## Manage the dashboard

@@ -12,7 +12,7 @@ ensure_template <- function(path, use_cache = TRUE){
   template_path <- file.path(R_user_dir("raveio", 'data'), 'rave-pipelines')
 
   if(!use_cache || !dir.exists(template_path)) {
-    raveio::pipeline_install_github('dipterix/rave-pipelines', to = "default")
+    raveio::pipeline_install_github('rave-ieeg/rave-pipelines', to = "default")
   }
 
   fs <- list.files(template_path, full.names = TRUE, recursive = FALSE)
@@ -134,11 +134,11 @@ new_session <- function(update = FALSE, app_root = NULL) {
   src_pipeline <- file.path(R_user_dir("raveio", 'data'), "pipelines")
 
   if(!dir.exists(src_pipeline)){
-    stop("No pipeline found. TODO (dev: fixe this)")
+    stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
   }
   pipelines <- raveio::pipeline_list(root_path = src_pipeline)
   if(!length(pipelines)){
-    stop("No pipeline found. TODO (dev: fixe this)")
+    stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
   }
 
   # create a temporary repository
