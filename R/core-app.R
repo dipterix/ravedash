@@ -1,9 +1,16 @@
 session_root <- function(ensure = FALSE){
-  cache_path <- raveio::raveio_getopt("tensor_temp_path", default = file.path(tempdir(), "rave2-session"))
-  if( ensure && !dir.exists(cache_path) ){
-    raveio::dir_create2(cache_path)
+  path <- raveio::raveio_getopt("ravedash_session_root", default = NA)
+  if(length(path) != 1 || is.na(path) || !is.character(path)) {
+    path <- raveio::raveio_getopt("tensor_temp_path", default = NA)
+    if(length(path) != 1 || is.na(path) || !is.character(path)) {
+      path <- file.path(tempdir(), "rave2-session")
+    }
   }
-  normalizePath(cache_path, mustWork = FALSE)
+
+  if( ensure && !dir.exists(path) ){
+    raveio::dir_create2(path)
+  }
+  normalizePath(path, mustWork = FALSE)
 }
 
 ensure_template <- function(path, use_cache = TRUE){
@@ -608,7 +615,7 @@ temp_dir <- function(
     }
   }
   if(persist == "package-cache") {
-    root <- file.path(raveio::cache_root(), "app_tmp")
+    root <- file.path(session_root(), "package-cache")
   }
   if(persist == "process") {
     root <- tempdir()
