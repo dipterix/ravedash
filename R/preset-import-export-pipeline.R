@@ -28,7 +28,19 @@ presets_import_export_subject_pipeline <- function(
 
   # repository_name <- "repository"
   get_repo <- function(){
-    if(!comp$container$data[['@has']](pipeline_repository)) {
+
+    data_loaded <- isTRUE(shiny::isolate(watch_data_loaded()))
+    has_repository <- comp$container$data[['@has']](pipeline_repository)
+
+    if(!data_loaded) {
+      if( has_repository ) {
+        comp$container$data[["@remove"]](pipeline_repository)
+      }
+      return(NULL)
+    }
+
+    if(!has_repository) {
+      logger("Trying to get repository object...", level = "trace")
       repository <- raveio::pipeline_read(var_names = pipeline_repository,
                                           pipe_dir = comp$container$pipeline_path)
       comp$container$data[[pipeline_repository]] <- repository
