@@ -1,9 +1,9 @@
 pandoc: 3.1.11
-pkgdown: 2.1.0
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   start: start.html
-last_built: 2024-07-31T12:04Z
+last_built: 2024-09-28T00:38Z
 urls:
   reference: https://dipterix.org/ravedash/reference
   article: https://dipterix.org/ravedash/articles
