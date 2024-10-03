@@ -9,7 +9,7 @@ no hang when when the expression raises error."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.34</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.35</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,8 @@ no hang when when the expression raises error.</p>
 <span>  priority <span class="op">=</span> <span class="fl">0L</span>,</span>
 <span>  domain <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
-<span>  error_wrapper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"notification"</span>, <span class="st">"alert"</span><span class="op">)</span></span>
+<span>  error_wrapper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"notification"</span>, <span class="st">"alert"</span><span class="op">)</span>,</span>
+<span>  watch_data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"ravedash.auto_watch_data"</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -69,6 +70,11 @@ no hang when when the expression raises error.</p>
 <dd><p>handler when error is encountered, choices are
 <code>'none'</code>, <code>'notification'</code> (see <code><a href="logger.html">error_notification</a></code>),
 or <code>'alert'</code> (see <code><a href="logger.html">error_alert</a></code>)</p></dd>
+
+
+<dt id="arg-watch-data">watch_data<a class="anchor" aria-label="anchor" href="#arg-watch-data"></a></dt>
+<dd><p>whether to invalidate only when
+<code><a href="rave-runtime-events.html">watch_data_loaded</a></code> is <code>TRUE</code></p></dd>
 
 </dl></div>
     <div class="section level2">
