@@ -11,7 +11,8 @@ safe_observe(
   priority = 0L,
   domain = NULL,
   ...,
-  error_wrapper = c("none", "notification", "alert")
+  error_wrapper = c("none", "notification", "alert"),
+  watch_data = getOption("ravedash.auto_watch_data", FALSE)
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ safe_observe(
 \item{error_wrapper}{handler when error is encountered, choices are
 \code{'none'}, \code{'notification'} (see \code{\link{error_notification}}),
 or \code{'alert'} (see \code{\link{error_alert}})}
+
+\item{watch_data}{whether to invalidate only when
+\code{\link{watch_data_loaded}} is \code{TRUE}}
 }
 \value{
 'shiny' observer instance
