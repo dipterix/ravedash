@@ -113,7 +113,7 @@ presets_loader_3dviewer <- function(
               control_display = FALSE,
               # show_modal = TRUE,
               background = theme$background,
-              palettes = list(Value = c("navy", "red", "gray80")),
+              palettes = list(Value = c("red", "navy", "gray80")),
               controllers = list(
                 "Background Color" = theme$background,
                 "Show Time" = FALSE
@@ -280,7 +280,7 @@ presets_loader_3dviewer2 <- function(
               control_display = FALSE,
               # show_modal = TRUE,
               background = theme$background,
-              palettes = list(Value = c("navy", "red", "gray80")),
+              palettes = list(Value = c("red", "navy", "gray80")),
               controllers = list(
                 "Background Color" = theme$background,
                 "Show Time" = FALSE

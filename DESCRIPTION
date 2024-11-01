@@ -1,12 +1,12 @@
 Package: ravedash
 Type: Package
 Title: Dashboard System for Reproducible Visualization of 'iEEG'
-Version: 0.1.3.35
+Version: 0.1.3.36
 Authors@R: c(
     person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph"))
     )
 Description: Dashboard system to display the analysis results produced by 'RAVE'
-    (Magnotti J.F., Wang Z., Beauchamp M.S. (2020), R analysis 
+    (Magnotti J.F., Wang Z., Beauchamp M.S. (2020), Reproducible analysis 
     and visualizations of 'iEEG' <doi:10.1016/j.neuroimage.2020.117341>). 
     Provides infrastructure to integrate customized analysis pipelines into
     dashboard modules, including file structures, front-end widgets, and 
