@@ -126,7 +126,8 @@ presets_loader_epoch(
   varname = "epoch_choice",
   label = "Epoch and Trial Duration",
   loader_project_id = "loader_project_name",
-  loader_subject_id = "loader_subject_code"
+  loader_subject_id = "loader_subject_code",
+  allow_stitch = FALSE
 )
 
 presets_loader_project(
