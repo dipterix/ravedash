@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   start: start.html
-last_built: 2025-07-02T18:24Z
+last_built: 2025-07-02T18:26Z
 urls:
   reference: https://dipterix.org/ravedash/reference
   article: https://dipterix.org/ravedash/articles
