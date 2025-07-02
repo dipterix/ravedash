@@ -226,6 +226,8 @@ different to the default}
 \item{gadgets}{gadget types to include; see \code{type} argument in function
 \code{\link{output_gadget}}}
 
+\item{allow_stitch}{whether to allow stitching the events}
+
 \item{mode}{whether to create new reference, or simply to choose from
 existing references}
 

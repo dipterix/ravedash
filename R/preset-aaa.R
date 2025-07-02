@@ -45,6 +45,7 @@
 #' @param multiple whether to allow multiple inputs
 #' @param allow_new whether to allow new subject to be created; ignored when
 #' checks exist
+#' @param allow_stitch whether to allow stitching the events
 #' @returns A \code{'RAVEShinyComponent'} instance.
 #' @seealso \code{\link{new_rave_shiny_component_container}}
 NULL
