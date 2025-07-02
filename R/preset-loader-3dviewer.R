@@ -36,7 +36,7 @@ presets_loader_3dviewer <- function(
     get_subject <- loader_subject$get_tool("get_subject")
 
     local_reactives <- shiny::reactiveValues(
-      brain = NULL
+      brain_flag = NULL
     )
 
     brain_proxy <- threeBrain::brain_proxy(outputId = "loader_3d_viewer", session = session)
@@ -86,9 +86,9 @@ presets_loader_3dviewer <- function(
         if(!is.data.frame(tbl)) { return() }
         brain_proxy$set_electrode_data(data = tbl, palettes = list(Value = c("pink", "orange", "gray80")))
       }),
-      local_reactives$brain,
+      local_reactives$brain_flag,
       electrode_table(),
-      ignoreNULL = FALSE, ignoreInit = TRUE
+      ignoreNULL = FALSE, ignoreInit = FALSE
     )
 
     shiny::bindEvent(
@@ -116,6 +116,7 @@ presets_loader_3dviewer <- function(
           brain <- raveio::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
 
           if(is.null(brain)) {
+            local_reactives$brain_flag <- NULL
             stop("No brain instance")
           }
 
@@ -128,9 +129,9 @@ presets_loader_3dviewer <- function(
 
           logger("Re-generate loader's viewer", level = 'trace')
 
-          new_brain <- shiny::isolate(is.null(local_reactives$brain))
+          new_brain <- shiny::isolate(is.null(local_reactives$brain_flag))
 
-          local_reactives$brain <- brain
+          local_reactives$brain_flag <- Sys.time()
 
           if( new_brain ) {
             camera_position <- c(0, 0, 500)
@@ -331,7 +332,7 @@ presets_loader_3dviewer2 <- function(
           subject <- get_subject()
 
           brain <- raveio::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
-          new_brain <- shiny::isolate(is.null(local_reactives$brain))
+          new_brain <- shiny::isolate(is.null(local_reactives$brain_flag))
 
           if(is.null(brain)) {
             local_reactives$brain_flag <- NULL
