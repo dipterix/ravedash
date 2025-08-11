@@ -12,7 +12,7 @@ presets_import_setup_blocks <- function(
   comp$no_save <- c("", "msg", "actions", "format_details", "action_dbl_confirm",
                     "block_preview", "")
 
-  all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4,7)]
+  all_formats <- ravecore::IMPORT_FORMATS[c(1,2,3,4,7)]
   regexps <- c(
     "\\.(h5|mat)$",
     "\\.(h5|mat)$",
@@ -158,7 +158,7 @@ presets_import_setup_blocks <- function(
         # enable UI
         project_name <- info$project_name
         subject_code <- info$subject_code
-        subject <- raveio::RAVESubject$new(project_name = project_name,
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
                                            subject_code = subject_code, strict = FALSE)
         preproc <- subject$preprocess_settings
         format_selection <- preproc$data$format %OF% seq_along(all_formats)
@@ -195,7 +195,7 @@ presets_import_setup_blocks <- function(
         shidashi::card2_close(id)
 
 
-        # preproc <- raveio::RAVEPreprocessSettings$new(subject = )
+        # preproc <- ravecore::RAVEPreprocessSettings$new(subject = )
 
       }),
       basic_setups(),
@@ -227,7 +227,7 @@ presets_import_setup_blocks <- function(
 
         project_name <- info$project_name
         subject_code <- info$subject_code
-        subject <- raveio::RAVESubject$new(project_name = project_name,
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
                                            subject_code = subject_code, strict = FALSE)
         preproc <- subject$preprocess_settings
 
@@ -246,7 +246,7 @@ presets_import_setup_blocks <- function(
           info$current_format <- preproc$data$format %OF% c(info$format, seq_along(all_formats))
         }
 
-        # raveio::save_yaml(info, stdout())
+        # ravepipeline::save_yaml(info, stdout())
         return(info)
 
       }),
@@ -273,10 +273,10 @@ presets_import_setup_blocks <- function(
           if(setequal(info$current_blocks, info$blocks) &&
              isTRUE(info$current_format == info$format)) {
 
-            settings <- raveio::load_yaml(comp$container$settings_path)
+            settings <- ravepipeline::load_yaml(comp$container$settings_path)
             comp$collect_settings(map = settings)
 
-            raveio::save_yaml(
+            ravepipeline::save_yaml(
               settings,
               comp$container$settings_path,
               sorted = TRUE
@@ -439,10 +439,10 @@ presets_import_setup_blocks <- function(
 
       preproc$save()
 
-      settings <- raveio::load_yaml(comp$container$settings_path)
+      settings <- ravepipeline::load_yaml(comp$container$settings_path)
       comp$collect_settings(map = settings)
 
-      raveio::save_yaml(
+      ravepipeline::save_yaml(
         settings,
         comp$container$settings_path,
         sorted = TRUE
@@ -501,7 +501,7 @@ presets_import_setup_blocks <- function(
         new_blocks <- info$blocks
         project_name <- info$project_name
         subject_code <- info$subject_code
-        subject <- raveio::RAVESubject$new(project_name = project_name,
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
                                            subject_code = subject_code, strict = FALSE)
         preproc <- subject$preprocess_settings
 
@@ -542,7 +542,7 @@ presets_import_setup_blocks <- function(
         info <- block_setups()
         project_name <- info$project_name
         subject_code <- info$subject_code
-        subject <- raveio::RAVESubject$new(project_name = project_name,
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
                                            subject_code = subject_code, strict = FALSE)
         preproc <- subject$preprocess_settings
         set_data(preproc, info)

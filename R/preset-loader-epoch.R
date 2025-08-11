@@ -122,7 +122,7 @@ presets_loader_epoch <- function(
         pre <- comp$get_settings_value(key = pre_varname, default = -1)
         post <- comp$get_settings_value(key = post_varname, default = 2)
       }
-      raveio::validate_time_window(as.vector(rbind(pre, post)))
+      ravecore::validate_time_window(as.vector(rbind(pre, post)))
     }
 
     shiny::bindEvent(

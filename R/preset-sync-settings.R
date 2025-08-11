@@ -48,7 +48,7 @@ presets_loader_sync_project_subject <- function(
           subject_code <- session_cache$subject_code
         } else {
           pipeline <- tryCatch({
-            raveio::pipeline(pipeline_name = from_module)
+            ravepipeline::pipeline(pipeline_name = from_module)
           }, error = function(e){ NULL })
           if(is.null(pipeline)) { return() }
           project_name <- pipeline$get_settings(key = project_varname, default = NULL)
@@ -74,7 +74,7 @@ presets_loader_sync_project_subject <- function(
           is.character(subject_code)
         ) {
           # get all subjects
-          all_subcodes <- list.dirs(raveio::raveio_getopt("raw_data_dir"),
+          all_subcodes <- list.dirs(ravepipeline::raveio_getopt("raw_data_dir"),
                                     full.names = FALSE, recursive = FALSE)
           all_subcodes <- all_subcodes[grepl("^[a-zA-Z0-9]", all_subcodes)]
           shiny::updateSelectInput(

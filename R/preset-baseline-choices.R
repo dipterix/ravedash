@@ -38,7 +38,7 @@ presets_baseline_choices <- function(
 
     if(!has_repository) {
       logger("Trying to get repository object...", level = "trace")
-      repository <- raveio::pipeline_read(var_names = pipeline_repository,
+      repository <- ravepipeline::pipeline_read(var_names = pipeline_repository,
                                           pipe_dir = comp$container$pipeline_path)
       comp$container$data[[pipeline_repository]] <- repository
     } else {
@@ -138,7 +138,7 @@ presets_baseline_choices <- function(
         unlist(x$window_interval)
       })
       baseline_windows <- tryCatch({
-        raveio::validate_time_window(baseline_windows)
+        ravecore::validate_time_window(baseline_windows)
       }, error = function(e){
         list(c(time_range[1], max(time_range[1], 0)))
       })

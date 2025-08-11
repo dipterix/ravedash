@@ -41,7 +41,7 @@ presets_import_export_subject_pipeline <- function(
 
     if(!has_repository) {
       logger("Trying to get repository object...", level = "trace")
-      repository <- raveio::pipeline_read(var_names = pipeline_repository,
+      repository <- ravepipeline::pipeline_read(var_names = pipeline_repository,
                                           pipe_dir = comp$container$pipeline_path)
       comp$container$data[[pipeline_repository]] <- repository
     } else {
@@ -78,7 +78,7 @@ presets_import_export_subject_pipeline <- function(
               type = "info",
               message = as.character(
                 shiny::tagList(shiny::p(
-                  raveio::glue("Saving pipeline [{pipeline_name}] to subject [{subject_id}]. Please name your pipeline below:")
+                  ravepipeline::glue("Saving pipeline [{pipeline_name}] to subject [{subject_id}]. Please name your pipeline below:")
                 ),
                 shidashi::flex_container(
                   direction = "column",
@@ -118,9 +118,9 @@ presets_import_export_subject_pipeline <- function(
 
         # # Save current pipeline
         # # load current subject information
-        # repository <- raveio::pipeline_read("repository", pipe_dir = pipeline_path)
+        # repository <- ravepipeline::pipeline_read("repository", pipe_dir = pipeline_path)
         # file.path(repository$subject$pipeline_path, pipeline_name, )
-        # raveio::pipeline_fork(src = pipeline_path, dest = )
+        # ravepipeline::pipeline_fork(src = pipeline_path, dest = )
       }),
       ravedash::get_rave_event("save_pipeline"),
       ignoreNULL = TRUE,
@@ -154,7 +154,7 @@ presets_import_export_subject_pipeline <- function(
           )
 
           tryCatch({
-            raveio::pipeline_fork(src = pipeline_path, dest = dest, activate = FALSE)
+            ravepipeline::pipeline_fork(src = pipeline_path, dest = dest, activate = FALSE)
             dipsaus::close_alert2()
             dipsaus::shiny_alert2(
               title = "Saved!",
@@ -170,7 +170,7 @@ presets_import_export_subject_pipeline <- function(
               auto_close = TRUE,
               buttons = list("Dismiss" = TRUE),
               danger_mode = TRUE,
-              text = raveio::glue("An error found while saving the pipeline. Reason: \n  {e$message}")
+              text = ravepipeline::glue("An error found while saving the pipeline. Reason: \n  {e$message}")
             )
           })
 
@@ -208,7 +208,7 @@ presets_import_export_subject_pipeline <- function(
             if(!length(project_name)){
               stop("Cannot get valid project name from currect context")
             }
-            project <- raveio::as_rave_project(project_name)
+            project <- ravecore::as_rave_project(project_name)
             if(!length(subject_code)) {
               subject_code <- NA
             }
@@ -217,7 +217,7 @@ presets_import_export_subject_pipeline <- function(
           pnames <- character(0L)
           dirs <- character(0L)
           if(isTRUE(project$has_subject(subject_code))) {
-            subject <- raveio::RAVESubject$new(project_name = project$name,
+            subject <- ravecore::RAVESubject$new(project_name = project$name,
                                                subject_code = subject_code,
                                                strict = FALSE)
             dirs <- list.dirs(file.path(subject$pipeline_path, pipeline_name),
@@ -292,7 +292,7 @@ presets_import_export_subject_pipeline <- function(
           project_name <- project$name
         } else {
           project_name <- loader_project$current_value
-          project <- raveio::as_rave_project(project_name, strict = FALSE)
+          project <- ravecore::as_rave_project(project_name, strict = FALSE)
         }
 
         # print(subject_code)
@@ -305,7 +305,7 @@ presets_import_export_subject_pipeline <- function(
           )
         }
 
-        subject <- raveio::RAVESubject$new(project_name = project_name,
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
                                            subject_code = subject_code,
                                            strict = FALSE)
 
@@ -350,20 +350,20 @@ presets_import_export_subject_pipeline <- function(
             subject_code <- subject$subject_code
           } else {
             project_name <- loader_project$current_value
-            project <- raveio::as_rave_project(project_name, strict = FALSE)
+            project <- ravecore::as_rave_project(project_name, strict = FALSE)
             subject_code <- loader_subject$current_value
             if(!isTRUE(project$has_subject(subject_code))){
               project_name <- loader_project$get_settings_value()
               subject_code <- loader_subject$get_settings_value()
             }
-            subject <- raveio::RAVESubject$new(project_name = project_name,
+            subject <- ravecore::RAVESubject$new(project_name = project_name,
                                                subject_code = subject_code,
                                                strict = FALSE)
             project <- subject$project
           }
 
 
-          remote_subject <- raveio::RAVESubject$new(project_name = project_name,
+          remote_subject <- ravecore::RAVESubject$new(project_name = project_name,
                                                     subject_code = remote_subject_code,
                                                     strict = FALSE)
 
@@ -379,8 +379,8 @@ presets_import_export_subject_pipeline <- function(
           remote_settings_path <- file.path(remote_pipeline_path, settings_filename)
           current_settings_path <- file.path(pipeline_path, settings_filename)
 
-          settings <- raveio::load_yaml(current_settings_path)
-          remote_settings <- raveio::load_yaml(remote_settings_path)
+          settings <- ravepipeline::load_yaml(current_settings_path)
+          remote_settings <- ravepipeline::load_yaml(remote_settings_path)
           nms <- names(remote_settings)
 
           if(fork_mode == "exclude") {
@@ -459,20 +459,20 @@ presets_import_export_subject_pipeline <- function(
             subject_code <- subject$subject_code
           } else {
             project_name <- loader_project$current_value
-            project <- raveio::as_rave_project(project_name, strict = FALSE)
+            project <- ravecore::as_rave_project(project_name, strict = FALSE)
             subject_code <- loader_subject$current_value
             if(!isTRUE(project$has_subject(subject_code))){
               project_name <- loader_project$get_settings_value()
               subject_code <- loader_subject$get_settings_value()
             }
-            subject <- raveio::RAVESubject$new(project_name = project_name,
+            subject <- ravecore::RAVESubject$new(project_name = project_name,
                                                subject_code = subject_code,
                                                strict = FALSE)
             project <- subject$project
           }
 
 
-          remote_subject <- raveio::RAVESubject$new(project_name = project_name,
+          remote_subject <- ravecore::RAVESubject$new(project_name = project_name,
                                                     subject_code = remote_subject_code,
                                                     strict = FALSE)
 
@@ -488,8 +488,8 @@ presets_import_export_subject_pipeline <- function(
           remote_settings_path <- file.path(remote_pipeline_path, settings_filename)
           current_settings_path <- file.path(pipeline_path, settings_filename)
 
-          settings <- raveio::load_yaml(current_settings_path)
-          remote_settings <- raveio::load_yaml(remote_settings_path)
+          settings <- ravepipeline::load_yaml(current_settings_path)
+          remote_settings <- ravepipeline::load_yaml(remote_settings_path)
           nms <- names(remote_settings)
           selected <- comp$get_sub_element_input("import_varnames")
           if(!length(selected)){
@@ -514,7 +514,7 @@ presets_import_export_subject_pipeline <- function(
           if(length(nms)) {
             dipsaus::list_to_fastmap2(remote_settings[nms], map = settings)
           }
-          raveio::save_yaml(settings, current_settings_path)
+          ravepipeline::save_yaml(settings, current_settings_path)
           logger("Pipeline imported with settings file:\n",
                  paste(readLines(current_settings_path), collapse = "\n"),
                  level = "debug")
@@ -523,7 +523,7 @@ presets_import_export_subject_pipeline <- function(
 
           # try to get project and subject from the pipeline settings
           logger("Re-run pipeline... This shouldn't take long if there is no bug...", level = "trace")
-          results <- raveio::pipeline_run(
+          results <- ravepipeline::pipeline_run(
             pipe_dir = pipeline_path,
             scheduler = "none", type = "smart",
             names = pipeline_repository, async = FALSE
@@ -531,7 +531,7 @@ presets_import_export_subject_pipeline <- function(
 
           results$promise$then(
             onFulfilled = function(...){
-              new_repository <- raveio::pipeline_read(pipeline_repository, pipe_dir = pipeline_path)
+              new_repository <- ravepipeline::pipeline_read(pipeline_repository, pipe_dir = pipeline_path)
               comp$container$data$repository <- new_repository
 
               ravedash::fire_rave_event('data_loaded', list(

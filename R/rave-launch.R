@@ -11,8 +11,8 @@ debug_modules <- function(module_root = rstudioapi::getActiveProject(), host = '
   options("rave.run.if_false" = FALSE)
 
   if(jupyter && rstudioapi::isAvailable()){
-    jupyter_port <- raveio::raveio_getopt("jupyter_port", default = 17284)
-    jupyter_wd <- raveio::raveio_getopt('data_dir')
+    jupyter_port <- ravepipeline::raveio_getopt("jupyter_port", default = 17284)
+    jupyter_wd <- ravepipeline::raveio_getopt('data_dir')
     rpymat::jupyter_check_launch(open_browser = FALSE, workdir = jupyter_wd, port = jupyter_port, host = host, async = TRUE)
   }
   shidashi::render(root_path = module_root, port = port, host = host, ...)

@@ -12,7 +12,7 @@ presets_import_setup_channels <- function(
   comp$no_save <- c("", "msg", "actions", "actions_alt", "snapshot",
                     "do_import")
 
-  all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4,7)]
+  all_formats <- ravecore::IMPORT_FORMATS[c(1,2,3,4,7)]
 
   comp$ui_func <- function(id, value, depends){
 
@@ -259,7 +259,7 @@ presets_import_setup_channels <- function(
         blocks <- info$current_blocks
         format <- info$current_format
 
-        subject <- raveio::RAVESubject$new(project_name = project_name,
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
                                            subject_code = subject_code, strict = FALSE)
         preproc <- subject$preprocess_settings
 
@@ -294,7 +294,7 @@ presets_import_setup_channels <- function(
         )
         shidashi::card2_close(id)
 
-        # preproc <- raveio::RAVEPreprocessSettings$new(subject = )
+        # preproc <- ravecore::RAVEPreprocessSettings$new(subject = )
 
       }),
       block_setups(),
@@ -455,7 +455,7 @@ presets_import_setup_channels <- function(
         lfp_channels <- preproc$electrodes[lfp_sel]
 
         # get composed channels
-        # preproc <- raveio::RAVEPreprocessSettings$new("demo/DemoSubject")
+        # preproc <- ravecore::RAVEPreprocessSettings$new("demo/DemoSubject")
 
         compose_params <- lapply(lfp_channels, function(e) {
           if(!isTRUE(preproc$data[[e]]$composed)) {
@@ -961,7 +961,7 @@ presets_import_setup_channels <- function(
 
         pipeline <- comp$container$get_pipeline()
 
-        settings <- raveio::load_yaml(comp$container$settings_path)
+        settings <- ravepipeline::load_yaml(comp$container$settings_path)
         settings <- comp$container$collect_settings(c(
           import_setup_id,
           import_blocks_id,
@@ -971,7 +971,7 @@ presets_import_setup_channels <- function(
         settings$skip_validation <- TRUE
         settings$force_import <- TRUE
 
-        # raveio::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
+        # ravepipeline::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
         pipeline$set_settings(.list = settings)
 
 
@@ -1148,7 +1148,7 @@ presets_import_setup_channels <- function(
 #   comp$no_save <- c("", "msg", "actions", "actions_alt", "snapshot",
 #                     "do_import")
 #
-#   all_formats <- raveio::IMPORT_FORMATS[c(1,2,3,4,7)]
+#   all_formats <- ravecore::IMPORT_FORMATS[c(1,2,3,4,7)]
 #
 #   comp$ui_func <- function(id, value, depends){
 #
@@ -1301,7 +1301,7 @@ presets_import_setup_channels <- function(
 #         blocks <- info$current_blocks
 #         format <- info$current_format
 #
-#         subject <- raveio::RAVESubject$new(project_name = project_name,
+#         subject <- ravecore::RAVESubject$new(project_name = project_name,
 #                                            subject_code = subject_code, strict = FALSE)
 #         preproc <- subject$preprocess_settings
 #
@@ -1336,7 +1336,7 @@ presets_import_setup_channels <- function(
 #         )
 #         shidashi::card2_close(id)
 #
-#         # preproc <- raveio::RAVEPreprocessSettings$new(subject = )
+#         # preproc <- ravecore::RAVEPreprocessSettings$new(subject = )
 #
 #       }),
 #       block_setups(),
@@ -1683,7 +1683,7 @@ presets_import_setup_channels <- function(
 #
 #         pipeline <- comp$container$get_pipeline()
 #
-#         settings <- raveio::load_yaml(comp$container$settings_path)
+#         settings <- ravepipeline::load_yaml(comp$container$settings_path)
 #         settings <- comp$container$collect_settings(c(
 #           import_setup_id,
 #           import_blocks_id,
@@ -1693,7 +1693,7 @@ presets_import_setup_channels <- function(
 #         settings$skip_validation <- TRUE
 #         settings$force_import <- TRUE
 #
-#         # raveio::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
+#         # ravepipeline::save_yaml(settings, comp$container$settings_path, sorted = TRUE)
 #         pipeline$set_settings(.list = settings)
 #
 #

@@ -30,7 +30,7 @@
 #' @export
 new_rave_shiny_component_container <- function(
   module_id, pipeline_name,
-  pipeline_path = raveio::pipeline_find(pipeline_name),
+  pipeline_path = ravepipeline::pipeline_find(pipeline_name),
   settings_file = "settings.yaml"
 ){
 
@@ -60,7 +60,7 @@ RAVEShinyComponentContainer <- R6::R6Class(
     initialize = function(
       module_id = NULL,
       pipeline_name = module_id,
-      pipeline_path = raveio::pipeline_find(pipeline_name),
+      pipeline_path = ravepipeline::pipeline_find(pipeline_name),
       settings_file = "settings.yaml"
     ){
       settings_path <- file.path(pipeline_path, settings_file)
@@ -77,7 +77,11 @@ RAVEShinyComponentContainer <- R6::R6Class(
       private$.pipeline_path <- pipeline_path[[1]]
       private$.settings_path <- settings_path[[1]]
       tryCatch({
-        private$.pipeline <- raveio::pipeline(pipeline_name = pipeline_name, settings_file = settings_file, paths = dirname(pipeline_path))
+        private$.pipeline <- ravepipeline::pipeline(
+          pipeline_name = pipeline_name,
+          settings_file = settings_file,
+          paths = dirname(pipeline_path)
+        )
       }, error = function(e) {
         private$.pipeline <- NULL
       })

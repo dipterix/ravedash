@@ -387,7 +387,7 @@ abbr_module_id <- function(module_id, ...){
     }
 
     if(use_glue) {
-      msg <- raveio::glue(..., .envir = .envir, .sep = .sep)
+      msg <- ravepipeline::glue(..., .envir = .envir, .sep = .sep)
     } else {
       msg <- paste(..., collapse = .sep, sep = .sep)
     }
@@ -395,7 +395,7 @@ abbr_module_id <- function(module_id, ...){
     if(loglevel < logger::ERROR ||
        (
          loglevel == logger::ERROR &&
-         raveio::raveio_getopt("traceback_on_error", default = FALSE)
+         ravepipeline::raveio_getopt("traceback_on_error", default = FALSE)
        )){
       if(system.file(package = "rlang") == '') {
         msg <- utils::capture.output({
