@@ -67,15 +67,20 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
           try({
             show_notification(
               title = "Report generated!",
-              type = "success",
-              message = shiny::p(
-                sprintf("A report `%s` has been generated at:", report_item$label),
-                shiny::tags$code(
-                  class = "bg-secondary",
-                  path
+              type = "default",
+              message = shiny::div(
+                shiny::p(
+                  sprintf("A report `%s` has been generated at:", report_item$label)
+                ),
+                shiny::p(
+                  shiny::tags$code(
+                    class = "bg-secondary",
+                    path
+                  )
                 ),
                 if(!is.null(url)) {
-                  shiny::a(target = "_blank", href = url, class = "btn btn-default", "View report")
+                  shiny::a(target = "_blank", href = url, class = "btn btn-sm btn-success",
+                           shiny::span("View report ", shiny_icons$external_link))
                 }
               ),
               close = TRUE,
