@@ -2,7 +2,7 @@
 % Please edit documentation in R/preset-report_wizard.R
 \name{create_report_wizard}
 \alias{create_report_wizard}
-\title{Create report wizard}
+\title{Create report wizard to be used within the interactive modules}
 \usage{
 create_report_wizard(pipeline, session = shiny::getDefaultReactiveDomain())
 }
@@ -12,10 +12,11 @@ create_report_wizard(pipeline, session = shiny::getDefaultReactiveDomain())
 \item{session}{shiny session}
 }
 \value{
-A function with argument \code{subject}; this function is to be
-called when users want to create reports, must be used within the module
-server code.
+A list of functions: \code{launch} with argument \code{subject} to
+be called when users want to pop up a wizard allowing users to choose
+reports; \code{generate} with arguments \code{subject} and
+\code{report_names} to generate reports
 }
 \description{
-Create report wizard
+Create report wizard to be used within the interactive modules
 }
