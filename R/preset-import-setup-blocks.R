@@ -390,10 +390,12 @@ presets_import_setup_blocks <- function(
 
       project_name <- info$project_name
       subject_code <- info$subject_code
-      dirs <- raveio::rave_directories(subject_code = subject_code,
-                                       project_name = project_name)
+      subject <- ravecore::RAVESubject$new(project_name = project_name,
+                                subject_code = subject_code,
+                                strict = FALSE)
+      preproc <- subject$preprocess_settings
 
-      if(!dir.exists(dirs$raw_path)) {
+      if(!dir.exists(preproc$raw_path)) {
         return("Cannot find raw data path")
       }
 
@@ -402,7 +404,7 @@ presets_import_setup_blocks <- function(
       regexp <- regexps[[fmt_idx]]
 
       for(block in blocks) {
-        fs <- list.files(file.path(dirs$raw_path, block), pattern = regexp, recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
+        fs <- list.files(file.path(preproc$raw_path, block), pattern = regexp, recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
         if(length(fs) > max_components) {
           fs <- c(fs[seq_len(max_components - 1)], "...")
         }

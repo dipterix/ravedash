@@ -17,12 +17,11 @@
 #' different to the default
 #' @param import_setup_id the ID of \code{presets_import_setup_native} if
 #' different to the default
-#' @param import_blocks_id the ID of \code{presets_import_setup_blocks} if
-#' different to the default
 #' @param pipeline_repository the pipeline name that represents the 'RAVE'
-#' repository from functions such as \code{\link[raveio]{prepare_subject_bare}},
-#' \code{\link[raveio]{prepare_subject_with_epoch}}, and
-#' \code{\link[raveio]{prepare_subject_power}}
+#' repository from functions such as
+#' \code{\link[ravecore]{prepare_subject_bare}},
+#' \code{\link[ravecore]{prepare_subject_with_epoch}}, and
+#' \code{\link[ravecore]{prepare_subject_power}}
 #' @param max_components maximum number of components for compound inputs
 #' @param baseline_choices the possible approaches to calculate baseline
 #' @param baseline_along_choices the units of baseline

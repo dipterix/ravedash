@@ -1,9 +1,9 @@
 #' @name logger
 #' @title Logger system used by 'RAVE'
 #' @description Keep track of messages printed by modules
-#' @param ...,.envir,.sep passed to \code{\link[raveio]{glue}}, if
+#' @param ...,.envir,.sep passed to \code{glue}, if
 #' \code{use_glue} is true
-#' @param use_glue whether to use \code{\link[raveio]{glue}} to combine
+#' @param use_glue whether to use \code{glue} to combine
 #' \code{...}; default is false
 #' @param calc_delta whether to calculate time difference between current
 #' message and previous message; default is \code{'auto'}, which prints

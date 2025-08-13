@@ -223,9 +223,12 @@ presets_import_setup_native <- function(
            !length(subject_code) || trimws(subject_code) == "" ){
           return(list(valid = FALSE, reason = "Blank project/subject found. Please enter the inputs"))
         }
-        dirs <- raveio::rave_directories(subject_code = subject_code, project_name = project_name)
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
+                                             subject_code = subject_code,
+                                             strict = FALSE)
+        preproc <- subject$preprocess_settings
 
-        if(dir.exists(dirs$proprocess_path)) {
+        if(dir.exists(subject$preprocess_path)) {
 
           settings <- ravepipeline::load_yaml(comp$container$settings_path)
           comp$collect_settings(map = settings)
@@ -244,7 +247,7 @@ presets_import_setup_native <- function(
           ))
         } else {
           # if( format == "Native" ) {
-            if(!dir.exists(dirs$raw_path)) {
+            if(!dir.exists(preproc$raw_path)) {
               return(list(
                 valid = FALSE,
                 reason = sprintf("Cannot find raw folder for subject `%s`", subject_code)

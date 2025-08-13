@@ -2,11 +2,11 @@
 % Please edit documentation in R/preset-aaa.R, R/preset-analysis-electrode.R,
 %   R/preset-analysis-range.R, R/preset-baseline-choices.R,
 %   R/preset-condition-groups.R, R/preset-import-export-pipeline.R,
-%   R/preset-import-setup-blocks.R, R/preset-import-setup-channels.R,
-%   R/preset-import-setup-subject.R, R/preset-loader-3dviewer.R,
-%   R/preset-loader-electrode.R, R/preset-loader-epoch.R,
-%   R/preset-loader-project.R, R/preset-loader-reference.R,
-%   R/preset-loader-subject.R, R/preset-sync-settings.R
+%   R/preset-import-setup-blocks.R, R/preset-import-setup-subject.R,
+%   R/preset-loader-3dviewer.R, R/preset-loader-electrode.R,
+%   R/preset-loader-epoch.R, R/preset-loader-project.R,
+%   R/preset-loader-reference.R, R/preset-loader-subject.R,
+%   R/preset-sync-settings.R
 \name{rave-ui-preset}
 \alias{rave-ui-preset}
 \alias{presets_analysis_electrode_selector2}
@@ -15,7 +15,6 @@
 \alias{presets_condition_groups}
 \alias{presets_import_export_subject_pipeline}
 \alias{presets_import_setup_blocks}
-\alias{presets_import_setup_channels}
 \alias{presets_import_setup_native}
 \alias{presets_loader_3dviewer}
 \alias{presets_loader_3dviewer2}
@@ -80,13 +79,6 @@ presets_import_setup_blocks(
   label = "Format & session blocks",
   import_setup_id = "import_setup",
   max_components = 5
-)
-
-presets_import_setup_channels(
-  id = "import_channels",
-  label = "Channel information",
-  import_setup_id = "import_setup",
-  import_blocks_id = "import_blocks"
 )
 
 presets_import_setup_native(
@@ -187,9 +179,10 @@ different to the default}
 different to the default}
 
 \item{pipeline_repository}{the pipeline name that represents the 'RAVE'
-repository from functions such as \code{\link[raveio]{prepare_subject_bare}},
-\code{\link[raveio]{prepare_subject_with_epoch}}, and
-\code{\link[raveio]{prepare_subject_power}}}
+repository from functions such as
+\code{\link[ravecore]{prepare_subject_bare}},
+\code{\link[ravecore]{prepare_subject_with_epoch}}, and
+\code{\link[ravecore]{prepare_subject_power}}}
 
 \item{start_simple}{whether to start in simple view and hide optional inputs}
 
@@ -210,9 +203,6 @@ pipeline settings; in \code{'include'} mode, only \code{settings_entries}
 can be imported.}
 
 \item{import_setup_id}{the ID of \code{presets_import_setup_native} if
-different to the default}
-
-\item{import_blocks_id}{the ID of \code{presets_import_setup_blocks} if
 different to the default}
 
 \item{height}{height of the element}

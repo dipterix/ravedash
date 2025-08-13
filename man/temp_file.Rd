@@ -54,7 +54,7 @@ The 'RAVE' session and package cache are not cleared even when R process
 ends. Users need to clean the data by themselves. See
 \code{\link{remove_session}} or \code{\link{remove_all_sessions}} about
 removing session-based folders, or
-\code{\link[raveio]{clear_cached_files}} to remove package-based cache.
+\code{\link[ravecore]{clear_cached_files}} to remove package-based cache.
 }
 \examples{
 
