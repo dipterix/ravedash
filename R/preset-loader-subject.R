@@ -208,8 +208,15 @@ presets_loader_subject <- function(
 
   }
   comp$add_rule(function(subject_code){
-    if(length(subject_code) != 1 || is.na(subject_code) ||
-       startsWith(subject_code, "_")){
+    if(length(subject_code) != 1 || is.na(subject_code) ){
+      return("Subject must not be blank.")
+    }
+
+    subject_code <- gsub("^sub-", "", trimws(subject_code), ignore.case = TRUE)
+    if(!nzchar(subject_code)) {
+      return("Subject must not be blank.")
+    }
+    if(grepl("^[^a-zA-Z0-9]", subject_code)) {
       return("Invalid subject code.")
     }
 
