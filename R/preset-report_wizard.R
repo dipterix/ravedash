@@ -61,7 +61,7 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
             sprintf("%s=%s", nm, htmltools::urlEncodePath(params[[nm]]))
           }))
           params <- paste(params, collapse = "&")
-          url <- sprintf("/?%s", params)
+          url <- sprintf("?%s", params)
         })
         try({
           clear_notifications(class = ns("_report_wizard_notif"), session = session)
