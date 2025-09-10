@@ -181,7 +181,7 @@ different to the default}
 \item{pipeline_repository}{the pipeline name that represents the 'RAVE'
 repository from functions such as
 \code{\link[ravecore]{prepare_subject_bare}},
-\code{\link[ravecore]{prepare_subject_with_epoch}}, and
+\code{\link[ravecore]{prepare_subject_with_epochs}}, and
 \code{\link[ravecore]{prepare_subject_power}}}
 
 \item{start_simple}{whether to start in simple view and hide optional inputs}

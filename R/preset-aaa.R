@@ -20,7 +20,7 @@
 #' @param pipeline_repository the pipeline name that represents the 'RAVE'
 #' repository from functions such as
 #' \code{\link[ravecore]{prepare_subject_bare}},
-#' \code{\link[ravecore]{prepare_subject_with_epoch}}, and
+#' \code{\link[ravecore]{prepare_subject_with_epochs}}, and
 #' \code{\link[ravecore]{prepare_subject_power}}
 #' @param max_components maximum number of components for compound inputs
 #' @param baseline_choices the possible approaches to calculate baseline
