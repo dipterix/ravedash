@@ -11,13 +11,13 @@ presets_import_setup_native <- function(
 
 
   get_projects <- function(refresh = FALSE){
-    raveio::get_projects(refresh = refresh)
+    ravecore::get_projects(refresh = refresh)
   }
 
   comp$ui_func <- function(id, value, depends){
 
     all_projects <- c(get_projects(TRUE), "[New Project]")
-    raw_root <- raveio::raveio_getopt("raw_data_dir")
+    raw_root <- ravepipeline::raveio_getopt("raw_data_dir")
     all_subjects <- list.files(raw_root, pattern = "^[^\\/ ]+$", full.names = FALSE, recursive = FALSE, all.files = FALSE)
     all_subjects <- all_subjects[grepl("^[a-zA-Z0-9]", all_subjects)]
     all_subjects <- all_subjects[dir.exists(file.path(raw_root, all_subjects))]
@@ -186,8 +186,8 @@ presets_import_setup_native <- function(
         }
 
         ravedash::logger("Creating new project name: `{new_project_name}`", level = "trace", use_glue = TRUE)
-        project <- raveio::RAVEProject$new(project_name = new_project_name, strict = FALSE)
-        raveio::dir_create2(project$path)
+        project <- ravecore::RAVEProject$new(project_name = new_project_name, strict = FALSE)
+        ravepipeline::dir_create2(project$path)
 
         shidashi::clear_notifications()
         shidashi::show_notification(message = sprintf("A new RAVE project folder [%s] has been created!", new_project_name), type = "success", title = "Success!", subtitle = "New Project")
@@ -223,14 +223,17 @@ presets_import_setup_native <- function(
            !length(subject_code) || trimws(subject_code) == "" ){
           return(list(valid = FALSE, reason = "Blank project/subject found. Please enter the inputs"))
         }
-        dirs <- raveio::rave_directories(subject_code = subject_code, project_name = project_name)
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
+                                             subject_code = subject_code,
+                                             strict = FALSE)
+        preproc <- subject$preprocess_settings
 
-        if(dir.exists(dirs$proprocess_path)) {
+        if(dir.exists(subject$preprocess_path)) {
 
-          settings <- raveio::load_yaml(comp$container$settings_path)
+          settings <- ravepipeline::load_yaml(comp$container$settings_path)
           comp$collect_settings(map = settings)
 
-          raveio::save_yaml(
+          ravepipeline::save_yaml(
             settings,
             comp$container$settings_path,
             sorted = TRUE
@@ -244,7 +247,7 @@ presets_import_setup_native <- function(
           ))
         } else {
           # if( format == "Native" ) {
-            if(!dir.exists(dirs$raw_path)) {
+            if(!dir.exists(preproc$raw_path)) {
               return(list(
                 valid = FALSE,
                 reason = sprintf("Cannot find raw folder for subject `%s`", subject_code)
@@ -315,7 +318,7 @@ presets_import_setup_native <- function(
         project_name <- validator$project_name
         subject_code <- validator$subject_code
         ravedash::logger("Initializing RAVE subject folders {project_name}/{subject_code}", level = "info", use_glue = TRUE)
-        preprocess <- raveio::RAVEPreprocessSettings$new(subject = sprintf("%s/%s", project_name, subject_code), read_only = FALSE)
+        preprocess <- ravecore::RAVEPreprocessSettings$new(subject = sprintf("%s/%s", project_name, subject_code), read_only = FALSE)
         preprocess$subject$initialize_paths(include_freesurfer = FALSE)
         preprocess$save()
         local_reactives$force_refresh <- Sys.time()

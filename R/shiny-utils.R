@@ -697,7 +697,7 @@ ravedash_footer <- function(
           )
         ),
         local({
-          if( raveio::raveio_getopt("interactive_debugging", default = FALSE) ) {
+          if( ravepipeline::raveio_getopt("interactive_debugging", default = FALSE) ) {
             shiny::div(
               class = "px-3 py-1",
               shiny::a(
@@ -788,7 +788,7 @@ get_active_pipeline <- function(
     return(NULL)
   }
 
-  raveio::pipeline(pipeline_name = module_info$id,
+  ravepipeline::pipeline(pipeline_name = module_info$id,
                    paths = dirname(module_info$path))
 
 }

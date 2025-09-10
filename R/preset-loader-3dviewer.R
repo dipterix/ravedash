@@ -113,7 +113,7 @@ presets_loader_3dviewer <- function(
 
           subject <- get_subject()
 
-          brain <- raveio::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
+          brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
 
           if(is.null(brain)) {
             local_reactives$brain_flag <- NULL
@@ -331,7 +331,7 @@ presets_loader_3dviewer2 <- function(
 
           subject <- get_subject()
 
-          brain <- raveio::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
+          brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
           new_brain <- shiny::isolate(is.null(local_reactives$brain_flag))
 
           if(is.null(brain)) {

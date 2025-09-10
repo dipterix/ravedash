@@ -10,7 +10,7 @@ presets_loader_project <- function(
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
 
   comp$ui_func <- function(id, value, depends){
-    choices <- raveio::get_projects(refresh = FALSE)
+    choices <- ravecore::get_projects(refresh = FALSE)
     shiny::selectInput(
       inputId = id,
       label = label,
@@ -23,9 +23,9 @@ presets_loader_project <- function(
     if(length(value) != 1 || is.na(value)){
       return("Missing project name. Please choose one.")
     }
-    project <- raveio::as_rave_project(value, strict = FALSE)
+    project <- ravecore::as_rave_project(value, strict = FALSE)
     if(!dir.exists(project$path)){
-      return(raveio::glue("Cannot find path to project `{value}`"))
+      return(ravepipeline::glue("Cannot find path to project `{value}`"))
     }
     return(NULL)
   })

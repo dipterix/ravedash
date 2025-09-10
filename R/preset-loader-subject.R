@@ -40,7 +40,7 @@ presets_loader_subject <- function(
       if(!inherits(subject, "RAVESubject") ||
          !identical(subject$subject_id, subject_id)) {
 
-        subject <- raveio::as_rave_subject(subject_id, strict = FALSE)
+        subject <- ravecore::as_rave_subject(subject_id, strict = FALSE)
         comp$container$set_cache(key = "loader_subject_instance",
                                  value = subject, expire_after = 10)
       }
@@ -52,7 +52,7 @@ presets_loader_subject <- function(
       observe({
         if(!loader_project$sv$is_valid()){ return() }
         project_name <- input[[loader_project$id]]
-        project <- raveio::as_rave_project(project_name)
+        project <- ravecore::as_rave_project(project_name)
         all_subjects <- project$subjects()
         selected <- comp$get_settings_value(
           default = input[[comp$id]],
@@ -82,7 +82,7 @@ presets_loader_subject <- function(
           return("Subject code cannot be blank")
         }
         project_name <- loader_project$get_sub_element_input()
-        project <- raveio::as_rave_project(project_name)
+        project <- ravecore::as_rave_project(project_name)
         all_subjects <- project$subjects()
         if(value %in% all_subjects) {
           return("Subject exists. Dismiss the modal and choose this subject in the subject selector")
@@ -183,11 +183,11 @@ presets_loader_subject <- function(
         project_name <- input[[loader_project$id]]
         subject_code <- comp$get_sub_element_input("new_subject_code")
 
-        subject <- raveio::RAVESubject$new(project_name = project_name,
+        subject <- ravecore::RAVESubject$new(project_name = project_name,
                                            subject_code = subject_code,
                                            strict = FALSE)
         subject$initialize_paths(include_freesurfer = FALSE)
-        raveio::dir_create2(subject$preprocess_settings$raw_path)
+        ravepipeline::dir_create2(subject$preprocess_settings$raw_path)
 
         all_subjects <- subject$project$subjects()
         if(allow_new) {
@@ -208,8 +208,15 @@ presets_loader_subject <- function(
 
   }
   comp$add_rule(function(subject_code){
-    if(length(subject_code) != 1 || is.na(subject_code) ||
-       startsWith(subject_code, "_")){
+    if(length(subject_code) != 1 || is.na(subject_code) ){
+      return("Subject must not be blank.")
+    }
+
+    subject_code <- gsub("^sub-", "", trimws(subject_code), ignore.case = TRUE)
+    if(!nzchar(subject_code)) {
+      return("Subject must not be blank.")
+    }
+    if(grepl("^[^a-zA-Z0-9]", subject_code)) {
       return("Invalid subject code.")
     }
 
@@ -224,7 +231,7 @@ presets_loader_subject <- function(
     if(!inherits(subject, "RAVESubject") ||
        !identical(subject$subject_id, subject_id)) {
 
-      subject <- raveio::as_rave_subject(subject_id, strict = FALSE)
+      subject <- ravecore::as_rave_subject(subject_id, strict = FALSE)
       comp$container$set_cache(key = "loader_subject_instance",
                                value = subject, expire_after = 10)
     }
@@ -270,7 +277,7 @@ presets_loader_subject_only <- function(
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
 
   comp$ui_func <- function(id, value, depends){
-    choices <- list.dirs(raveio::raveio_getopt("raw_data_dir"),
+    choices <- list.dirs(ravepipeline::raveio_getopt("raw_data_dir"),
                          full.names = FALSE, recursive = FALSE)
     choices <- choices[grepl("^[a-zA-Z][a-zA-Z0-9_-]{0,}$", choices)]
 

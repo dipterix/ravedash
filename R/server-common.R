@@ -42,7 +42,7 @@
 #'
 #'       re <- tryCatch({
 #'         # Try to read data from pipeline results
-#'         repo <- raveio::pipeline_read(
+#'         repo <- ravepipeline::pipeline_read(
 #'           'repository',
 #'           pipe_dir = pipeline_path
 #'         )
@@ -262,7 +262,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       module_info <- get_active_module_info()
 
       desc <- tryCatch({
-        raveio::get_module_description(module_info$path)
+        ravepipeline::get_module_description(module_info$path)
       }, error = function(e) {
         list(
           Package = module_info$id,
@@ -807,7 +807,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       "server_tools <- get_default_handlers()\n",
       "shiny::bindEvent(",
       "  shiny::observe({",
-      "    <Run your algorithms, e.g. `raveio::pipeline_run(...)>",
+      "    <Run your algorithms, e.g. `ravepipeline::pipeline_run(...)>",
       "  }),",
       "  server_tools$run_analysis_flag(),",
       "  ignoreNULL = TRUE, ignoreInit = TRUE",

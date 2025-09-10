@@ -7,7 +7,7 @@
 new_rave_shiny_component_container(
   module_id,
   pipeline_name,
-  pipeline_path = raveio::pipeline_find(pipeline_name),
+  pipeline_path = ravepipeline::pipeline_find(pipeline_name),
   settings_file = "settings.yaml"
 )
 }

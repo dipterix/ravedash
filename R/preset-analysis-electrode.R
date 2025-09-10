@@ -41,7 +41,7 @@ presets_analysis_electrode_selector2 <- function(
 
     if(!has_repository) {
       logger("Trying to get repository object...", level = "trace")
-      repository <- raveio::pipeline_read(var_names = pipeline_repository,
+      repository <- ravepipeline::pipeline_read(var_names = pipeline_repository,
                                           pipe_dir = comp$container$pipeline_path)
       comp$container$data[[pipeline_repository]] <- repository
     } else {

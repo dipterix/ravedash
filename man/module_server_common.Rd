@@ -65,7 +65,7 @@ server <- function(input, output, session, ...){
 
       re <- tryCatch({
         # Try to read data from pipeline results
-        repo <- raveio::pipeline_read(
+        repo <- ravepipeline::pipeline_read(
           'repository',
           pipe_dir = pipeline_path
         )

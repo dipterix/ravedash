@@ -1,14 +1,14 @@
 session_root <- function(ensure = FALSE){
-  path <- raveio::raveio_getopt("ravedash_session_root", default = NA)
+  path <- ravepipeline::raveio_getopt("ravedash_session_root", default = NA)
   if(length(path) != 1 || is.na(path) || !is.character(path)) {
-    path <- raveio::raveio_getopt("tensor_temp_path", default = NA)
+    path <- ravepipeline::raveio_getopt("tensor_temp_path", default = NA)
     if(length(path) != 1 || is.na(path) || !is.character(path)) {
       path <- file.path(tempdir(), "rave2-session")
     }
   }
 
   if( ensure && !dir.exists(path) ){
-    raveio::dir_create2(path)
+    ravepipeline::dir_create2(path)
   }
   normalizePath(path, mustWork = FALSE)
 }
@@ -19,11 +19,11 @@ ensure_template <- function(path, use_cache = TRUE){
   template_path <- file.path(R_user_dir("raveio", 'data'), 'rave-pipelines')
 
   if(!use_cache || !dir.exists(template_path)) {
-    raveio::pipeline_install_github('rave-ieeg/rave-pipelines', to = "default")
+    ravepipeline::pipeline_install_github('rave-ieeg/rave-pipelines', to = "default")
   }
 
   fs <- list.files(template_path, full.names = TRUE, recursive = FALSE)
-  raveio::dir_create2(path)
+  ravepipeline::dir_create2(path)
   for(f in fs){
     file.copy(f, to = path, overwrite = TRUE, copy.date = TRUE, recursive = TRUE)
   }
@@ -31,7 +31,7 @@ ensure_template <- function(path, use_cache = TRUE){
   module_path <- file.path(path, "modules")
   if(dir.exists(module_path)) {
     unlink(module_path, recursive = TRUE)
-    raveio::dir_create2(module_path)
+    ravepipeline::dir_create2(module_path)
   }
   module_yaml_path <- file.path(path, "modules.yaml")
   if(file.exists(module_yaml_path)) {
@@ -55,7 +55,7 @@ resolve_app_root <- function(app_root, ensure = FALSE) {
 #' @param session,x session identification string, or session object; use
 #' \code{list_session} to list all existing sessions
 #' @param path,app_root root path to store the sessions; default is the
-#' \code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}
+#' \code{"tensor_temp_path"} in \code{\link[ravepipeline]{raveio_getopt}}
 #' @param host host 'IP' address, default is 'localhost'
 #' @param port port to listen
 #' @param options additional options, including \code{jupyter},
@@ -65,7 +65,7 @@ resolve_app_root <- function(app_root, ensure = FALSE) {
 #' requires additional setups to enable 'jupyter' lab; see 'Installation Guide
 #' Step 3' in the 'RAVE' wiki page.
 #' @param jupyter_port port used by 'jupyter' lab, can be set by
-#' \code{'jupyter_port'} option in \code{\link[raveio]{raveio_setopt}}
+#' \code{'jupyter_port'} option in \code{\link[ravepipeline]{raveio_setopt}}
 #' @param as_job whether to launch the application as 'RStudio' job, default is
 #' true if 'RStudio' is detected; when running without 'RStudio', this option
 #' is always false
@@ -132,9 +132,9 @@ resolve_app_root <- function(app_root, ensure = FALSE) {
 #' @export
 new_session <- function(update = FALSE, app_root = NULL) {
 
-  # o <- raveio::pipeline_root()
+  # o <- ravepipeline::pipeline_root()
   # on.exit({
-  #   raveio::pipeline_root(o)
+  #   ravepipeline::pipeline_root(o)
   # })
 
   src_root <- R_user_dir("raveio", 'data')
@@ -143,7 +143,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
   if(!dir.exists(src_pipeline)){
     stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
   }
-  pipelines <- raveio::pipeline_list(root_path = src_pipeline)
+  pipelines <- ravepipeline::pipeline_list(root_path = src_pipeline)
   if(!length(pipelines)){
     stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
   }
@@ -153,14 +153,14 @@ new_session <- function(update = FALSE, app_root = NULL) {
   app_root <- resolve_app_root(app_root, ensure = TRUE)
   app_path <- file.path(app_root, session_id)
 
-  # raveio::dir_create2(app_path)
+  # ravepipeline::dir_create2(app_path)
   ensure_template(app_path, use_cache = !update)
 
   pipeline_path <- file.path(app_path, "_pipelines")
 
   for(pipeline in pipelines){
-    p <- raveio::pipeline_find(pipeline)
-    raveio::pipeline_fork(
+    p <- ravepipeline::pipeline_find(pipeline)
+    ravepipeline::pipeline_fork(
       src = p, dest = file.path(pipeline_path, pipeline)
     )
   }
@@ -177,7 +177,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
     recursive = TRUE, copy.date = TRUE
   )
 
-  module_conf <- raveio::load_yaml(file.path(module_root_path, "modules.yaml"))
+  module_conf <- ravepipeline::load_yaml(file.path(module_root_path, "modules.yaml"))
   groups <- lapply(module_conf$modules, function(item){
     if(length(item$group) == 1) {
       order <- c(item$order, 99999L)
@@ -208,8 +208,8 @@ new_session <- function(update = FALSE, app_root = NULL) {
   module_conf$divider[["Built-ins"]] <- list(order = 9.99)
   module_conf$divider[["Add-ons"]] <- list(order = 99.99)
 
-  raveio::save_yaml(module_conf, file = file.path(app_path, "modules.yaml"))
-  raveio::save_yaml(module_conf, file = file.path(app_path, "modules_backup.yaml"))
+  ravepipeline::save_yaml(module_conf, file = file.path(app_path, "modules.yaml"))
+  ravepipeline::save_yaml(module_conf, file = file.path(app_path, "modules_backup.yaml"))
   # file.copy(
   #   from = file.path(module_root_path, "modules.yaml"),
   #   to = file.path(app_path, "modules.yaml"),
@@ -293,7 +293,7 @@ launch_session <- function(
     if( inherits(modules, "fastmap2") ) {
       module_config <- modules
     } else {
-      module_config <- raveio::load_yaml(path_module_config_backup)
+      module_config <- ravepipeline::load_yaml(path_module_config_backup)
       sel <- modules %in% names(module_config$modules)
       if(!all(sel)) {
         warning("The following modules are not available: ", paste(modules[!sel], collapse = ", "))
@@ -313,7 +313,7 @@ launch_session <- function(
       )
       module_config$`@remove`(c("groups", "divider"))
     }
-    raveio::save_yaml(module_config, path_module_config, sorted = TRUE)
+    ravepipeline::save_yaml(module_config, path_module_config, sorted = TRUE)
 
     if(!isTRUE(sidebar_open) && length(module_config$modules) == 1) {
       sidebar_open <- FALSE
@@ -370,7 +370,7 @@ launch_session <- function(
 
   if(isTRUE(options$jupyter)) {
     if(length(jupyter_port) == 0) {
-      jupyter_port <- raveio::raveio_getopt("jupyter_port", default = 17284L)
+      jupyter_port <- ravepipeline::raveio_getopt("jupyter_port", default = 17284L)
     } else {
       jupyter_port <- as.integer(jupyter_port)
       if(!(length(jupyter_port) == 1 && !is.na(jupyter_port) &&
@@ -378,7 +378,7 @@ launch_session <- function(
         stop("`launch_session`: options$jupyter_port must be an integer from 1024-65535.")
       }
     }
-    jupyter_wd <- raveio::raveio_getopt('data_dir')
+    jupyter_wd <- ravepipeline::raveio_getopt('data_dir')
     logger("Trying to launch JupyterLab from port [{ jupyter_port }]",
            level = "info", use_glue = TRUE)
 
@@ -386,7 +386,7 @@ launch_session <- function(
       rpymat::jupyter_check_launch(
         open_browser = FALSE, workdir = jupyter_wd, port = jupyter_port,
         host = host, async = TRUE)
-      raveio::save_yaml(
+      ravepipeline::save_yaml(
         list(
           host = host,
           port = jupyter_port
@@ -583,7 +583,7 @@ report_bugs <- function() {
 #' ends. Users need to clean the data by themselves. See
 #' \code{\link{remove_session}} or \code{\link{remove_all_sessions}} about
 #' removing session-based folders, or
-#' \code{\link[raveio]{clear_cached_files}} to remove package-based cache.
+#' \code{\link[ravecore]{clear_cached_files}} to remove package-based cache.
 #'
 #' @examples
 #'
@@ -655,7 +655,7 @@ session_getopt <- function(keys, default = NA, namespace = "default") {
   map <- dipsaus::fastmap2()
   if(file.exists(conf_path)) {
     try(silent = TRUE, expr = {
-      raveio::load_yaml(conf_path, map = map)
+      ravepipeline::load_yaml(conf_path, map = map)
     })
   }
 
@@ -695,10 +695,10 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
   on.exit({
     unlink(tfile, force = TRUE)
   })
-  raveio::dir_create2(dirname(tfile))
-  raveio::save_yaml(map, file = tfile)
+  ravepipeline::dir_create2(dirname(tfile))
+  ravepipeline::save_yaml(map, file = tfile)
 
-  raveio::dir_create2(dirname(conf_path))
+  ravepipeline::dir_create2(dirname(conf_path))
 
   file.copy(from = tfile, to = conf_path, overwrite = TRUE, recursive = FALSE)
 
@@ -936,7 +936,7 @@ shutdown_session <- function(
         jupyter_confpath <- file.path(current_session_path(), "jupyter.yaml")
         if(length(jupyter_confpath) == 1 && !is.na(jupyter_confpath) &&
            file.exists(jupyter_confpath)) {
-          jupyter_conf <- raveio::load_yaml(jupyter_confpath)
+          jupyter_conf <- ravepipeline::load_yaml(jupyter_confpath)
           unlink(jupyter_confpath)
           if(length(jupyter_conf$port)) {
             port <- as.integer(jupyter_conf$port)

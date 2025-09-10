@@ -91,7 +91,7 @@ RAVEShinyComponent <- R6::R6Class(
       }
       pipeline_repository <- self$repository_name
       if(!self$container$data[['@has']](pipeline_repository)) {
-        repository <- raveio::pipeline_read(
+        repository <- ravepipeline::pipeline_read(
           var_names = pipeline_repository,
           pipe_dir = self$container$pipeline_path
         )
@@ -140,7 +140,7 @@ RAVEShinyComponent <- R6::R6Class(
         settings <- self$container$get_cache("pipeline_settings", default = NULL)
       }
       if(is.null(settings)){
-        settings <- raveio::pipeline_settings_get(
+        settings <- ravepipeline::pipeline_settings_get(
           pipeline_settings_path = self$container$settings_path)
         self$container$set_cache("pipeline_settings", settings, expire_after = 1)
       }

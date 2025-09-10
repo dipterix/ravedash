@@ -92,7 +92,7 @@ should be obtained}
 \item{namespace}{namespace of the option; default is \code{'default'}}
 
 \item{path, app_root}{root path to store the sessions; default is the
-\code{"tensor_temp_path"} in \code{\link[raveio]{raveio_getopt}}}
+\code{"tensor_temp_path"} in \code{\link[ravepipeline]{raveio_getopt}}}
 
 \item{order}{whether to order the session by date created; choices are
 \code{'none'} (default), \code{'ascend'}, \code{'descend'}}
@@ -116,7 +116,7 @@ requires additional setups to enable 'jupyter' lab; see 'Installation Guide
 Step 3' in the 'RAVE' wiki page.}
 
 \item{jupyter_port}{port used by 'jupyter' lab, can be set by
-\code{'jupyter_port'} option in \code{\link[raveio]{raveio_setopt}}}
+\code{'jupyter_port'} option in \code{\link[ravepipeline]{raveio_setopt}}}
 
 \item{as_job}{whether to launch the application as 'RStudio' job, default is
 true if 'RStudio' is detected; when running without 'RStudio', this option

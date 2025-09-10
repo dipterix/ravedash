@@ -568,7 +568,7 @@ register_output <- function(
       filename = function(...) {
         extension <- extensions[[ session$input[[type_id]] %OF% names(extensions) ]]
         force(outputId)
-        return(raveio::glue(download_fileformat))
+        return(ravepipeline::glue(download_fileformat))
       },
       content = function(con) {
         on.exit({

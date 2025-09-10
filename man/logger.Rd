@@ -61,7 +61,7 @@ with_error_notification(expr, envir = parent.frame(), quoted = FALSE, ...)
 with_error_alert(expr, envir = parent.frame(), quoted = FALSE, ...)
 }
 \arguments{
-\item{..., .envir, .sep}{passed to \code{\link[raveio]{glue}}, if
+\item{..., .envir, .sep}{passed to \code{glue}, if
 \code{use_glue} is true}
 
 \item{level}{the level of message, choices are \code{'info'} (default),
@@ -74,7 +74,7 @@ time difference when \code{level} is \code{'debug'}.
 This behavior can be changed by altering \code{calc_delta} by a logical
 \code{TRUE} to enable or \code{FALSE} to disable.}
 
-\item{use_glue}{whether to use \code{\link[raveio]{glue}} to combine
+\item{use_glue}{whether to use \code{glue} to combine
 \code{...}; default is false}
 
 \item{reset_timer}{whether to reset timer used by \code{calc_delta}}
