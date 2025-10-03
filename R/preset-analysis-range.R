@@ -121,7 +121,7 @@ presets_analysis_ranges <- function(
       repo <- get_repo()
       if(is.null(repo)) { return() }
 
-      time_range <- range(repo$time_points)
+      time_range <- range(c(unlist(repo$time_windows), repo$time_windows))
       freq_range <- range(repo$frequency)
       default_analysis_ranges <- list(
         list(

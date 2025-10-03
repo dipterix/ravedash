@@ -120,7 +120,7 @@ presets_baseline_choices <- function(
       repo <- get_repo()
       if(is.null(repo)) { return() }
 
-      time_range <- range(repo$time_points)
+      time_range <- range(c(unlist(repo$time_windows), repo$time_windows))
       if(time_range[1] <= 0){
         default_baseline_windows <- c(time_range[1], 0)
       } else {
