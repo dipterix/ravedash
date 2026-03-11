@@ -11,12 +11,17 @@ presets_loader_project <- function(
 
   comp$ui_func <- function(id, value, depends){
     choices <- ravecore::get_projects(refresh = FALSE)
-    shiny::selectInput(
-      inputId = id,
-      label = label,
-      choices = choices,
-      selected = value %OF% choices,
-      multiple = FALSE
+    shidashi::register_input(
+      shiny::selectInput(
+        inputId = id,
+        label = label,
+        choices = choices,
+        selected = value %OF% choices,
+        multiple = FALSE
+      ),
+      inputId = comp$get_sub_element_id(with_namespace = FALSE),
+      update = "shiny::updateSelectInput(value=selected)",
+      description = "RAVE project name to load data from."
     )
   }
   comp$add_rule(function(value){

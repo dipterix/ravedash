@@ -90,19 +90,24 @@ presets_analysis_ranges <- function(
         ),
         shidashi::flex_break(),
         shidashi::flex_item(
-          dipsaus::compoundInput2(
-            inputId = comp$get_sub_element_id(with_namespace = TRUE),
-            label = "Analysis range",
-            initial_ncomp = 1L, min_ncomp = 1L, max_ncomp = max_components,
-            label_color = gray_label_color,
-            components = shiny::div(
-              shiny::sliderInput(inputId = "frequency", label = "Frequency",
-                                 min = 0, max = 150, value = c(75, 150),
-                                 step = 0.5, round = -1, post = " Hz"),
-              shiny::sliderInput(inputId = "time", label = "Time range",
-                                 min = 0, max = 1, value = c(0, 1),
-                                 step = 0.01, round = -2, post = " s")
-            )
+          shidashi::register_input(
+            dipsaus::compoundInput2(
+              inputId = comp$get_sub_element_id(with_namespace = TRUE),
+              label = "Analysis range",
+              initial_ncomp = 1L, min_ncomp = 1L, max_ncomp = max_components,
+              label_color = gray_label_color,
+              components = shiny::div(
+                shiny::sliderInput(inputId = "frequency", label = "Frequency",
+                                   min = 0, max = 150, value = c(75, 150),
+                                   step = 0.5, round = -1, post = " Hz"),
+                shiny::sliderInput(inputId = "time", label = "Time range",
+                                   min = 0, max = 1, value = c(0, 1),
+                                   step = 0.01, round = -2, post = " s")
+              )
+            ),
+            inputId = comp$get_sub_element_id(with_namespace = FALSE),
+            update = "dipsaus::updateCompoundInput2",
+            description = "Analysis frequency/time ranges. Value: list of lists, e.g. list(list(frequency=c(75,150), time=c(0,1))). Each inner list has 'frequency' (Hz range) and 'time' (seconds range)."
           )
         )
 

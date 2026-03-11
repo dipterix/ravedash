@@ -254,6 +254,20 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     ignoreInit = FALSE, ignoreNULL = TRUE
   )
 
+  shiny::bindEvent(
+    observe({
+      # get
+      if (!module_is_active()) { return() }
+      session$sendCustomMessage(
+        type = "shidashi.drawer_toggle",
+        message = list()
+      )
+    }),
+    ravedash::get_rave_event("toggle_drawer"),
+    ignoreInit = FALSE, ignoreNULL = TRUE
+  )
+
+
 
   shiny::bindEvent(
     observe({
@@ -377,6 +391,93 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     ravedash::get_rave_event("citation_information"),
     ignoreInit = FALSE, ignoreNULL = TRUE
   )
+
+  # shiny::bindEvent(
+  #   observe({
+  #     # get
+  #     if (!module_is_active()) { return() }
+  #     module_info <- get_active_module_info()
+  #     module_info$id
+  #     tricobbler_chat_ui("app")
+  #
+  #     shiny::showModal(
+  #       shiny::modalDialog(
+  #         title = "Module Information",
+  #         footer = shiny::modalButton("Dismiss"),
+  #         size = "xl",
+  #         easyClose = FALSE,
+  #         shiny::fluidRow(
+  #           shiny::column(
+  #             width = 12L,
+  #             shiny::tags$dl(
+  #
+  #               shiny::tags$dt("Module ID: "),
+  #               shiny::tags$dd(desc$Package, sprintf(" (version %s)", desc$Version)),
+  #
+  #               shiny::tags$dt("Title: "),
+  #               shiny::tags$dd(desc$Title),
+  #
+  #               shiny::tags$dt("Description: "),
+  #               shiny::tags$dd(desc$Description),
+  #
+  #               shiny::tags$dt("License: "),
+  #               shiny::tags$dd(desc$License),
+  #
+  #
+  #               render_url(desc$URL, "Website: "),
+  #
+  #               render_url(desc$BugReports, "Bug Reports: "),
+  #
+  #               shiny::tags$dt("Author list: "),
+  #               shiny::tags$dd(shiny::tags$ul(
+  #                 lapply(desc$Author, function(aut) {
+  #                   shiny::tags$li(format(aut))
+  #                 })
+  #               )),
+  #
+  #               local({
+  #                 if(length(desc$Citations)) {
+  #                   shiny::tagList(
+  #                     shiny::tags$dt("Citation list: "),
+  #                     shiny::tags$dd(
+  #                       shiny::tags$ol(
+  #                         lapply(desc$Citations, function(citation) {
+  #                           header <- attr(.subset2(citation, 1), "header")
+  #                           if(length(header)) {
+  #                             header <- shiny::tags$small(header)
+  #                           } else {
+  #                             header <- NULL
+  #                           }
+  #                           shiny::tags$li(
+  #                             header,
+  #                             shiny::HTML(
+  #                               gsub(
+  #                                 "<a ([^>]{0,})>",
+  #                                 "<a target='_blank' \\1>",
+  #                                 format(citation, style = "html"),
+  #                                 ignore.case = TRUE
+  #                               )
+  #                             )
+  #                           )
+  #                         })
+  #                       )
+  #                     )
+  #                   )
+  #                 } else {
+  #                   NULL
+  #                 }
+  #               })
+  #
+  #             )
+  #           )
+  #         )
+  #       )
+  #     )
+  #
+  #   }),
+  #   ravedash::get_rave_event("launch_ai_agent"),
+  #   ignoreInit = FALSE, ignoreNULL = TRUE
+  # )
 
   output[["__loader_short_message__"]] <- shiny::renderText({
     msg <- trimws(paste(ravedash::get_rave_event('loader_message'), collapse = ""))
