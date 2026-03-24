@@ -1,0 +1,148 @@
+# Package index
+
+## All functions
+
+- [`card_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
+  [`card_recalculate_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
+  [`enable_recalculate_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
+  [`disable_recalculate_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
+  [`set_card_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
+  : Create a badge widget located at card header
+
+- [`set_card_url_scheme()`](https://dipterix.org/ravedash/reference/card_url.md)
+  [`card_href()`](https://dipterix.org/ravedash/reference/card_url.md) :
+  Set 'URL' scheme for modules
+
+- [`create_report_wizard()`](https://dipterix.org/ravedash/reference/create_report_wizard.md)
+  : Create report wizard to be used within the interactive modules
+
+- [`debug_modules()`](https://dipterix.org/ravedash/reference/debug_modules.md)
+  : Debug 'RAVE' modules interactively in local project folder
+
+- [`get_active_module_info()`](https://dipterix.org/ravedash/reference/get_active_module_info.md)
+  [`get_active_pipeline()`](https://dipterix.org/ravedash/reference/get_active_module_info.md)
+  : Get current active module information, internally used
+
+- [`group_box()`](https://dipterix.org/ravedash/reference/group_box.md)
+  [`flex_group_box()`](https://dipterix.org/ravedash/reference/group_box.md)
+  : Group input elements into a box with title
+
+- [`logger()`](https://dipterix.org/ravedash/reference/logger.md)
+  [`set_logger_path()`](https://dipterix.org/ravedash/reference/logger.md)
+  [`logger_threshold()`](https://dipterix.org/ravedash/reference/logger.md)
+  [`logger_error_condition()`](https://dipterix.org/ravedash/reference/logger.md)
+  [`error_notification()`](https://dipterix.org/ravedash/reference/logger.md)
+  [`error_alert()`](https://dipterix.org/ravedash/reference/logger.md)
+  [`with_error_notification()`](https://dipterix.org/ravedash/reference/logger.md)
+  [`with_error_alert()`](https://dipterix.org/ravedash/reference/logger.md)
+  : Logger system used by 'RAVE'
+
+- [`module_server_common()`](https://dipterix.org/ravedash/reference/module_server_common.md)
+  : Default module server function
+
+- [`new_rave_shiny_component_container()`](https://dipterix.org/ravedash/reference/new_rave_shiny_component_container.md)
+  : Creates a container for preset components
+
+- [`output_gadget()`](https://dipterix.org/ravedash/reference/output_gadget.md)
+  [`output_gadget_container()`](https://dipterix.org/ravedash/reference/output_gadget.md)
+  : 'RAVE' dashboard output gadgets
+
+- [`plotOutput2()`](https://dipterix.org/ravedash/reference/plotOutput2.md)
+  : Shiny plot output with minimum height and additional classes
+
+- [`be_patient_text()`](https://dipterix.org/ravedash/reference/random-text.md)
+  [`finished_text()`](https://dipterix.org/ravedash/reference/random-text.md)
+  : Randomly choose a text from a list of strings
+
+- [`input_card()`](https://dipterix.org/ravedash/reference/rave-input-output-card.md)
+  [`output_card()`](https://dipterix.org/ravedash/reference/rave-input-output-card.md)
+  [`output_cardset()`](https://dipterix.org/ravedash/reference/rave-input-output-card.md)
+  : Input and output card (front-end element)
+
+- [`register_rave_session()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`get_default_handlers()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`fire_rave_event()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`get_session_by_rave_id()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`get_rave_event()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`open_loader()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`close_loader()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`watch_loader_opened()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`watch_data_loaded()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  [`current_shiny_theme()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
+  : 'RAVE' run-time events
+
+- [`new_session()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`use_session()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`launch_session()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`session_getopt()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`session_setopt()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`remove_session()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`remove_all_sessions()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`list_session()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`start_session()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`shutdown_session()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  [`session_log()`](https://dipterix.org/ravedash/reference/rave-session.md)
+  : Create, register, list, and remove 'RAVE' sessions
+
+- [`presets_analysis_electrode_selector2()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_analysis_ranges()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_baseline_choices()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_condition_groups()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_import_export_subject_pipeline()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_import_setup_blocks()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_import_setup_native()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_3dviewer()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_3dviewer2()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_electrodes()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_epoch()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_project()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_reference()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_subject()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_subject_only()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  [`presets_loader_sync_project_subject()`](https://dipterix.org/ravedash/reference/rave-ui-preset.md)
+  : Preset reusable front-end components for 'RAVE' modules
+
+- [`ravedash_footer()`](https://dipterix.org/ravedash/reference/ravedash_footer.md)
+  : A hovering footer at bottom-right
+
+- [`register_output_options()`](https://dipterix.org/ravedash/reference/register_output.md)
+  [`get_output_options()`](https://dipterix.org/ravedash/reference/register_output.md)
+  [`register_output()`](https://dipterix.org/ravedash/reference/register_output.md)
+  [`get_output()`](https://dipterix.org/ravedash/reference/register_output.md)
+  : Register output and output options
+
+- [`run_analysis_button()`](https://dipterix.org/ravedash/reference/run_analysis_button.md)
+  : Button to trigger analysis
+
+- [`safe_observe()`](https://dipterix.org/ravedash/reference/safe_observe.md)
+  :
+
+  Safe-wrapper of 'shiny'
+  [`observe`](https://rdrr.io/pkg/shiny/man/observe.html) function
+
+- [`shiny_cache()`](https://dipterix.org/ravedash/reference/shiny_cache.md)
+  : Obtain caching object for current run-time shiny session
+
+- [`shiny_check_input()`](https://dipterix.org/ravedash/reference/shiny_check_input.md)
+  : Check shiny inputs and modify if validation fails
+
+- [`shiny_icons`](https://dipterix.org/ravedash/reference/shiny_icons.md)
+  : Shiny icons
+
+- [`simple_layout()`](https://dipterix.org/ravedash/reference/simple_layout.md)
+  : Simple input-output layout
+
+- [`standalone_viewer()`](https://dipterix.org/ravedash/reference/standalone_viewer.md)
+  : Register shiny-output options to allow display in stand-alone
+  viewers
+
+- [`switch_module()`](https://dipterix.org/ravedash/reference/switch_module.md)
+  : Drive 'RAVE' browser to switch to another module
+
+- [`temp_file()`](https://dipterix.org/ravedash/reference/temp_file.md)
+  [`temp_dir()`](https://dipterix.org/ravedash/reference/temp_file.md) :
+  Create a random temporary file path for current session
+
+- [`with_log_modal()`](https://dipterix.org/ravedash/reference/with_log_modal.md)
+  : Evaluate script in the background and show the results from shiny
+  modal dialogue
