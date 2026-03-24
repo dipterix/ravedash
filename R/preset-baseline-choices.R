@@ -75,33 +75,48 @@ presets_baseline_choices <- function(
 
       shidashi::flex_container(
         shidashi::flex_item(
-          shiny::selectInput(
-            inputId = comp$get_sub_element_id(unit_of_analysis_str, with_namespace = TRUE),
-            label = "Electrode unit of analysis",
-            choices = baseline_choices
+          shidashi::register_input(
+            shiny::selectInput(
+              inputId = comp$get_sub_element_id(unit_of_analysis_str, with_namespace = TRUE),
+              label = "Electrode unit of analysis",
+              choices = baseline_choices
+            ),
+            inputId = comp$get_sub_element_id(unit_of_analysis_str, with_namespace = FALSE),
+            update = "shiny::updateSelectInput(value=selected)",
+            description = "Unit of analysis for electrode data (e.g. Decibel, z-score Power)."
           ),
-          shiny::selectInput(
-            inputId = comp$get_sub_element_id(global_baseline_choice_str, with_namespace = TRUE),
-            label = "Baseline method",
-            choices = baseline_along_choices
+          shidashi::register_input(
+            shiny::selectInput(
+              inputId = comp$get_sub_element_id(global_baseline_choice_str, with_namespace = TRUE),
+              label = "Baseline method",
+              choices = baseline_along_choices
+            ),
+            inputId = comp$get_sub_element_id(global_baseline_choice_str, with_namespace = FALSE),
+            update = "shiny::updateSelectInput(value=selected)",
+            description = "Baseline calculation method (per frequency/trial/electrode or across)."
           )
         ),
         shidashi::flex_break(),
         shidashi::flex_item(
           shiny::tags$label("Baseline windows"),
-          dipsaus::compoundInput2(
-            inputId = comp$get_sub_element_id(baseline_windows_str, with_namespace = TRUE),
-            label = NULL,
-            initial_ncomp = 1L, min_ncomp = 1L,
-            label_color = gray_label_color,
-            components = {
-              shiny::sliderInput(
-                inputId = "window_interval",
-                label = NULL, width = "100%",
-                min = 0, max = 1, value = c(0, 0),
-                round = -2, post = " s", step = 0.01
-              )
-            }
+          shidashi::register_input(
+            dipsaus::compoundInput2(
+              inputId = comp$get_sub_element_id(baseline_windows_str, with_namespace = TRUE),
+              label = NULL,
+              initial_ncomp = 1L, min_ncomp = 1L,
+              label_color = gray_label_color,
+              components = {
+                shiny::sliderInput(
+                  inputId = "window_interval",
+                  label = NULL, width = "100%",
+                  min = 0, max = 1, value = c(0, 0),
+                  round = -2, post = " s", step = 0.01
+                )
+              }
+            ),
+            inputId = comp$get_sub_element_id(baseline_windows_str, with_namespace = FALSE),
+            update = "dipsaus::updateCompoundInput2",
+            description = "Baseline time windows (seconds). Value: list of lists, e.g. list(list(window_interval=c(-1,0))) for pre-stimulus baseline."
           )
         )
       )

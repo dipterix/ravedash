@@ -13,11 +13,16 @@ presets_loader_electrodes <- function(
   comp$depends <- c(loader_project_id, loader_subject_id)
 
   comp$ui_func <- function(id, value, depends){
-    shiny::textInput(
-      inputId = id,
-      label = label,
-      placeholder = "E.g. 1-84,90-100",
-      value = ""
+    shidashi::register_input(
+      shiny::textInput(
+        inputId = id,
+        label = label,
+        placeholder = "E.g. 1-84,90-100",
+        value = ""
+      ),
+      inputId = comp$get_sub_element_id(with_namespace = FALSE),
+      update = "shiny::updateTextInput",
+      description = "Electrodes to load. Format: comma-separated ranges, e.g. '1-84,90-100'."
     )
   }
   comp$server_func <- function(input, output, session){

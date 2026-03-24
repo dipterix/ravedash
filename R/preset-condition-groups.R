@@ -64,26 +64,31 @@ presets_condition_groups <- function(
       class_header = "shidashi-anchor",
       title = label,
       href = card_href(label, module_id = comp$container$module_id),
-      dipsaus::compoundInput2(
-        inputId = comp$get_sub_element_id(with_namespace = TRUE),
-        label = "Group",
-        initial_ncomp = 1L,
-        min_ncomp = 1L,
-        max_ncomp = 40L,
-        label_color = gray_label_color,
-        components = shiny::div(
-          shiny::textInput(inputId = "group_name", label = "Name"),
-          # shiny::selectInput(inputId = "group_conditions", label = NULL, choices = "", multiple = TRUE)
-          shiny::selectInput(
-            inputId = "group_conditions", label = NULL,
-            choices = "", multiple = TRUE
-            # options = list(
-            #   "live-search" = TRUE,
-            #   "actions-box" = TRUE,
-            #   "size" = 4
-            # )
+      shidashi::register_input(
+        dipsaus::compoundInput2(
+          inputId = comp$get_sub_element_id(with_namespace = TRUE),
+          label = "Group",
+          initial_ncomp = 1L,
+          min_ncomp = 1L,
+          max_ncomp = 40L,
+          label_color = gray_label_color,
+          components = shiny::div(
+            shiny::textInput(inputId = "group_name", label = "Name"),
+            # shiny::selectInput(inputId = "group_conditions", label = NULL, choices = "", multiple = TRUE)
+            shiny::selectInput(
+              inputId = "group_conditions", label = NULL,
+              choices = "", multiple = TRUE
+              # options = list(
+              #   "live-search" = TRUE,
+              #   "actions-box" = TRUE,
+              #   "size" = 4
+              # )
+            )
           )
-        )
+        ),
+        inputId = comp$get_sub_element_id(with_namespace = FALSE),
+        update = "dipsaus::updateCompoundInput2",
+        description = "Condition contrast groups. Value: list of lists, e.g. list(list(group_name='Group1', group_conditions=c('cond1','cond2'))). Each group has 'group_name' (string) and 'group_conditions' (character vector of epoch conditions)."
       )
     )
   }

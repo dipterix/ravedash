@@ -18,12 +18,17 @@ presets_loader_subject <- function(
   comp$no_save <- c("create_new", "cancel_new", "new_subject_code")
 
   comp$ui_func <- function(id, value, depends){
-    shiny::selectInput(
-      inputId = id,
-      label = label,
-      choices = value,
-      selected = value,
-      multiple = FALSE
+    shidashi::register_input(
+      shiny::selectInput(
+        inputId = id,
+        label = label,
+        choices = value,
+        selected = value,
+        multiple = FALSE
+      ),
+      inputId = comp$get_sub_element_id(with_namespace = FALSE),
+      update = "shiny::updateSelectInput(value=selected)",
+      description = "Subject code within the selected project."
     )
   }
   comp$server_func <- function(input, output, session){
@@ -287,12 +292,17 @@ presets_loader_subject_only <- function(
       value <- value %OF% choices
     }
 
-    shiny::selectInput(
-      inputId = id,
-      label = label,
-      choices = choices,
-      selected = value,
-      multiple = multiple
+    shidashi::register_input(
+      shiny::selectInput(
+        inputId = id,
+        label = label,
+        choices = choices,
+        selected = value,
+        multiple = multiple
+      ),
+      inputId = comp$get_sub_element_id(with_namespace = FALSE),
+      update = "shiny::updateSelectInput(value=selected)",
+      description = "Subject code(s) from raw data directory."
     )
   }
   comp

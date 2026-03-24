@@ -35,19 +35,29 @@ presets_import_setup_blocks <- function(
         shiny::fluidRow(
           shiny::column(
             width = 6L,
-            shiny::selectInput(
-              inputId = comp$get_sub_element_id("session_block", TRUE),
-              label = "Sessions/Blocks",
-              choices = character(0L),
-              selected = character(0L),
-              multiple = TRUE
+            shidashi::register_input(
+              shiny::selectInput(
+                inputId = comp$get_sub_element_id("session_block", TRUE),
+                label = "Sessions/Blocks",
+                choices = character(0L),
+                selected = character(0L),
+                multiple = TRUE
+              ),
+              inputId = comp$get_sub_element_id("session_block", FALSE),
+              update = "shiny::updateSelectInput(value=selected)",
+              description = "Session/block folders to import (multi-select)."
             ),
-            shiny::selectInput(
-              inputId = comp$get_sub_element_id("format", TRUE),
-              label = "Formats",
-              choices = names(all_formats),
-              selected = character(0L),
-              multiple = FALSE
+            shidashi::register_input(
+              shiny::selectInput(
+                inputId = comp$get_sub_element_id("format", TRUE),
+                label = "Formats",
+                choices = names(all_formats),
+                selected = character(0L),
+                multiple = FALSE
+              ),
+              inputId = comp$get_sub_element_id("format", FALSE),
+              update = "shiny::updateSelectInput(value=selected)",
+              description = "Data file format (e.g. BlackRock, BrainVision, EDF)."
             ),
             shiny::tags$small(
               shiny::p(shiny::textOutput(

@@ -31,20 +31,30 @@ presets_import_setup_native <- function(
       shiny::fluidRow(
         shiny::column(
           width = 6L,
-          shiny::selectInput(
-            inputId = comp$get_sub_element_id("project_name", with_namespace = TRUE),
-            label = "Project name",
-            choices = all_projects,
-            selected = comp$get_default("project_name")
+          shidashi::register_input(
+            shiny::selectInput(
+              inputId = comp$get_sub_element_id("project_name", with_namespace = TRUE),
+              label = "Project name",
+              choices = all_projects,
+              selected = comp$get_default("project_name")
+            ),
+            inputId = comp$get_sub_element_id("project_name", with_namespace = FALSE),
+            update = "shiny::updateSelectInput(value=selected)",
+            description = "Target project for data import."
           )
         ),
         shiny::column(
           width = 6L,
-          shiny::selectInput(
-            inputId = comp$get_sub_element_id("subject_code", with_namespace = TRUE),
-            label = "Subject code",
-            choices = all_subjects,
-            selected = comp$get_default("subject_code", missing = character())
+          shidashi::register_input(
+            shiny::selectInput(
+              inputId = comp$get_sub_element_id("subject_code", with_namespace = TRUE),
+              label = "Subject code",
+              choices = all_subjects,
+              selected = comp$get_default("subject_code", missing = character())
+            ),
+            inputId = comp$get_sub_element_id("subject_code", with_namespace = FALSE),
+            update = "shiny::updateSelectInput(value=selected)",
+            description = "Subject code from raw data directory to import."
           )
           # shiny::textInput(
           #   inputId = comp$get_sub_element_id("subject_code", with_namespace = TRUE),

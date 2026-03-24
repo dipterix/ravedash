@@ -308,6 +308,14 @@ register_output <- function(
 
   fenv <- new.env(parent = parent.frame())
 
+  shidashi::register_output(
+    expr = NULL,
+    outputId = outputId,
+    description = sprintf("Output type: %s", output_type),
+    quoted = TRUE,
+    env = fenv
+  )
+
   trigger_id <- sprintf("%s__download2", outputId)
   download_id <- sprintf("%s__.download_do.", outputId)
   type_id <- sprintf("%s__.extension.", outputId)

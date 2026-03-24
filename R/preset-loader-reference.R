@@ -17,12 +17,17 @@ presets_loader_reference <- function(
   if(mode == "default") {
     comp$ui_func <- function(id, value, depends){
       shiny::tagList(shidashi::flex_item(
-        shiny::selectInput(
-          inputId = id,
-          label = label,
-          choices = '',
-          selected = NULL,
-          multiple = FALSE
+        shidashi::register_input(
+          shiny::selectInput(
+            inputId = id,
+            label = label,
+            choices = '',
+            selected = NULL,
+            multiple = FALSE
+          ),
+          inputId = comp$get_sub_element_id(with_namespace = FALSE),
+          update = "shiny::updateSelectInput(value=selected)",
+          description = "Reference scheme name for electrode re-referencing."
         ),
         shinyWidgets::prettyCheckbox(
           inputId = comp$get_sub_element_id("default", with_namespace = TRUE),
@@ -36,11 +41,16 @@ presets_loader_reference <- function(
   } else {
     comp$ui_func <- function(id, value, depends){
       shiny::tagList(shidashi::flex_item(
-        shiny::selectInput(
-          inputId = id,
-          label = label,
-          choices = "[Blank profile]",
-          multiple = FALSE
+        shidashi::register_input(
+          shiny::selectInput(
+            inputId = id,
+            label = label,
+            choices = "[Blank profile]",
+            multiple = FALSE
+          ),
+          inputId = comp$get_sub_element_id(with_namespace = FALSE),
+          update = "shiny::updateSelectInput(value=selected)",
+          description = "Reference scheme name or '[Blank profile]' for new reference creation."
         )
       ))
     }
