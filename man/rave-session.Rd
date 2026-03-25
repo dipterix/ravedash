@@ -151,7 +151,7 @@ Create, register, list, and remove 'RAVE' sessions
 }
 \examples{
 
-if(interactive()){
+if (interactive()){
 
   sess <- new_session()
   sess$launch_session()
