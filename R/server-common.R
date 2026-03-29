@@ -129,7 +129,8 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   session$sendCustomMessage("shidashi.set_current_module", list(
     module_id = module_id,
-    rave_id = tools$rave_id
+    rave_id = tools$rave_id,
+    shiny_token = session$token
   ))
 
   module_is_active <- function(id = module_id){

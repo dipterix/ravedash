@@ -8,22 +8,18 @@ presets_loader_3dviewer <- function(
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
   loader_electrodes_id = "loader_electrode_text",
-  gadgets = c("standalone", "download")
+  ...
 ) {
   comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- c(loader_project_id, loader_subject_id, loader_electrodes_id, loader_reference_id)
   comp$no_save <- TRUE
 
-  gadgets <- gadgets[gadgets %in% c("standalone", "download2")]
 
   comp$ui_func <- function(id, value, depends){
-    output_gadget_container(
-      threeBrain::threejsBrainOutput(
-        outputId = id,
-        height = height,
-        reportSize = FALSE
-      ),
-      gadgets = gadgets
+    threeBrain::threejsBrainOutput(
+      outputId = id,
+      height = height,
+      reportSize = FALSE
     )
   }
   comp$server_func <- function(input, output, session){
@@ -103,109 +99,110 @@ presets_loader_3dviewer <- function(
 
 
     viewer_output_id <- "loader_3d_viewer"
-    register_output(
-      shiny::bindEvent(
-        threeBrain::renderBrain({
+    env <- environment()
 
-          shiny::validate(
-            shiny::need(loader_subject$sv$is_valid(), message = "")
+    gen_brain <- function(new_brain) {
+      subject <- get_subject()
+
+      brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
+
+      if(is.null(brain)) {
+        local_reactives$brain_flag <- NULL
+        stop("No brain instance")
+      }
+
+      tbl <- get_loading_table()
+      if(is.data.frame(tbl) && nrow(tbl)) {
+        brain$set_electrode_values(tbl)
+      }
+
+      theme <- shidashi::get_theme(tools$theme_event)
+
+      logger("Re-generate loader's viewer", level = 'trace')
+
+      local_reactives$brain_flag <- Sys.time()
+
+      if( new_brain ) {
+        camera_position <- c(0, 0, 500)
+        camera_up <- c(0, 1, 0)
+
+        brain$plot(
+          volumes = FALSE,
+          atlases = FALSE,
+          side_canvas = FALSE,
+          control_display = FALSE,
+          start_zoom = 1,
+          background = theme$background,
+          palettes = list(Value = c("pink", "orange", "gray80")),
+          controllers = list(
+            "Background Color" = theme$background,
+            "Outlines" = "on",
+            "Show Time" = FALSE
+          ),
+          custom_javascript = sprintf(
+            '
+                  // Remove the focus box
+                  if( canvas.focus_box ) {
+                    canvas.focus_box.visible = false;
+                  }
+
+                  // set camera
+                  canvas.mainCamera.position.set( %f , %f , %f );
+                  canvas.mainCamera.up.set( %f , %f , %f );
+                  canvas.mainCamera.updateProjectionMatrix();
+
+                  // Let shiny know the viewer is ready
+                  if( window.Shiny ) {
+                    window.Shiny.setInputValue("%s", "%f");
+                  }
+
+                  // Force render one frame (update the canvas)
+                  canvas.needsUpdate = true;
+                  ',
+            camera_position[[1]], camera_position[[2]], camera_position[[3]],
+            camera_up[[1]], camera_up[[2]], camera_up[[3]],
+            session$ns( viewer_output_id ),
+            Sys.time()
           )
+        )
+      } else {
 
-          subject <- get_subject()
+        brain$render(
+          outputId = viewer_output_id,
+          volumes = FALSE,
+          atlases = FALSE,
+          side_canvas = FALSE,
+          control_display = FALSE,
+          # show_modal = TRUE,
+          # start_zoom = 1,
+          # background = theme$background,
+          palettes = list(Value = c("pink", "orange", "gray80")),
+          controllers = list(
+            "Background Color" = theme$background,
+            "Outlines" = "on",
+            "Show Time" = FALSE
+          )
+        )
 
-          brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
+      }
+    }
 
-          if(is.null(brain)) {
-            local_reactives$brain_flag <- NULL
-            stop("No brain instance")
-          }
 
-          tbl <- get_loading_table()
-          if(is.data.frame(tbl) && nrow(tbl)) {
-            brain$set_electrode_values(tbl)
-          }
+    output[[viewer_output_id]] <- shiny::bindEvent(
+      threeBrain::renderBrain({
 
-          theme <- shidashi::get_theme(tools$theme_event)
+        shiny::validate(
+          shiny::need(loader_subject$sv$is_valid(), message = "")
+        )
 
-          logger("Re-generate loader's viewer", level = 'trace')
+        new_brain <- shiny::isolate(is.null(local_reactives$brain_flag))
+        gen_brain(new_brain)
 
-          new_brain <- shiny::isolate(is.null(local_reactives$brain_flag))
-
-          local_reactives$brain_flag <- Sys.time()
-
-          if( new_brain ) {
-            camera_position <- c(0, 0, 500)
-            camera_up <- c(0, 1, 0)
-
-            brain$plot(
-              volumes = FALSE,
-              atlases = FALSE,
-              side_canvas = FALSE,
-              control_display = FALSE,
-              start_zoom = 1,
-              background = theme$background,
-              palettes = list(Value = c("pink", "orange", "gray80")),
-              controllers = list(
-                "Background Color" = theme$background,
-                "Outlines" = "on",
-                "Show Time" = FALSE
-              ),
-              custom_javascript = sprintf(
-                '
-                // Remove the focus box
-                if( canvas.focus_box ) {
-                  canvas.focus_box.visible = false;
-                }
-
-                // set camera
-                canvas.mainCamera.position.set( %f , %f , %f );
-                canvas.mainCamera.up.set( %f , %f , %f );
-                canvas.mainCamera.updateProjectionMatrix();
-
-                // Let shiny know the viewer is ready
-                if( window.Shiny ) {
-                  window.Shiny.setInputValue("%s", "%f");
-                }
-
-                // Force render one frame (update the canvas)
-                canvas.needsUpdate = true;
-                ',
-                camera_position[[1]], camera_position[[2]], camera_position[[3]],
-                camera_up[[1]], camera_up[[2]], camera_up[[3]],
-                session$ns( viewer_output_id ),
-                Sys.time()
-              )
-            )
-          } else {
-
-            brain$render(
-              outputId = viewer_output_id,
-              volumes = FALSE,
-              atlases = FALSE,
-              side_canvas = FALSE,
-              control_display = FALSE,
-              # show_modal = TRUE,
-              # start_zoom = 1,
-              # background = theme$background,
-              palettes = list(Value = c("pink", "orange", "gray80")),
-              controllers = list(
-                "Background Color" = theme$background,
-                "Outlines" = "on",
-                "Show Time" = FALSE
-              )
-            )
-
-          }
-
-        }),
-        loader_project$current_value,
-        loader_subject$current_value,
-        loader_subject$sv$is_valid(),
-        ignoreNULL = FALSE, ignoreInit = FALSE
-      ),
-      outputId = viewer_output_id,
-      export_type = "3dviewer",
-      session = session
+      }),
+      loader_project$current_value,
+      loader_subject$current_value,
+      loader_subject$sv$is_valid(),
+      ignoreNULL = FALSE, ignoreInit = FALSE
     )
 
   }
@@ -222,22 +219,17 @@ presets_loader_3dviewer2 <- function(
     loader_project_id = "loader_project_name",
     loader_subject_id = "loader_subject_code",
     loader_electrodes_id = "loader_electrode_text",
-    gadgets = c("standalone", "download")
+    ...
 ) {
   comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- c(loader_project_id, loader_subject_id, loader_electrodes_id)
   comp$no_save <- TRUE
 
-  gadgets <- gadgets[gadgets %in% c("standalone", "download2")]
-
   comp$ui_func <- function(id, value, depends){
-    output_gadget_container(
-      threeBrain::threejsBrainOutput(
-        outputId = id,
-        height = height,
-        reportSize = FALSE
-      ),
-      gadgets = gadgets
+    threeBrain::threejsBrainOutput(
+      outputId = id,
+      height = height,
+      reportSize = FALSE
     )
   }
   comp$server_func <- function(input, output, session){
@@ -321,108 +313,110 @@ presets_loader_3dviewer2 <- function(
     )
 
     viewer_output_id <- "loader_3d_viewer"
-    register_output(
-      shiny::bindEvent(
-        threeBrain::renderBrain({
 
-          shiny::validate(
-            shiny::need(loader_subject$sv$is_valid(), message = "")
+
+    env <- environment()
+    gen_brain <- function(new_brain) {
+      subject <- get_subject()
+
+      brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
+
+      if(is.null(brain)) {
+        local_reactives$brain_flag <- NULL
+        stop("No brain instance")
+      }
+
+      tbl <- get_loading_table()
+      if(is.data.frame(tbl) && nrow(tbl)) {
+        brain$set_electrode_values(tbl)
+      }
+
+      theme <- shidashi::get_theme(tools$theme_event)
+
+      logger("Re-generate loader's viewer", level = 'trace')
+
+      local_reactives$brain_flag <- Sys.time()
+
+      if( new_brain ) {
+        camera_position <- c(0, 0, 500)
+        camera_up <- c(0, 1, 0)
+
+        brain$plot(
+          volumes = FALSE,
+          atlases = FALSE,
+          side_canvas = FALSE,
+          control_display = FALSE,
+          start_zoom = 1,
+          background = theme$background,
+          palettes = list(Value = c("orange", "gray80")),
+          controllers = list(
+            "Background Color" = theme$background,
+            "Outlines" = "on",
+            "Show Time" = FALSE
+          ),
+          custom_javascript = sprintf(
+            '
+                  // Remove the focus box
+                  if( canvas.focus_box ) {
+                    canvas.focus_box.visible = false;
+                  }
+
+                  // set camera
+                  canvas.mainCamera.position.set( %f , %f , %f );
+                  canvas.mainCamera.up.set( %f , %f , %f );
+                  canvas.mainCamera.updateProjectionMatrix();
+
+                  // Let shiny know the viewer is ready
+                  if( window.Shiny ) {
+                    window.Shiny.setInputValue("%s", "%f");
+                  }
+
+                  // Force render one frame (update the canvas)
+                  canvas.needsUpdate = true;
+                  ',
+            camera_position[[1]], camera_position[[2]], camera_position[[3]],
+            camera_up[[1]], camera_up[[2]], camera_up[[3]],
+            session$ns( viewer_output_id ),
+            Sys.time()
           )
+        )
+      } else {
 
-          subject <- get_subject()
+        brain$render(
+          outputId = viewer_output_id,
+          volumes = FALSE,
+          atlases = FALSE,
+          side_canvas = FALSE,
+          control_display = FALSE,
+          # show_modal = TRUE,
+          # start_zoom = 1,
+          # background = theme$background,
+          palettes = list(Value = c("pink", "orange", "gray80")),
+          controllers = list(
+            "Background Color" = theme$background,
+            "Outlines" = "on",
+            "Show Time" = FALSE
+          )
+        )
 
-          brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
-          new_brain <- shiny::isolate(is.null(local_reactives$brain_flag))
+      }
 
-          if(is.null(brain)) {
-            local_reactives$brain_flag <- NULL
-            stop("No brain instance")
-          }
+    }
 
-          tbl <- get_loading_table()
-          if(is.data.frame(tbl) && nrow(tbl)) {
-            brain$set_electrode_values(tbl)
-          }
+    output[[viewer_output_id]] <- shiny::bindEvent(
+      threeBrain::renderBrain({
 
-          theme <- shidashi::get_theme(tools$theme_event)
+        shiny::validate(
+          shiny::need(loader_subject$sv$is_valid(), message = "")
+        )
+        new_brain <- shiny::isolate(is.null(local_reactives$brain_flag))
+        gen_brain(new_brain)
 
-          logger("Re-generate loader's viewer", level = 'trace')
-
-          local_reactives$brain_flag <- Sys.time()
-
-          if( new_brain ) {
-            camera_position <- c(0, 0, 500)
-            camera_up <- c(0, 1, 0)
-
-            brain$plot(
-              volumes = FALSE,
-              atlases = FALSE,
-              side_canvas = FALSE,
-              control_display = FALSE,
-              start_zoom = 1,
-              background = theme$background,
-              palettes = list(Value = c("orange", "gray80")),
-              controllers = list(
-                "Background Color" = theme$background,
-                "Outlines" = "on",
-                "Show Time" = FALSE
-              ),
-              custom_javascript = sprintf(
-                '
-                // Remove the focus box
-                if( canvas.focus_box ) {
-                  canvas.focus_box.visible = false;
-                }
-
-                // set camera
-                canvas.mainCamera.position.set( %f , %f , %f );
-                canvas.mainCamera.up.set( %f , %f , %f );
-                canvas.mainCamera.updateProjectionMatrix();
-
-                // Let shiny know the viewer is ready
-                if( window.Shiny ) {
-                  window.Shiny.setInputValue("%s", "%f");
-                }
-
-                // Force render one frame (update the canvas)
-                canvas.needsUpdate = true;
-                ',
-                camera_position[[1]], camera_position[[2]], camera_position[[3]],
-                camera_up[[1]], camera_up[[2]], camera_up[[3]],
-                session$ns( viewer_output_id ),
-                Sys.time()
-              )
-            )
-          } else {
-
-            brain$render(
-              outputId = viewer_output_id,
-              volumes = FALSE,
-              atlases = FALSE,
-              side_canvas = FALSE,
-              control_display = FALSE,
-              # show_modal = TRUE,
-              # start_zoom = 1,
-              # background = theme$background,
-              palettes = list(Value = c("pink", "orange", "gray80")),
-              controllers = list(
-                "Background Color" = theme$background,
-                "Outlines" = "on",
-                "Show Time" = FALSE
-              )
-            )
-
-          }
-
-        }),
-        loader_project$current_value,
-        loader_subject$current_value,
-        loader_subject$sv$is_valid(),
-        ignoreNULL = FALSE, ignoreInit = FALSE
-      ),
-      outputId = viewer_output_id,
-      export_type = "3dviewer",
-      session = session
+      }),
+      loader_project$current_value,
+      loader_subject$current_value,
+      loader_subject$sv$is_valid(),
+      ignoreNULL = FALSE, ignoreInit = FALSE
     )
   }
 
