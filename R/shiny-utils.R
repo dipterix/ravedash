@@ -819,8 +819,12 @@ run_analysis_button <- function(
   btn_type <- match.arg(btn_type)
 
   if(btn_type == "button") {
-    stopifnot2(length(type) == 0 || type[[1]] %in% c("default",
-                                                     "primary", "info", "success", "warning", "danger"), msg = "type must be in 'default', 'primary', 'info', 'success', 'warning', 'danger'")
+    stopifnot(
+      "type must be in 'default', 'primary', 'info', 'success', 'warning', 'danger'" =
+        length(type) == 0 ||
+        type[[1]] %in% c("default", "primary", "info",
+                         "success", "warning", "danger")
+    )
     class <- dipsaus::combine_html_class(
       sprintf("btn btn-%s rave-button %s", type, class))
 

@@ -58,7 +58,7 @@ DEFAULT_PALETTES <- local({
 
 
   set <- function(type = c("line", "heatmap"), name, col) {
-    stopifnot2(length(col) >= 3, msg = "length(col) must >= 3 to set a palette")
+    stopifnot("length(col) must >= 3 to set a palette" = length(col) >= 3)
     type <- match.arg(type)
     if(type == "line") {
       LINE[[ name ]] <<- col
@@ -85,10 +85,14 @@ DEFAULT_PALETTES <- local({
     }
 
     if(!length(name)) {
-      logger("Invalid palette requested: [{deparse1(name)}]. Returning the first palette", level = "warning", use_glue = TRUE)
+      logger(
+        "Invalid palette requested: [{deparse1(name)}]. Returning the first palette",
+        level = "warning",
+        use_glue = TRUE
+      )
       pal <- pals[[1]]
     } else {
-      pal <- pals[[ name ]]
+      pal <- pals[[name]]
     }
 
     attr(pal, "name") <- name
@@ -144,13 +148,8 @@ DEFAULT_GRAPHICS <- list(
 
 
 strip_style <- function(x, ...) {
-  gsub(ansi_regex, "", x, perl = TRUE, useBytes = TRUE)
-}
-
-stopifnot2 <- function (..., msg = "Condition not satisfied") {
-  if (!all(c(...))) {
-    stop(msg)
-  }
+  cli::ansi_strip(x)
+  # gsub(ansi_regex, "", x, perl = TRUE, useBytes = TRUE)
 }
 
 shiny_validation_error <- function(message, ..., error_class = NULL) {
@@ -161,16 +160,16 @@ shiny_validation_error <- function(message, ..., error_class = NULL) {
   stop(e)
 }
 
-rand_string <- function (length = 20) {
+rand_string <- function(length = 20) {
   paste(sample(c(letters, LETTERS, 0:9), length, replace = TRUE),
         collapse = "")
 }
 
-deparse1 <- function (expr, collapse = " ") {
+deparse1 <- function(expr, collapse = " ") {
   paste(deparse(expr), collapse = collapse)
 }
 
-R_user_dir <- function (package, which = c("data", "config", "cache"))
+R_user_dir <- function(package, which = c("data", "config", "cache"))
 {
   stopifnot(is.character(package), length(package) == 1L)
   which <- match.arg(which)

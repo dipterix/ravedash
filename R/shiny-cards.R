@@ -56,8 +56,12 @@ NULL
 #'
 #' @export
 set_card_url_scheme <- function(module_id, root, sep = "/"){
-  stopifnot2(length(root) == 1 && is.character(root), msg = "`root` must be a character with length of one")
-  stopifnot2(length(sep) == 1 && is.character(sep), msg = "`sep` must be a character with length of one")
+  stopifnot(
+    "`root` must be a character with length of one" =
+      length(root) == 1 && is.character(root),
+    "`sep` must be a character with length of one" =
+      length(sep) == 1 && is.character(sep)
+  )
   urls <- getOption("ravedash.urls", NULL)
   if(!inherits(urls, "fastmap2")){
     urls <- dipsaus::list_to_fastmap2(as.list(urls))

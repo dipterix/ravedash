@@ -261,7 +261,7 @@ set_card_badge <- function(
       )
     })
   }
-  if(length(remove_class)) {
+  if (length(remove_class)) {
     remove_class <- trimws(unlist(strsplit(remove_class, " ")))
     remove_class <- remove_class[!remove_class %in% "rave-output-status"]
     lapply(remove_class, function(cls) {
