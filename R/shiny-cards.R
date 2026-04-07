@@ -176,7 +176,7 @@ input_card <- function(title, ...,
       )
     )
   }
-  class <- dipsaus::combine_html_class(class, "ravedash-input-card")
+  class <- shidashi::combine_html_class(class, "ravedash-input-card")
   shidashi::card(title = title, ..., class = class, tools = all_tools, class_body = class_body, class_foot = class_foot, footer = footer, class_header = class_header)
 }
 
@@ -226,7 +226,7 @@ output_card <- function(title, ..., class = "", class_body = "padding-10",
 
   }
 
-  class <- dipsaus::combine_html_class(class, "ravedash-output-card")
+  class <- shidashi::combine_html_class(class, "ravedash-output-card")
   shidashi::card(title = title, ..., class = class, tools = all_tools, class_body = class_body, class_foot = class_foot)
 }
 
@@ -276,7 +276,7 @@ output_cardset <- function(title, ..., class = "", class_body = "no-padding",
 
   }
 
-  class <- dipsaus::combine_html_class(class, "ravedash-output-card-tabs")
+  class <- shidashi::combine_html_class(class, "ravedash-output-card-tabs")
 
   shidashi::card_tabset(title = title, tools = all_tools, class = class, class_body = class_body, class_foot = class_foot, ...)
 }

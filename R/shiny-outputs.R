@@ -19,7 +19,7 @@ plotOutput2 <- function(outputId, class = NULL,
     height = width, width = height, ...
   )
 
-  res$attribs$class <- dipsaus::combine_html_class(res$attribs$class, class)
+  res$attribs$class <- shidashi::combine_html_class(res$attribs$class, class)
 
   res$attribs$style <- sprintf(
     "%s;min-height:%s",

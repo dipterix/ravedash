@@ -9,6 +9,15 @@
 \alias{show_notification}
 \alias{clear_notifications}
 \alias{register_output}
+\alias{card_badge}
+\alias{card_recalculate_badge}
+\alias{enable_recalculate_badge}
+\alias{disable_recalculate_badge}
+\alias{set_card_badge}
+\alias{logger}
+\alias{set_logger_path}
+\alias{logger_threshold}
+\alias{logger_error_condition}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -18,6 +27,8 @@ below to see their documentation.
 \describe{
   \item{dipsaus}{\code{\link[dipsaus:grapes-OF-grapes]{\%OF\%}}, \code{\link[dipsaus:shiny_alert2]{close_alert2}}, \code{\link[dipsaus]{shiny_alert2}}}
 
-  \item{shidashi}{\code{\link[shidashi:notification]{clear_notifications}}, \code{\link[shidashi:register_io]{register_output}}, \code{\link[shidashi:notification]{show_notification}}}
+  \item{ravepipeline}{\code{\link[ravepipeline]{logger}}, \code{\link[ravepipeline:logger]{logger_error_condition}}, \code{\link[ravepipeline:logger]{logger_threshold}}, \code{\link[ravepipeline:logger]{set_logger_path}}}
+
+  \item{shidashi}{\code{\link[shidashi]{card_badge}}, \code{\link[shidashi:card_badge]{card_recalculate_badge}}, \code{\link[shidashi:notification]{clear_notifications}}, \code{\link[shidashi:card_badge]{disable_recalculate_badge}}, \code{\link[shidashi:card_badge]{enable_recalculate_badge}}, \code{\link[shidashi:register_io]{register_output}}, \code{\link[shidashi:card_badge]{set_card_badge}}, \code{\link[shidashi:notification]{show_notification}}}
 }}
 

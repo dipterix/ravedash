@@ -438,8 +438,8 @@ launch_session <- function(
     s <- c(
       s, anchors[[1]],
       format(bquote(options(
-        ravedash.logger.max_bytes = 52428800,
-        ravedash.logger.max_files = 10
+        rave.logger.max_bytes = 52428800,
+        rave.logger.max_files = 10
       ))),
       anchors[[2]]
     )

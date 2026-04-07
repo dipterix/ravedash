@@ -70,7 +70,7 @@
 module_server_common <- function(module_id, check_data_loaded, ..., session = shiny::getDefaultReactiveDomain(), parse_env = NULL){
 
   if(!length(session)){
-    if(dipsaus::shiny_is_running()){
+    if(shiny_is_running()){
       logger("`module_server_common`: session must be provided in production!", level = "fatal")
       stop("`module_server_common`: session must be provided in production!")
     } else {
@@ -89,7 +89,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     root_session <- session$rootScope()
     if(!identical(session$ns(NULL), module_id)){
       logger("`module_server_common`: session scope is inconsistent (expected: {module_id}, actual: {session$ns(NULL)}).", level = "warning", use_glue = TRUE)
-      if(dipsaus::shiny_is_running()){
+      if(shiny_is_running()){
         stop("Inconsistent `module_id`. see the warnings above.")
       }
     }
@@ -1239,7 +1239,11 @@ switch_module <- function(module_id, title,
     stop("`switch_module`: must runs in a shiny module")
   }
   query_str <- shiny::isolate(shiny::getQueryString(session = session))
-  url <- sprintf("/?module=%s&shared_id=%s", module_id, paste(query_str$shared_id, collapse = ""))
+  url <- sprintf(
+    "/?module=%s&shared_id=%s",
+    module_id,
+    paste(query_str$shared_id, collapse = "")
+  )
   session$sendCustomMessage(
     type = "shidashi.open_iframe_tab",
     message = list(

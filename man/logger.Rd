@@ -2,35 +2,12 @@
 % Please edit documentation in R/logger.R
 \name{logger}
 \alias{logger}
-\alias{set_logger_path}
-\alias{logger_threshold}
-\alias{logger_error_condition}
 \alias{error_notification}
 \alias{error_alert}
 \alias{with_error_notification}
 \alias{with_error_alert}
 \title{Logger system used by 'RAVE'}
 \usage{
-logger(
-  ...,
-  level = c("info", "warning", "error", "fatal", "debug", "trace"),
-  calc_delta = "auto",
-  .envir = parent.frame(),
-  .sep = "",
-  use_glue = FALSE,
-  reset_timer = FALSE
-)
-
-set_logger_path(root_path, max_bytes, max_files)
-
-logger_threshold(
-  level = c("info", "warning", "error", "fatal", "debug", "trace"),
-  module_id,
-  type = c("console", "file", "both")
-)
-
-logger_error_condition(cond, level = "error")
-
 error_notification(
   cond,
   title = "Error found!",
@@ -61,42 +38,12 @@ with_error_notification(expr, envir = parent.frame(), quoted = FALSE, ...)
 with_error_alert(expr, envir = parent.frame(), quoted = FALSE, ...)
 }
 \arguments{
-\item{..., .envir, .sep}{passed to \code{glue}, if
-\code{use_glue} is true}
-
-\item{level}{the level of message, choices are \code{'info'} (default),
-\code{'warning'}, \code{'error'}, \code{'fatal'}, \code{'debug'},
-\code{'trace'}}
-
-\item{calc_delta}{whether to calculate time difference between current
-message and previous message; default is \code{'auto'}, which prints
-time difference when \code{level} is \code{'debug'}.
-This behavior can be changed by altering \code{calc_delta} by a logical
-\code{TRUE} to enable or \code{FALSE} to disable.}
-
-\item{use_glue}{whether to use \code{glue} to combine
-\code{...}; default is false}
-
-\item{reset_timer}{whether to reset timer used by \code{calc_delta}}
-
-\item{root_path}{root directory if you want log messages to be saved to
-hard disks; if \code{root_path} is \code{NULL}, \code{""}, or
-\code{\link{nullfile}}, then logger path will be unset.}
-
-\item{max_bytes}{maximum file size for each logger partitions}
-
-\item{max_files}{maximum number of partition files to hold the log; old
-files will be deleted.}
-
-\item{module_id}{'RAVE' module identification string, or name-space; default
-is \code{'ravedash'}}
+\item{cond}{condition to log}
 
 \item{type}{which type of logging should be set; default is \code{'console'},
 if file log is enabled through \code{set_logger_path}, \code{type} could be
 \code{'file'} or \code{'both'}. Default log level is \code{'info'} on
 console and \code{'debug'} on file.}
-
-\item{cond}{condition to log}
 
 \item{class, title, delay, autohide}{passed to \code{\link[shidashi]{show_notification}}}
 
@@ -113,6 +60,36 @@ console and \code{'debug'} on file.}
 \item{envir}{environment to evaluate \code{expr}}
 
 \item{quoted}{whether \code{expr} is quoted; default is false}
+
+\item{..., .envir, .sep}{passed to \code{glue}, if
+\code{use_glue} is true}
+
+\item{use_glue}{whether to use \code{glue} to combine
+\code{...}; default is false}
+
+\item{calc_delta}{whether to calculate time difference between current
+message and previous message; default is \code{'auto'}, which prints
+time difference when \code{level} is \code{'debug'}.
+This behavior can be changed by altering \code{calc_delta} by a logical
+\code{TRUE} to enable or \code{FALSE} to disable.}
+
+\item{level}{the level of message, choices are \code{'info'} (default),
+\code{'success'}, \code{'warning'}, \code{'error'}, \code{'fatal'},
+\code{'debug'}, \code{'trace'}}
+
+\item{module_id}{'RAVE' module identification string, or name-space; default
+is \code{'ravedash'}}
+
+\item{reset_timer}{whether to reset timer used by \code{calc_delta}}
+
+\item{root_path}{root directory if you want log messages to be saved to
+hard disks; if \code{root_path} is \code{NULL}, \code{""}, or
+\code{\link{nullfile}}, then logger path will be unset.}
+
+\item{max_bytes}{maximum file size for each logger partitions}
+
+\item{max_files}{maximum number of partition files to hold the log; old
+files will be deleted.}
 }
 \value{
 The message without time-stamps

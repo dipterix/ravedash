@@ -27,7 +27,7 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
   #   # logger(paste(c("Wrapped expressions:", deparse(expr_)), collapse = "\n"),
   #   #        .sep = "\n", level = log_error, use_glue = FALSE)
   #
-  #   if(dipsaus::shiny_is_running()) {
+  #   if(shiny_is_running()) {
   #     try({
   #       ravedash::error_notification(
   #         cond = e, title = "Coding Error", type = "danger",

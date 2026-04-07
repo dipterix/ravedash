@@ -4,11 +4,12 @@
 #' @importFrom shinyvalidate InputValidator
 #' @importFrom R6 R6Class
 #' @importFrom checkmate assert
+#' @importFrom ravepipeline logger
 NULL
 
 gray_label_color <- "#c8c9ca"
 
-ansi_regex <- "(?:(?:\\x{001b}\\[)|\\x{009b})(?:(?:[0-9]{1,3})?(?:(?:;[0-9]{0,3})*)?[A-M|f-m])|\\x{001b}[A-M]"
+# ansi_regex <- "(?:(?:\\x{001b}\\[)|\\x{009b})(?:(?:[0-9]{1,3})?(?:(?:;[0-9]{0,3})*)?[A-M|f-m])|\\x{001b}[A-M]"
 
 
 DEFAULT_PALETTES <- local({
@@ -68,23 +69,28 @@ DEFAULT_PALETTES <- local({
     invisible(name)
   }
 
-  get <- function(name, type = c("line", "heatmap"), get_palettes = FALSE, get_palette_names = FALSE) {
+  get <- function(
+    name,
+    type = c("line", "heatmap"),
+    get_palettes = FALSE,
+    get_palette_names = FALSE
+  ) {
     type <- match.arg(type)
 
-    if(type == "line") {
+    if (type == "line") {
       pals <- LINE
     } else {
       pals <- HEATMAP
     }
 
-    if(missing(name)) {
-      if( get_palette_names ) {
-        return (names(pals))
+    if (missing(name)) {
+      if (get_palette_names) {
+        return(names(pals))
       }
-      return (pals)
+      return(pals)
     }
 
-    if(!length(name)) {
+    if (!length(name)) {
       logger(
         "Invalid palette requested: [{deparse1(name)}]. Returning the first palette",
         level = "warning",
@@ -96,7 +102,7 @@ DEFAULT_PALETTES <- local({
     }
 
     attr(pal, "name") <- name
-    return (pal)
+    return(pal)
   }
 
   return(list(
@@ -109,27 +115,27 @@ DEFAULT_PALETTES <- local({
 DEFAULT_GRAPHICS <- list(
   rave_cex.main = 1.5,
   rave_cex.axis = 1.3,
-  # putting this to 1.4 because 1.5 causes some clipping of the axis(2) label, we could also try to increase
-  # the (outer) left margin to compensate
+  # putting this to 1.4 because 1.5 causes some clipping of the axis(2) label, 
+  # we could also try to increase the (outer) left margin to compensate
   rave_cex.lab = 1.4,
   rave_axis_tcl = -0.3,
   plot_time_range = c(-Inf,Inf),
   draw_decorator_labels = FALSE,
-  plot_title_options = c('Subject ID', 'Electrode #', 'Condition', 'Frequency Range',
-                         'Sample Size', 'Baseline Window', 'Analysis Window'),
+  plot_title_options = c("Subject ID", "Electrode #", "Condition", "Frequency Range",
+                         "Sample Size", "Baseline Window", "Analysis Window"),
 
   # no shiny, shiny running, all(mfrow == 2), any(mfrow > 2)
   cex_multiplier = c(1, 1/0.88, 1/0.66),
 
   ## this is now managed through ravedash theme
-  background_plot_color_hint = 'white',
-  champions_tunic = '#009edd',
+  background_plot_color_hint = "white",
+  champions_tunic = "#009edd",
 
   invert_colors_in_palette = FALSE,
   reverse_colors_in_palette = FALSE,
 
-  analysis_window.shade.color = 'gray70',
-  analysis_window.stroke.color = 'match',
+  analysis_window.shade.color = "gray70",
+  analysis_window.stroke.color = "match",
 
   heatmap_number_color_values = 101,
   invert_colors_in_heatmap_palette = FALSE,
@@ -140,7 +146,7 @@ DEFAULT_GRAPHICS <- list(
   log_scale = FALSE,
   max_zlim = 0,
   percentile_range = TRUE,
-  sort_trials_by_type = 'Trial Number',
+  sort_trials_by_type = "Trial Number",
 
   max_columns_in_figure = 3
 )
@@ -169,8 +175,7 @@ deparse1 <- function(expr, collapse = " ") {
   paste(deparse(expr), collapse = collapse)
 }
 
-R_user_dir <- function(package, which = c("data", "config", "cache"))
-{
+R_user_dir <- function(package, which = c("data", "config", "cache")) {
   stopifnot(is.character(package), length(package) == 1L)
   which <- match.arg(which)
   home <- normalizePath("~")
@@ -232,24 +237,6 @@ R_user_dir <- function(package, which = c("data", "config", "cache"))
 }
 
 
-#' @export
-dipsaus::`%OF%`
-
-#' @importFrom dipsaus shiny_alert2
-#' @export
-dipsaus::shiny_alert2
-
-#' @importFrom dipsaus close_alert2
-#' @export
-dipsaus::close_alert2
-
-#' @importFrom shidashi show_notification
-#' @export
-shidashi::show_notification
-
-#' @importFrom shidashi clear_notifications
-#' @export
-shidashi::clear_notifications
 
 get_function_from <- function(name, package) {
   asNamespace(package)[[name]]
@@ -268,7 +255,7 @@ get_function_from <- function(name, package) {
 #'
 #' @export
 be_patient_text <- function(candidates){
-  if(missing(candidates)) {
+  if (missing(candidates)) {
     sp <- c(
       "Please be patient, running in progress...",
       "Grab a cup of coffee, this might take a while...",
@@ -295,8 +282,8 @@ be_patient_text <- function(candidates){
 
 #' @rdname random-text
 #' @export
-finished_text <- function(candidates){
-  if(missing(candidates)) {
+finished_text <- function(candidates) {
+  if (missing(candidates)) {
     sp <- c(
       "Please proceed to the next step",
       "It's done!",
@@ -319,4 +306,8 @@ finished_text <- function(candidates){
     size = 1,
     prob = prob / sum(prob)
   )
+}
+
+shiny_is_running <- function() {
+  return(isTRUE(!is.null(shiny::getDefaultReactiveDomain())))
 }
