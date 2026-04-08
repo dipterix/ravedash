@@ -132,28 +132,8 @@ register_rave_session <- function(
   }
   map <- root_session$userData$ravedash
 
-  # register & reference to shidashi components
-
-  # sync tools to sync inputs across modules (are we using it?)
-  sync_tools <- shidashi::register_session_id(session = session)
-
-  # reactives to update theme
-  if (!shiny::is.reactivevalues(map$theme_event)) {
-    shidashi::register_session_events(session = session)
-    # TODO: make sure has the most updated shidashi
-    theme_event <- root_session$userData$event_data
-
-    if (!shiny::is.reactivevalues(theme_event)) {
-      theme_event <- root_session$cache$get("shidashi_event_data")
-    }
-
-    map$theme_event <- theme_event
-  }
-
-  # ravedash event flags
-  if (!shiny::is.reactivevalues(map$rave_event)) {
-    map$rave_event <- shiny::reactiveValues()
-  }
+  # register with shidashi session registry (installs event bus and theme observer)
+  shidashi::register_session(session = session)
 
   # reactive event handlers
   if (!inherits(map$handlers, "fastmap2")) {
@@ -194,8 +174,7 @@ register_rave_session <- function(
     item <- list(
       rave_id = rave_id,
       register_ns = session$ns(NULL),
-      root_session = root_session,
-      rave_event = map$rave_event
+      root_session = root_session
     )
 
     sess <- get(x = ".sessions")
@@ -204,9 +183,6 @@ register_rave_session <- function(
 
   list(
     rave_id = map$rave_id,
-    sync_tools = sync_tools,
-    theme_event = map$theme_event,
-    rave_event = map$rave_event,
     module_cache = map$module_cache
   )
 }
@@ -302,41 +278,12 @@ fire_rave_event <- function(
 
   force(value)
 
-  tool <- register_rave_session(session)
+  register_rave_session(session)
 
   logger("Firing RAVE-event: ", key, level = "trace")
 
-  if (global) {
-    sess <- get(x = ".sessions")
-    lapply(sess$keys(), function(key) {
-      item <- sess$get(key, missing = NULL)
-      if (is.null(item)) {
-        return()
-      }
-      if (!is.list(item)) {
-        sess$remove(key)
-        return()
-      }
-      if (!is.environment(item$root_session)) {
-        sess$remove(key)
-        return()
-      }
-      root_session <- item$root_session
-      if (root_session$isEnded()) {
-        sess$remove(key)
-        return()
-      }
-      # shiny::isolate({
-      #   # impl <- .subset2(item$rave_event, "impl")
-      #   # impl$set(key, value, isTRUE(force))
-      #
-      # })
-      item$rave_event[[key]] <- value
-    })
-  } else if (!session$isEnded()) {
-    # impl <- .subset2(tool$rave_event, "impl")
-    # impl$set(key, value, isTRUE(force))
-    tool$rave_event[[key]] <- value
+  if (!session$isEnded()) {
+    shidashi::fire_event(key, value, session = session, global = global)
   }
   invisible()
 }
@@ -373,17 +320,15 @@ close_loader <- function(session = shiny::getDefaultReactiveDomain()) {
 
 #' @rdname rave-runtime-events
 #' @export
-watch_loader_opened <- function(session = shiny::getDefaultReactiveDomain()){
-  tool <- register_rave_session(session)
-  res <- tool$rave_event$open_loader
+watch_loader_opened <- function(session = shiny::getDefaultReactiveDomain()) {
+  res <- shidashi::get_event("open_loader", session = session)
   structure(!is.null(res), timestamp = res)
 }
 
 #' @rdname rave-runtime-events
 #' @export
-watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()){
-  tool <- register_rave_session(session)
-  res <- tool$rave_event$data_loaded
+watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()) {
+  res <- shidashi::get_event("data_loaded", session = session)
 
   # 1. load from pipeline settings only
   # 2. combinations of subject default and pipeline settings
@@ -407,7 +352,6 @@ current_shiny_theme <- function(
   session = shiny::getDefaultReactiveDomain()
 ) {
   if (shiny_is_running()) {
-    tool <- register_rave_session(session = session)
     return(shidashi::get_theme(session = session))
   } else {
     if (missing(default)) {
@@ -651,30 +595,25 @@ ravedash_footer <- function(
 #' @return A named list, including module ID, module label, internal
 #' \code{'rave_id'}.
 #' @export
-get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()){
-  if(is.environment(session)){
-    # rave_events <- session$cache$get("rave_reactives", missing = NULL)
-    rave_event <- session$userData$ravedash$rave_event
-    if(shiny::is.reactivevalues(rave_event)){
-      info <- shiny::isolate({
-        rave_event$active_module
-      })
-      # make sure module_id is inside!!!
-      if(!'id' %in% names(info)){ return(NULL) }
+get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()) {
+  if (is.environment(session)) {
+    info <- shiny::isolate({
+      shidashi::get_event("active_module", session = session)
+    })
+    # make sure module_id is inside!!!
+    if (!'id' %in% names(info)) { return(NULL) }
 
-      # rave_id <- session$cache$get("rave_id", missing = "")
-      rave_id <- session$userData$ravedash$rave_id
-      info$rave_id <- rave_id
+    rave_id <- session$userData$ravedash$rave_id
+    info$rave_id <- rave_id
 
-      # get session information
-      session_path <- current_session_path()
-      if(is.null(session_path)) {
-        session_path <- "."
-      }
-      info$path <- normalizePath(file.path(session_path, "modules", info$id), mustWork = FALSE)
-
-      return(info)
+    # get session information
+    session_path <- current_session_path()
+    if (is.null(session_path)) {
+      session_path <- "."
     }
+    info$path <- normalizePath(file.path(session_path, "modules", info$id), mustWork = FALSE)
+
+    return(info)
   }
   return(NULL)
 }
