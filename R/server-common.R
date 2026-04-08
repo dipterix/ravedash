@@ -230,14 +230,14 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   # Defer `local_reactives$rave_action` and dispatch the event
   shidashi::set_handler("ravedash_action_dispatcher", shiny::bindEvent(
-    observe({
+    shiny::observe({
       rave_action <- as.list(get_rave_action())
       fire_rave_event( #rave_action$type
         key = rave_action$type,
         value = rave_action,
         .internal_ok = TRUE
       )
-      if (rave_action$parent_frame) {
+      if (isTRUE(rave_action$parent_frame)) {
         logger(
           "[{rave_action$type}] A JavaScript rave-action fired from parent frame.", # nolint: line_length_linter.
           level = "trace", use_glue = TRUE)

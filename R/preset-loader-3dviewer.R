@@ -23,7 +23,6 @@ presets_loader_3dviewer <- function(
     )
   }
   comp$server_func <- function(input, output, session) {
-    # shidashi::register_session(session)
     loader_project <- comp$get_dependent_component(loader_project_id)
     loader_subject <- comp$get_dependent_component(loader_subject_id)
     loader_electrodes <- comp$get_dependent_component(loader_electrodes_id)
@@ -233,7 +232,6 @@ presets_loader_3dviewer2 <- function(
     )
   }
   comp$server_func <- function(input, output, session) {
-    # shidashi::register_session(session)
     loader_project <- comp$get_dependent_component(loader_project_id)
     loader_subject <- comp$get_dependent_component(loader_subject_id)
     loader_electrodes <- comp$get_dependent_component(loader_electrodes_id)

@@ -76,7 +76,7 @@
 #'
 #' server <- function(input, output, session) {
 #'   # Create event registries
-#'   register_rave_session()
+#'   shidashi::register_session()
 #'
 #'   shiny::bindEvent(
 #'     shiny::observe({
@@ -509,7 +509,6 @@ get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()) 
     info <- shiny::isolate({
       shidashi::active_module(session = session)
     })
-    print(info)
     # make sure module_id is inside!!!
     if (!"id" %in% names(info)) {
       return(NULL)
