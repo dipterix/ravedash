@@ -55,13 +55,13 @@ server_tools$module_is_active
 server_tools$simplify_view
 
 # 'RAVE' module server function
-server <- function(input, output, session, ...){
+server <- function(input, output, session, ...) {
 
   pipeline_path <- "PATH to module pipeline"
 
   module_server_common(
     module_id = session$ns(NULL),
-    check_data_loaded = function(first_time){
+    check_data_loaded = function(first_time) {
 
       re <- tryCatch({
         # Try to read data from pipeline results
@@ -76,7 +76,7 @@ server <- function(input, output, session, ...){
 
         # Return TRUE indicating data has been loaded
         TRUE
-      }, error = function(e){
+      }, error = function(e) {
 
         # Fire event to remove footer message
         ravedash::fire_rave_event('loader_message', NULL)

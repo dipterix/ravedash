@@ -107,8 +107,8 @@ one, default is false}
 of either one (page title and logo text are the same); or length of two,
 with page title be the first element and logo text be the second.}
 
-\item{sidebar_open}{whether to open the side-bar by default; default \code{TRUE}
-when more than one module is to be displayed}
+\item{sidebar_open}{whether to open the side-bar by default; default 
+\code{TRUE} when more than one module is to be displayed}
 
 \item{jupyter}{logical, whether to launch 'jupyter' instances when starting
 'RAVE' sessions, or to stop the 'jupyter' instances when shutting down. It
@@ -151,7 +151,7 @@ Create, register, list, and remove 'RAVE' sessions
 }
 \examples{
 
-if (interactive()){
+if (interactive()) {
 
   sess <- new_session()
   sess$launch_session()

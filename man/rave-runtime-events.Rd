@@ -5,7 +5,6 @@
 \alias{register_rave_session}
 \alias{get_default_handlers}
 \alias{fire_rave_event}
-\alias{get_session_by_rave_id}
 \alias{get_rave_event}
 \alias{open_loader}
 \alias{close_loader}
@@ -29,8 +28,6 @@ fire_rave_event(
   session = shiny::getDefaultReactiveDomain(),
   .internal_ok = FALSE
 )
-
-get_session_by_rave_id(rave_id)
 
 get_rave_event(key, session = shiny::getDefaultReactiveDomain())
 
@@ -59,10 +56,9 @@ changed}
 
 \item{.internal_ok}{internally used}
 
-\item{rave_id, .rave_id}{internally used to store unique session
-identification key}
-
 \item{default}{default value if not found}
+
+\item{rave_id, .rave_id}{deprecated, no longer used}
 }
 \value{
 See 'Details'
@@ -73,14 +69,13 @@ A set of preset behaviors used by 'RAVE' modules
 \details{
 These goal of these event functions is to  simplify the dashboard
 logic without understanding the details or passing global variables around.
-Everything starts with \code{register_rave_session}. This function registers
-a unique identification to session, and adds bunch of registry to
-monitor the changes of themes, built-in, and custom events. If you have
-called \code{\link{module_server_common}}, then \code{register_rave_session}
-has already been called.
+Everything starts with \code{shidashi::register_session}. This function
+registers session event handlers and theme observers.
+If you have called \code{\link{module_server_common}}, then session
+registration has already been done.
 \describe{
-\item{\code{register_rave_session}}{make initial registries, must be called,
-returns a list of registries}
+\item{\code{register_rave_session}}{\strong{Deprecated.} Use
+\code{shidashi::register_session()} instead.}
 \item{\code{fire_rave_event}}{send signals to make changes to a event;
 returns nothing}
 \item{\code{get_rave_event}}{watch and get the event values; must run in
@@ -152,7 +147,7 @@ server <- function(input, output, session) {
 
   shiny::bindEvent(
     shiny::observe({
-      if(watch_loader_opened()){
+      if (watch_loader_opened()) {
         close_loader()
       } else {
         open_loader()
@@ -173,7 +168,7 @@ server <- function(input, output, session) {
 
 }
 
-if(interactive()){
+if(interactive()) {
   shinyApp(ui, server)
 }
 

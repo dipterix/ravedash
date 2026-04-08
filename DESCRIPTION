@@ -32,10 +32,11 @@ Imports:
     checkmate,
     cachem (>= 1.0.6)
 Suggests: 
+    cli,
+    crayon (>= 1.4.2),
     htmltools,
     fastmap (>= 1.1.0),
     rlang (>= 1.0.2),
-    crayon (>= 1.4.2),
     rstudioapi,
     knitr,
     httr,

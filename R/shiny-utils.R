@@ -2,8 +2,7 @@
 #' @title 'RAVE' run-time events
 #' @description A set of preset behaviors used by 'RAVE' modules
 #' @param session shiny session, usually automatically determined
-#' @param rave_id,.rave_id internally used to store unique session
-#' identification key
+#' @param rave_id,.rave_id deprecated, no longer used
 #' @param key event key to fire or to monitor
 #' @param value event value
 #' @param global whether to notify other sessions (experimental and not
@@ -14,14 +13,13 @@
 #' @param .internal_ok internally used
 #' @details These goal of these event functions is to  simplify the dashboard
 #' logic without understanding the details or passing global variables around.
-#' Everything starts with \code{register_rave_session}. This function registers
-#' a unique identification to session, and adds bunch of registry to
-#' monitor the changes of themes, built-in, and custom events. If you have
-#' called \code{\link{module_server_common}}, then \code{register_rave_session}
-#' has already been called.
+#' Everything starts with \code{shidashi::register_session}. This function
+#' registers session event handlers and theme observers.
+#' If you have called \code{\link{module_server_common}}, then session
+#' registration has already been done.
 #' \describe{
-#' \item{\code{register_rave_session}}{make initial registries, must be called,
-#' returns a list of registries}
+#' \item{\code{register_rave_session}}{\strong{Deprecated.} Use
+#' \code{shidashi::register_session()} instead.}
 #' \item{\code{fire_rave_event}}{send signals to make changes to a event;
 #' returns nothing}
 #' \item{\code{get_rave_event}}{watch and get the event values; must run in
@@ -53,8 +51,15 @@
 #' loaded}
 #' \item{\code{'open_loader'}, \code{'toggle_loader'}}{notifies the internal
 #' server code to show or hide the data loading panel}
-#' \item{\code{'active_module'}}{internally used to store current active
-#' module information}
+#' \item{\code{'active_module'}}{internally populated by the action
+#' dispatcher when the module first loads (and whenever a
+#' \code{type = "active_module"} rave-action arrives). Returns a list with
+#' elements \code{type}, \code{id}, \code{parent_frame}, and \code{rave_id}.
+#' This key is \strong{reserved}: external code must not call
+#' \code{fire_rave_event("active_module", ...)} directly.
+#' To obtain the currently active module, prefer
+#' \code{\link{get_active_module_info}()}, which reads from the
+#' \code{shidashi} module registry and is always up-to-date.}
 #' }
 #' @return See 'Details'
 #'
@@ -121,6 +126,12 @@ register_rave_session <- function(
   session = shiny::getDefaultReactiveDomain(),
   .rave_id = NULL
 ) {
+  .Deprecated(
+    msg = paste(
+      "`register_rave_session()` is deprecated.",
+      "Use `shidashi::register_session()` instead."
+    )
+  )
   if (is.null(session)) {
     session <- shiny::MockShinySession$new()
   }
@@ -140,109 +151,12 @@ register_rave_session <- function(
     handler_map <- dipsaus::fastmap2()
     handler_map$output_options <- dipsaus::fastmap2()
     map$handlers <- handler_map
-
-    # Probably first time registering session
-    clean_shiny_sessions(active = FALSE)
-    session$onEnded(function() {
-      clean_shiny_sessions(sessions = session, active = TRUE)
-    })
   }
 
-  rave_id <- map$rave_id
-  if (length(rave_id) != 1 || !is.character(rave_id) || !nzchar(rave_id)) {
-    if (!missing(.rave_id) && length(.rave_id)) {
-      rave_id <- paste(unlist(.rave_id), collapse = "")
-      rave_id <- gsub("[^a-zA-Z0-9]", "", rave_id)
-      if (nchar(rave_id) == 0) {
-        rave_id <- rand_string()
-      }
-    } else {
-      rave_id <- rand_string()
-    }
-    map$rave_id <- rave_id
-    root_session$cache$set("rave_id", rave_id)
-    root_session$userData$rave_id <- rave_id
-  }
-
-  # cache for modules and apps
-  if (!inherits(map$module_cache, "fastmap2")) {
-    map$module_cache <- dipsaus::fastmap2()
-  }
-
-  if (!inherits(session, "MockShinySession")) {
-    # register session
-    item <- list(
-      rave_id = rave_id,
-      register_ns = session$ns(NULL),
-      root_session = root_session
-    )
-
-    sess <- get(x = ".sessions")
-    sess$set(rave_id, item)
-  }
-
-  list(
-    rave_id = map$rave_id,
-    module_cache = map$module_cache
-  )
+  invisible()
 }
 
-clean_shiny_sessions <- function(sessions = NULL, active = FALSE) {
-  sess <- get(".sessions")
-  current_size <- sess$size()
-
-  # Do not actively clean ended sessions
-  if (!is.null(sessions) && length(sessions)) {
-    active <- TRUE
-    if (!is.list(sessions)) {
-      sessions <- list(sessions)
-    }
-  }
-  if (!active && current_size <= 20) {
-    return()
-  }
-  if (is.null(sessions)) {
-    rave_ids <- sess$keys()
-  } else {
-    rave_ids <- unlist(lapply(sessions, function(session) {
-      tryCatch(
-        {
-          # session$userData$rave_id
-          session$userData$ravedash$rave_id
-        },
-        error = function(e) {
-          NULL
-        }
-      )
-    }))
-  }
-
-  lapply(rave_ids, function(key) {
-    try(
-      {
-        item <- sess$get(key, missing = NULL)
-        if (is.null(item)) {
-          return()
-        }
-        if (!is.list(item)) {
-          sess$remove(key)
-          return()
-        }
-        if (!is.environment(item$root_session)) {
-          sess$remove(key)
-          return()
-        }
-        root_session <- item$root_session
-        if (root_session$isEnded()) {
-          sess$remove(key)
-          return()
-        }
-      },
-      silent = TRUE
-    )
-  })
-  invisible(sess$size())
-}
+# clean_shiny_sessions moved to R/deprecated.R
 
 #' @rdname rave-runtime-events
 #' @export
@@ -250,10 +164,16 @@ get_default_handlers <- function(session = shiny::getDefaultReactiveDomain()) {
   if (is.null(session)) {
     session <- shiny::MockShinySession$new()
   }
-  if (!inherits(session$userData$ravedash$handlers, "fastmap2")) {
-    register_rave_session(session = session)
+  root_session <- session$rootScope()
+  if (!inherits(root_session$userData$ravedash, "fastmap2")) {
+    root_session$userData$ravedash <- dipsaus::fastmap2()
   }
-  session$userData$ravedash$handlers
+  if (!inherits(root_session$userData$ravedash$handlers, "fastmap2")) {
+    handler_map <- dipsaus::fastmap2()
+    handler_map$output_options <- dipsaus::fastmap2()
+    root_session$userData$ravedash$handlers <- handler_map
+  }
+  root_session$userData$ravedash$handlers
 }
 
 #' @rdname rave-runtime-events
@@ -278,8 +198,6 @@ fire_rave_event <- function(
 
   force(value)
 
-  register_rave_session(session)
-
   logger("Firing RAVE-event: ", key, level = "trace")
 
   if (!session$isEnded()) {
@@ -288,16 +206,7 @@ fire_rave_event <- function(
   invisible()
 }
 
-#' @rdname rave-runtime-events
-#' @export
-get_session_by_rave_id <- function(rave_id) {
-  sess <- get(x = ".sessions")
-  re <- sess$get(rave_id)
-  if (is.list(re)) {
-    return(re$root_session)
-  }
-  return()
-}
+# get_session_by_rave_id moved to R/deprecated.R
 
 #' @rdname rave-runtime-events
 #' @export
@@ -598,20 +507,25 @@ ravedash_footer <- function(
 get_active_module_info <- function(session = shiny::getDefaultReactiveDomain()) {
   if (is.environment(session)) {
     info <- shiny::isolate({
-      shidashi::get_event("active_module", session = session)
+      shidashi::active_module(session = session)
     })
+    print(info)
     # make sure module_id is inside!!!
-    if (!'id' %in% names(info)) { return(NULL) }
+    if (!"id" %in% names(info)) {
+      return(NULL)
+    }
 
-    rave_id <- session$userData$ravedash$rave_id
-    info$rave_id <- rave_id
+    info$rave_id <- session$token
 
     # get session information
     session_path <- current_session_path()
     if (is.null(session_path)) {
       session_path <- "."
     }
-    info$path <- normalizePath(file.path(session_path, "modules", info$id), mustWork = FALSE)
+    info$path <- normalizePath(
+      file.path(session_path, "modules", info$id),
+      mustWork = FALSE
+    )
 
     return(info)
   }
@@ -693,38 +607,7 @@ run_analysis_button <- function(
 }
 
 
-#' Obtain caching object for current run-time shiny session
-#' @description Cache small objects such as inputs or configurations
-#' @param namespace characters, usually the module ID
-#' @param session shiny interactive context domain
-#' @returns A caching object. The caching object is identical within the same
-#' context and namespace.
-#' @export
-shiny_cache <- function(namespace, session = shiny::getDefaultReactiveDomain()) {
-  if (missing(namespace) || length(namespace) != 1) {
-    stop(
-      "`session_cache`: `namespace` (i.e. module ID) must be explicitly specified."
-    )
-  }
-  if (!is.environment(session)) {
-    warning(
-      "`session_cache`: session must be a shiny reactive context. Are you running shiny application?"
-    )
-    return(cache_mem2())
-  }
-  module_cache <- session$userData$ravedash$module_cache
-  if (!inherits(module_cache, "fastmap2")) {
-    tools <- register_rave_session(session)
-    module_cache <- tools$module_cache
-  }
-
-  if (!inherits(module_cache[[namespace]], "cache_mem2")) {
-    module_cache[[namespace]] <- cache_mem2()
-  }
-
-  return(module_cache[[namespace]])
-
-}
+# shiny_cache moved to R/deprecated.R
 
 
 

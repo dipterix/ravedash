@@ -16,16 +16,25 @@ session_root <- function(ensure = FALSE) {
 ensure_template <- function(path, use_cache = TRUE) {
 
 
-  template_path <- file.path(R_user_dir("raveio", 'data'), 'rave-pipelines')
+  template_path <- file.path(R_user_dir("raveio", "data"), "rave-pipelines")
 
   if (!use_cache || !dir.exists(template_path)) {
-    ravepipeline::pipeline_install_github('rave-ieeg/rave-pipelines', to = "default")
+    ravepipeline::pipeline_install_github(
+      "rave-ieeg/rave-pipelines",
+      to = "default"
+    )
   }
 
   fs <- list.files(template_path, full.names = TRUE, recursive = FALSE)
   ravepipeline::dir_create2(path)
-  for(f in fs) {
-    file.copy(f, to = path, overwrite = TRUE, copy.date = TRUE, recursive = TRUE)
+  for (f in fs) {
+    file.copy(
+      from = f,
+      to = path,
+      overwrite = TRUE,
+      copy.date = TRUE,
+      recursive = TRUE
+    )
   }
   # remove <path>/modules
   module_path <- file.path(path, "modules")
@@ -88,8 +97,8 @@ resolve_app_root <- function(app_root, ensure = FALSE) {
 #' @param page_title session web page title and logo text; can have length
 #' of either one (page title and logo text are the same); or length of two,
 #' with page title be the first element and logo text be the second.
-#' @param sidebar_open whether to open the side-bar by default; default \code{TRUE}
-#' when more than one module is to be displayed
+#' @param sidebar_open whether to open the side-bar by default; default 
+#' \code{TRUE} when more than one module is to be displayed
 #' @param dry_run whether to dry-run (do not launch) the 'RAVE' session
 #' @param ...,.list named list of key-value pairs of session options. The
 #' keys must be characters, and values must be simple data types (such as
@@ -137,19 +146,36 @@ new_session <- function(update = FALSE, app_root = NULL) {
   #   ravepipeline::pipeline_root(o)
   # })
 
-  src_root <- R_user_dir("raveio", 'data')
-  src_pipeline <- file.path(R_user_dir("raveio", 'data'), "pipelines")
+  src_root <- R_user_dir("raveio", "data")
+  src_pipeline <- file.path(R_user_dir("raveio", "data"), "pipelines")
 
   if (!dir.exists(src_pipeline)) {
-    stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
+    stop(
+      "No pipeline found. This is often caused by incomplete installation. ",
+      "Please make sure your RAVE installation is complete by opening R and ",
+      "follow the steps below:\n  * Check if the packages are up-to-date by ",
+      "the following command, and update RAVE if needed. \n    ",
+      "ravemanager::version_info()\n  * If everything is up-to-date, run\n    ",
+      "options(timeout = 3600)\n    ravemanager::finalize_installation()"
+    )
   }
   pipelines <- ravepipeline::pipeline_list(root_path = src_pipeline)
   if (!length(pipelines)) {
-    stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
+    stop(
+      "No pipeline found. This is often caused by incomplete installation. ",
+      "Please make sure your RAVE installation is complete by opening R and ",
+      "follow the steps below:\n  * Check if the packages are up-to-date by ",
+      "the following command, and update RAVE if needed. \n    ",
+      "ravemanager::version_info()\n  * If everything is up-to-date, run\n    ",
+      "options(timeout = 3600)\n    ravemanager::finalize_installation()"
+    )
   }
 
   # create a temporary repository
-  session_id <- paste0(strftime(Sys.time(), "session-%y%m%d-%H%M%S-%Z-"), toupper(rand_string(4)))
+  session_id <- paste0(
+    strftime(Sys.time(), "session-%y%m%d-%H%M%S-%Z-"),
+    toupper(rand_string(4))
+  )
   app_root <- resolve_app_root(app_root, ensure = TRUE)
   app_path <- file.path(app_root, session_id)
 
@@ -166,7 +192,10 @@ new_session <- function(update = FALSE, app_root = NULL) {
   }
 
   # copy modules
-  module_root_path <- file.path(R_user_dir("raveio", 'data'), "shidashi_modules")
+  module_root_path <- file.path(
+    R_user_dir("raveio", "data"),
+    "shidashi_modules"
+  )
   source_path <- file.path(module_root_path, "modules")
   target_path <- file.path(app_path, "modules")
   if (file.exists(target_path)) {
@@ -177,7 +206,10 @@ new_session <- function(update = FALSE, app_root = NULL) {
     recursive = TRUE, copy.date = TRUE
   )
 
-  module_conf <- ravepipeline::load_yaml(file.path(module_root_path, "modules.yaml"))
+  module_conf <- ravepipeline::load_yaml(file.path(
+    module_root_path,
+    "modules.yaml"
+  ))
   groups <- lapply(module_conf$modules, function(item) {
     if (length(item$group) == 1) {
       order <- c(item$order, 99999L)
@@ -197,7 +229,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
         open = FALSE
       )
     })
-    names(groups) <- sapply(groups, '[[', 'name')
+    names(groups) <- sapply(groups, "[[", "name")
   }
   module_conf$groups <- groups
 
@@ -208,17 +240,34 @@ new_session <- function(update = FALSE, app_root = NULL) {
   module_conf$divider[["Built-ins"]] <- list(order = 9.99)
   module_conf$divider[["Add-ons"]] <- list(order = 99.99)
 
-  ravepipeline::save_yaml(module_conf, file = file.path(app_path, "modules.yaml"))
-  ravepipeline::save_yaml(module_conf, file = file.path(app_path, "modules_backup.yaml"))
+  ravepipeline::save_yaml(
+    module_conf, 
+    file = file.path(app_path, "modules.yaml")
+  )
+  ravepipeline::save_yaml(
+    module_conf,
+    file = file.path(app_path, "modules_backup.yaml")
+  )
   # file.copy(
   #   from = file.path(module_root_path, "modules.yaml"),
   #   to = file.path(app_path, "modules.yaml"),
   #   overwrite = TRUE, copy.date = TRUE
   # )
 
-  logger("A new RAVE session has been created [session ID: { session_id }]", level = "info", use_glue = TRUE)
+  logger(
+    "A new RAVE session has been created [session ID: { session_id }]",
+    level = "info",
+    use_glue = TRUE
+  )
   sess <- use_session(session_id, app_root = app_root)
-  start_session(session = sess, as_job = FALSE, jupyter = FALSE, dry_run = TRUE, launch_browser = FALSE, app_root = app_root)
+  start_session(
+    session = sess,
+    as_job = FALSE,
+    jupyter = FALSE,
+    dry_run = TRUE,
+    launch_browser = FALSE,
+    app_root = app_root
+  )
 
   sess
 
@@ -236,7 +285,11 @@ use_session <- function(x, ...) {
 use_session.default <- function(x, app_root = NULL, ...) {
   force(x)
 
-  if (length(x) != 1 || is.na(x) || !grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x)) {
+  if (
+    length(x) != 1 ||
+      is.na(x) ||
+      !grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x)
+  ) {
     stop("Invalid session ID")
   }
 
@@ -296,7 +349,10 @@ launch_session <- function(
       module_config <- ravepipeline::load_yaml(path_module_config_backup)
       sel <- modules %in% names(module_config$modules)
       if (!all(sel)) {
-        warning("The following modules are not available: ", paste(modules[!sel], collapse = ", "))
+        warning(
+          "The following modules are not available: ",
+          paste(modules[!sel], collapse = ", ")
+        )
         modules <- modules[sel]
       }
 
@@ -352,14 +408,14 @@ launch_session <- function(
       options$page_title <- c(options$page_title, options$page_title)
     }
     site_config <- c(site_config, c(
-      'page_title <- function(complete = TRUE) {',
-      '  if (complete) {',
-      sprintf('    re <- "%s"', options$page_title[[1]]),
-      '  } else {',
-      sprintf('    re <- "%s"', options$page_title[[2]]),
-      '  }',
-      '  re',
-      '}'
+      "page_title <- function(complete = TRUE) {",
+      "  if (complete) {",
+      sprintf("    re <- \"%s\"", options$page_title[[1]]),
+      "  } else {",
+      sprintf("    re <- \"%s\"", options$page_title[[2]]),
+      "  }",
+      "  re",
+      "}"
     ))
   }
   writeLines(site_config, zzz_path)
@@ -370,15 +426,21 @@ launch_session <- function(
 
   if (isTRUE(options$jupyter)) {
     if (length(jupyter_port) == 0) {
-      jupyter_port <- ravepipeline::raveio_getopt("jupyter_port", default = 17284L)
+      jupyter_port <- ravepipeline::raveio_getopt(
+        key = "jupyter_port",
+        default = 17284L
+      )
     } else {
       jupyter_port <- as.integer(jupyter_port)
       if (!(length(jupyter_port) == 1 && !is.na(jupyter_port) &&
            jupyter_port >= 1024 && jupyter_port <= 65535)) {
-        stop("`launch_session`: options$jupyter_port must be an integer from 1024-65535.")
+        stop(
+          "`launch_session`: options$jupyter_port must be an integer ",
+          "from 1024-65535."
+        )
       }
     }
-    jupyter_wd <- ravepipeline::raveio_getopt('data_dir')
+    jupyter_wd <- ravepipeline::raveio_getopt("data_dir")
     logger("Trying to launch JupyterLab from port [{ jupyter_port }]",
            level = "info", use_glue = TRUE)
 
@@ -463,15 +525,23 @@ launch_session <- function(
         source(.(profile_path), local = TRUE)
       }
       shidashi::template_settings$set(root_path = .(x$app_path))
-      Sys.setenv("RAVEDASH_SESSION_ID" = .(x$session_id), "RSTUDIO_PANDOC" = .(pandoc))
+      Sys.setenv(
+        "RAVEDASH_SESSION_ID" = .(x$session_id),
+        "RSTUDIO_PANDOC" = .(pandoc)
+      )
       options("ravedash.single.session" = .(!isFALSE(options$single_session)))
       options("shiny.useragg" = FALSE)
       sess_info <- utils::capture.output({ print(utils::sessionInfo()) })
       ravedash <- asNamespace("ravedash")
-      ravedash$set_logger_path(root_path = .(file.path(x$app_path, "logs")))
-      ravedash$logger_threshold(level = "trace", type = "file")
-      ravedash$logger(sprintf("Session path: %s", ravedash$current_session_path(.(x$app_path))))
-      ravedash$logger(c(
+      ravepipeline::set_logger_path(
+        root_path = .(file.path(x$app_path, "logs")))
+      ravepipeline::logger_threshold(
+        level = "trace", type = "file")
+      ravepipeline::logger(sprintf(
+        "Session path: %s",
+        ravedash$current_session_path(.(x$app_path))
+      ))
+      ravepipeline::logger(c(
         "Current session information: ", sess_info, ""
       ), .sep = "\n")
     })
@@ -483,7 +553,7 @@ launch_session <- function(
 
   writeLines(c(
     sprintf(
-      "shidashi::template_settings$set('root_path' = '%s')",
+      'shidashi::template_settings$set("root_path" = "%s")',
       x$app_path
     ),
     "shidashi::adminlte_ui()"
@@ -639,7 +709,11 @@ temp_dir <- function(
 
 session_config_path <- function(namespace = "default") {
   namespace <- as.character(namespace)
-  if (length(namespace) != 1 || is.na(namespace) || namespace %in% c("/", ".", "..", "")) {
+  if (
+    length(namespace) != 1 ||
+      is.na(namespace) ||
+      namespace %in% c("/", ".", "..", "")
+  ) {
     namespace <- "default"
   }
   fname <- sprintf("ravedash-session-config-%s.yaml", namespace)
@@ -794,7 +868,10 @@ remove_all_sessions <- function() {
 
 #' @rdname rave-session
 #' @export
-list_session <- function(path = session_root(), order = c("none", "ascend", "descend")) {
+list_session <- function(
+  path = session_root(),
+  order = c("none", "ascend", "descend")
+) {
   order <- match.arg(order)
 
   path <- resolve_app_root(path)
@@ -802,12 +879,10 @@ list_session <- function(path = session_root(), order = c("none", "ascend", "des
   sel <- grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", dirs)
   session_ids <- dirs[sel]
   if (order != "none") {
-
     timestamps <- sub("\\-[^\\-]+\\-[a-zA-Z0-9]{4}$", "", session_ids)
     timestamps <- strptime(timestamps, "session-%y%m%d-%H%M%S")
     order <- order(timestamps, decreasing = order == "descend", na.last = TRUE)
     session_ids <- session_ids[order]
-
   }
   re <- lapply(session_ids, use_session, app_root = path)
   re
@@ -825,7 +900,10 @@ start_session <- function(
 
   if (!missing(session) && length(session)) {
     if (isTRUE(new)) {
-      stop("`start_session`: Please leave `session` blank or NULL if you want to create a new session (new=TRUE).")
+      stop(
+        "`start_session`: Please leave `session` blank or NULL if you want ",
+        "to create a new session (new=TRUE)."
+      )
     }
     if (!inherits(session, "rave-dash-session")) {
       if (length(session) != 1 || is.na(session) ||
@@ -852,11 +930,18 @@ start_session <- function(
       if (is.na(new)) {
         # try to guess
         tryCatch({
-          last_updated <- file.path(R_user_dir(package = "ravemanager", which = "config"), "last_updates", "rave-family")
+          last_updated <- file.path(
+            R_user_dir(package = "ravemanager", which = "config"),
+            "last_updates",
+            "rave-family"
+          )
           if (file.exists(last_updated)) {
             last_updated <- readLines(last_updated, n = 1L)
             last_updated <- as.POSIXlt(last_updated)
-            session_created <- strptime(substr(session$session_id, start = 9, 21), "%y%m%d-%H%M%S")
+            session_created <- strptime(
+              substr(session$session_id, start = 9, 21),
+              "%y%m%d-%H%M%S"
+            )
             if ( last_updated > session_created ) {
               # RAVE dash just got updated
               # start a new session
@@ -904,7 +989,12 @@ start_session <- function(
       )
     )
     if (as_job) {
-      logger("RAVE application [{session$session_id}] has been launched. Detailed information has been printed out in the `jobs` panel.", level = "info", use_glue = TRUE, .trim = FALSE)
+      logger(
+        "RAVE application [{session$session_id}] has been launched. Detailed information has been printed out in the `jobs` panel.",
+        level = "info",
+        use_glue = TRUE,
+        .trim = FALSE
+      )
     }
 
     return(invisible(list(
@@ -973,16 +1063,33 @@ session_log <- function(x, max_lines = 200, modules = NULL) {
   if (missing(x) || is.null(x)) {
     x <- list_session(order = "descend")
     if (!length(x)) {
-      return(structure(character(0L), class = "ravedash_session_log_string", max_lines = n, session_id = NULL))
+      return(structure(
+        character(0L),
+        class = "ravedash_session_log_string",
+        max_lines = n,
+        session_id = NULL
+      ))
     }
     x <- x[[1]]
   }
   session <- use_session(x)
   log_dir <- file.path(session$app_path, "logs")
   if (!dir.exists(log_dir)) {
-    return(structure(character(0L), class = "ravedash_session_log_string", max_lines = n, session_id = session$session_id))
+    return(structure(
+      character(0L),
+      class = "ravedash_session_log_string",
+      max_lines = n,
+      session_id = session$session_id
+    ))
   }
-  all_modules <- list.files(log_dir, pattern = "\\.log", all.files = FALSE, full.names = FALSE, recursive = FALSE, include.dirs = FALSE)
+  all_modules <- list.files(
+    log_dir,
+    pattern = "\\.log",
+    all.files = FALSE,
+    full.names = FALSE,
+    recursive = FALSE,
+    include.dirs = FALSE
+  )
   modules <- all_modules
   if (length(modules)) {
     modules <- gsub("\\(.log|)$", ".log", x = modules, ignore.case = TRUE)
@@ -991,14 +1098,20 @@ session_log <- function(x, max_lines = 200, modules = NULL) {
   modules <- unique(modules)
   modules <- modules[file.exists(file.path(log_dir, modules))]
   if (!length(modules)) {
-    return(structure(character(0L), class = "ravedash_session_log_string", max_lines = n, session_id = session$session_id))
+    return(structure(
+      character(0L),
+      class = "ravedash_session_log_string",
+      max_lines = n,
+      session_id = session$session_id
+    ))
   }
   logs <- lapply(modules, function(module) {
     s <- trimws(readLines(file.path(log_dir, module)))
     if (length(s) > n) {
       s <- s[ -seq_len(length(s) - n) ]
     }
-    timestamp <- substring(gsub("^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)[ ]{0, }", "", s), 1, 19)
+    timestamp <- substring(
+      gsub("^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)[ ]{0, }", "", s), 1, 19)
     timestamp <- strptime(timestamp, format = "%Y-%m-%d %H:%M:%S")
     nas <- dipsaus::deparse_svec( which(is.na(timestamp)), concatenate = FALSE)
 
@@ -1026,8 +1139,12 @@ session_log <- function(x, max_lines = 200, modules = NULL) {
     })
     logs_combined <- do.call("rbind", logs)
   }
-  return(structure(logs_combined$string[order(logs_combined$time, decreasing = FALSE)],
-                   class = "ravedash_session_log_string", max_lines = n, session_id = session$session_id))
+  return(structure(
+    logs_combined$string[order(logs_combined$time, decreasing = FALSE)],
+    class = "ravedash_session_log_string",
+    max_lines = n,
+    session_id = session$session_id
+  ))
 
 }
 
