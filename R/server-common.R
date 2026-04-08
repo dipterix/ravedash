@@ -32,13 +32,13 @@
 #' server_tools$simplify_view
 #'
 #' # 'RAVE' module server function
-#' server <- function(input, output, session, ...){
+#' server <- function(input, output, session, ...) {
 #'
 #'   pipeline_path <- "PATH to module pipeline"
 #'
 #'   module_server_common(
 #'     module_id = session$ns(NULL),
-#'     check_data_loaded = function(first_time){
+#'     check_data_loaded = function(first_time) {
 #'
 #'       re <- tryCatch({
 #'         # Try to read data from pipeline results
@@ -53,7 +53,7 @@
 #'
 #'         # Return TRUE indicating data has been loaded
 #'         TRUE
-#'       }, error = function(e){
+#'       }, error = function(e) {
 #'
 #'         # Fire event to remove footer message
 #'         ravedash::fire_rave_event('loader_message', NULL)
@@ -67,10 +67,16 @@
 #' }
 #'
 #' @export
-module_server_common <- function(module_id, check_data_loaded, ..., session = shiny::getDefaultReactiveDomain(), parse_env = NULL){
+module_server_common <- function(module_id, check_data_loaded, ..., session = shiny::getDefaultReactiveDomain(), parse_env = NULL) {
 
-  if(!length(session)){
-    if(shiny_is_running()){
+  # DIPSAUS DEBUG START
+  # module_id = "power_explorer"
+  # check_data_loaded <- function() {TRUE}
+  # session <- shiny::MockShinySession$new()$makeScope(module_id)
+  # parse_env <- NULL
+
+  if (!length(session)) {
+    if (shiny_is_running()) {
       logger("`module_server_common`: session must be provided in production!", level = "fatal")
       stop("`module_server_common`: session must be provided in production!")
     } else {
@@ -87,9 +93,13 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     options("shiny.useragg" = FALSE)
 
     root_session <- session$rootScope()
-    if(!identical(session$ns(NULL), module_id)){
-      logger("`module_server_common`: session scope is inconsistent (expected: {module_id}, actual: {session$ns(NULL)}).", level = "warning", use_glue = TRUE)
-      if(shiny_is_running()){
+    if (!identical(session$ns(NULL), module_id)) {
+      logger(
+        "`module_server_common`: session scope is inconsistent (expected: {module_id}, actual: {session$ns(NULL)}).",
+        level = "warning",
+        use_glue = TRUE
+      )
+      if (shiny_is_running()) {
         stop("Inconsistent `module_id`. see the warnings above.")
       }
     }
@@ -97,12 +107,9 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     output <- session$output
   }
 
-  # class(output) <- unique(c("ravedashoutput", class(output)))
-  # assign('output', output, envir = globalenv())
-
-  if(missing(check_data_loaded) || !is.function(check_data_loaded)) {
+  if (missing(check_data_loaded) || !is.function(check_data_loaded)) {
     logger("`module_server_common`: `check_data_loaded` is missing. Data loader is disabled", level = "debug")
-    check_data_loaded <- function(){ return(TRUE) }
+    check_data_loaded <- function() { return(TRUE) }
   }
 
 
@@ -133,9 +140,9 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     shiny_token = session$token
   ))
 
-  module_is_active <- function(id = module_id){
+  module_is_active <- function(id = module_id) {
     module <- get_active_module_info()
-    if(!is.list(module) || length(module$id) != 1){ return(FALSE) }
+    if (!is.list(module) || length(module$id) != 1) { return(FALSE) }
     identical(module$id, id)
   }
 
@@ -258,7 +265,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   shiny::bindEvent(
     observe({
       # get
-      if (!module_is_active()) { return() }
+      if (!isTRUE(module_is_active())) { return() }
       session$sendCustomMessage(
         type = "shidashi.drawer_toggle",
         message = list()
@@ -288,11 +295,11 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       })
 
       render_url <- function(url, keyword) {
-        if(!length(url)) { return() }
+        if (!length(url)) { return() }
 
         urls <- trimws(unlist(strsplit(url, "(^|[, \n\t]{1,})http")))
         urls <- urls[urls != ""]
-        if(!length(urls)) { return() }
+        if (!length(urls)) { return() }
 
         urls <- sprintf("http%s", urls)
 
@@ -350,14 +357,14 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
                 )),
 
                 local({
-                  if(length(desc$Citations)) {
+                  if (length(desc$Citations)) {
                     shiny::tagList(
                       shiny::tags$dt("Citation list: "),
                       shiny::tags$dd(
                         shiny::tags$ol(
                           lapply(desc$Citations, function(citation) {
                             header <- attr(.subset2(citation, 1), "header")
-                            if(length(header)) {
+                            if (length(header)) {
                               header <- shiny::tags$small(header)
                             } else {
                               header <- NULL
@@ -582,15 +589,15 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   run_analysis <- function() {
 
     module_id <- session$ns(NULL)
-    if(!length(module_id) || module_id == ""){ return() }
+    if (!length(module_id) || module_id == "") { return() }
     module <- shiny::isolate(get_rave_event("active_module"))
-    if(!(is.list(module) && isTRUE(module$id == module_id))) {
+    if (!(is.list(module) && isTRUE(module$id == module_id))) {
       logger("Module ID: expected {module_id} vs. actual {module$id}",
-                       level = "trace", use_glue = TRUE)
+             level = "trace", use_glue = TRUE)
       return()
     }
-    if(shiny::isolate(watch_loader_opened())) {
-      logger("Module loader has been opened, pause auto-calculation", level = "trace")
+    if (shiny::isolate(watch_loader_opened())) {
+      logger("Module loader is active, user needs to load data first.", level = "trace")
       return()
     }
 
@@ -613,17 +620,17 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   shiny::bindEvent(
     observe({
       watch_ids <- local_reactives$watch_ids
-      if(!length(watch_ids)){ return(NULL) }
+      if (!length(watch_ids)) { return(NULL) }
       inputs <- sensitive_input()
-      res <- structure(lapply(watch_ids, function(nm){
+      res <- structure(lapply(watch_ids, function(nm) {
         inputs[[nm]]
       }), names = watch_ids)
 
-      if(!is.null(local_data$previous_input)) {
-        changed <- lapply(watch_ids, function(nm){
+      if (!is.null(local_data$previous_input)) {
+        changed <- lapply(watch_ids, function(nm) {
           actual <- res[[nm]]
           expected <- local_data$previous_input[[nm]]
-          if(!identical(actual, expected)){
+          if (!identical(actual, expected)) {
             return(nm)
           }
           return()
@@ -635,11 +642,11 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
       local_data$previous_input <- res
 
-      if(length(changed)){
+      if (length(changed)) {
         changed <- changed[!changed %in% local_data$changed_inputs]
         local_data$changed_inputs <- c(local_data$changed_inputs, changed)
 
-        if(length(changed)){
+        if (length(changed)) {
           changed <- paste(changed, collapse = ", ")
           logger("Detected input change - [{changed}]",
                  level = "trace", use_glue = TRUE)
@@ -657,7 +664,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     local_reactives$watch_input_changed
   }), millis = 70, priority = 100)
 
-  run_analysis_onchange <- function(inputIds){
+  run_analysis_onchange <- function(inputIds) {
     logger("run_analysis_onchange", level = "trace")
     local_reactives$watch_ids <- inputIds
   }
@@ -667,15 +674,15 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
       v <- local_reactives$auto_recalculate
       vb <- local_reactives$auto_recalculate_back_up
-      if(v <= 0 && vb <= 0){ return() }
+      if (v <= 0 && vb <= 0) { return() }
 
-      if(v > 0){
+      if (v > 0) {
         module_id <- session$ns(NULL)
         module <- shiny::isolate(get_rave_event("active_module"))
-        if(
+        if (
           !length(module_id) || module_id == "" ||
           !is.list(module) || !isTRUE(module$id == module_id)
-        ){
+        ) {
           local_reactives$auto_recalculate_back_up <- local_reactives$auto_recalculate
           local_reactives$auto_recalculate <- 0L
           shidashi::show_notification(message = shiny::div(
@@ -778,7 +785,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   output[["_interactive_debugging_output_"]] <- shiny::renderPrint({
     text <- local_reactives$debug_outputs
-    if(!length(text)) {
+    if (!length(text)) {
       cat("(No output yet. Please enter R commands...)\n")
     } else {
       cat(text, sep = "\n")
@@ -791,12 +798,12 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       clear_notifications()
 
       command <- input[["_interactive_debugging_input_"]]
-      if(!length(command)) { return() }
+      if (!length(command)) { return() }
       command <- trimws(paste(command, collapse = "\n"))
-      if( command == "" ) { return() }
+      if ( command == "" ) { return() }
 
       auto_clear <- TRUE
-      if(startsWith(command, "@keep")) {
+      if (startsWith(command, "@keep")) {
         auto_clear <- FALSE
         command <- gsub("^@keep", "", command)
       }
@@ -819,7 +826,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
         cat(msg, sep = "\n")
       }, type = "output")
 
-      if(success && auto_clear) {
+      if (success && auto_clear) {
         shiny::updateTextAreaInput(
           session = session,
           inputId = "_interactive_debugging_input_",
@@ -831,7 +838,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
       shiny::isolate({
         text <- c(local_reactives$debug_outputs, command, outputs)
-        if(length(text) > 1000) {
+        if (length(text) > 1000) {
           text <- utils::tail(text, 1000)
         }
         local_reactives$debug_outputs <- text
@@ -844,7 +851,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   simplify_view <- function(action = c("toggle", "yes", "no")) {
     action <- match.arg(action)
-    if(action == "yes"){
+    if (action == "yes") {
       local_reactives$view_simplified <- FALSE
     } else if (action == "no") {
       local_reactives$view_simplified <- TRUE
@@ -853,18 +860,18 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
                               force = TRUE, global = FALSE, session = session)
   }
 
-  auto_recalculate <- function(flag){
+  auto_recalculate <- function(flag) {
 
     current <- isTRUE(shiny::isolate(local_reactives$auto_recalculate > 0))
-    if(missing(flag)){
+    if (missing(flag)) {
       return(current)
     }
-    if(length(flag) != 1){
+    if (length(flag) != 1) {
       logger("`auto_recalculate`: flag must be length of 1", level = "warning")
       return(current)
     }
-    if(is.logical(flag)){
-      if(flag){
+    if (is.logical(flag)) {
+      if (flag) {
         local_reactives$auto_recalculate <- Inf
         local_reactives$auto_recalculate_back_up <- 0L
       } else {
@@ -873,7 +880,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       }
       local_reactives$renew_auto_recalculate <- Sys.time()
     } else {
-      if(!is.numeric(flag)){
+      if (!is.numeric(flag)) {
         logger("`auto_recalculate`: flag must be logical or numeric", level = "warning")
         return(current)
       }
@@ -963,16 +970,16 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
 
   # Add-on, register preset components
-  if(is.environment(parse_env) || is.list(parse_env)){
+  if (is.environment(parse_env) || is.list(parse_env)) {
     local({
 
       nms <- names(parse_env)
-      for(nm in nms){
+      for (nm in nms) {
         item <- parse_env[[nm]]
-        if(inherits(item, "RAVEShinyComponentContainer")){
+        if (inherits(item, "RAVEShinyComponentContainer")) {
           logger("Found a RAVEShinyComponentContainer: ", nm, ". validating", level = "trace")
           item$validate_server(session)
-          lapply(names(item$components), function(nm){
+          lapply(names(item$components), function(nm) {
             logger("Registering component: ", nm, "...", level = "trace")
             item$components[[nm]]$server_func(input, output, session)
           })
@@ -988,9 +995,9 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 }
 
 #' @export
-print.ravedash_printable <- function(x, ...){
+print.ravedash_printable <- function(x, ...) {
   docs <- attr(x, "docs")
-  if(is.null(docs)){
+  if (is.null(docs)) {
     NextMethod("print")
   } else {
     cat(attr(x, "docs"), "\n", sep = "")
@@ -1024,8 +1031,8 @@ format_export_settings.pdf <- function(settings) {
                    family = settings$family, encoding = settings$encoding,
                    colormodel = settings$colormodel, pointsize = settings$pointsize)
 
-    if(is.function(pre_func)) {
-      if(length(formals(pre_func))) {
+    if (is.function(pre_func)) {
+      if (length(formals(pre_func))) {
         pre_func(con)
       } else {
         pre_func()
@@ -1034,8 +1041,8 @@ format_export_settings.pdf <- function(settings) {
   }
   settings$post <- function(con, data) {
     try(silent = TRUE, expr = {
-      if(is.function(post_func)) {
-        if(length(formals(post_func)) >= 2) {
+      if (is.function(post_func)) {
+        if (length(formals(post_func)) >= 2) {
           post_func(con, data)
         } else {
           post_func()
@@ -1062,8 +1069,8 @@ format_export_settings.csv <- function(settings) {
   pre_func <- settings$pre
   post_func <- settings$post
   settings$pre <- function(con) {
-    if(is.function(pre_func)) {
-      if(length(formals(pre_func))) {
+    if (is.function(pre_func)) {
+      if (length(formals(pre_func))) {
         pre_func(con)
       } else {
         pre_func()
@@ -1072,15 +1079,15 @@ format_export_settings.csv <- function(settings) {
   }
   settings$post <- function(con, data) {
     try(silent = TRUE, expr = {
-      if(is.function(post_func)) {
-        if(length(formals(post_func)) >= 2) {
+      if (is.function(post_func)) {
+        if (length(formals(post_func)) >= 2) {
           data <- post_func(con, data)
         } else {
           data <- post_func(data)
         }
       }
     })
-    if(inherits(data, "datatables")) {
+    if (inherits(data, "datatables")) {
       data <- data$x$data
     }
     data <- data[, trimws(names(data)) != "", drop = FALSE]
@@ -1102,8 +1109,8 @@ format_export_settings.3dviewer <- function(settings) {
   pre_func <- settings$pre
   post_func <- settings$post
   settings$pre <- function(con) {
-    if(is.function(pre_func)) {
-      if(length(formals(pre_func))) {
+    if (is.function(pre_func)) {
+      if (length(formals(pre_func))) {
         pre_func(con)
       } else {
         pre_func()
@@ -1117,14 +1124,14 @@ format_export_settings.3dviewer <- function(settings) {
       try(silent = TRUE, {
         dipsaus::close_alert2()
       })
-      if(file.exists(tf)) {
+      if (file.exists(tf)) {
         unlink(tf, recursive = TRUE)
       }
     }, add = TRUE, after = TRUE)
 
     try(silent = TRUE, expr = {
-      if(is.function(post_func)) {
-        if(length(formals(post_func)) >= 2) {
+      if (is.function(post_func)) {
+        if (length(formals(post_func)) >= 2) {
           data <- post_func(con, data)
         } else {
           data <- post_func(data)
@@ -1148,8 +1155,8 @@ format_export_settings.htmlwidget <- function(settings) {
   pre_func <- settings$pre
   post_func <- settings$post
   settings$pre <- function(con) {
-    if(is.function(pre_func)) {
-      if(length(formals(pre_func))) {
+    if (is.function(pre_func)) {
+      if (length(formals(pre_func))) {
         pre_func(con)
       } else {
         pre_func()
@@ -1163,14 +1170,14 @@ format_export_settings.htmlwidget <- function(settings) {
       try(silent = TRUE, {
         dipsaus::close_alert2()
       })
-      if(file.exists(tf)) {
+      if (file.exists(tf)) {
         unlink(tf, recursive = TRUE)
       }
     }, add = TRUE, after = TRUE)
 
     try(silent = TRUE, expr = {
-      if(is.function(post_func)) {
-        if(length(formals(post_func)) >= 2) {
+      if (is.function(post_func)) {
+        if (length(formals(post_func)) >= 2) {
           data <- post_func(con, data)
         } else {
           data <- post_func(data)
@@ -1195,8 +1202,8 @@ format_export_settings.custom <- function(settings) {
   pre_func <- settings$pre
   post_func <- settings$post
   settings$pre <- function(con) {
-    if(is.function(pre_func)) {
-      if(length(formals(pre_func))) {
+    if (is.function(pre_func)) {
+      if (length(formals(pre_func))) {
         pre_func(con)
       } else {
         pre_func()
@@ -1204,15 +1211,15 @@ format_export_settings.custom <- function(settings) {
     }
   }
   settings$post <- function(con, data) {
-    if(is.function(post_func)) {
-      if(length(formals(post_func)) >= 2) {
+    if (is.function(post_func)) {
+      if (length(formals(post_func)) >= 2) {
         data <- post_func(con, data)
       } else {
         data <- post_func(data)
       }
     }
 
-    if(
+    if (
       !file.exists(con) &&
       identical(settings$extension, "rds")
     ) {
@@ -1235,7 +1242,7 @@ format_export_settings.custom <- function(settings) {
 #' @export
 switch_module <- function(module_id, title,
                           session = shiny::getDefaultReactiveDomain()) {
-  if(is.null(session)) {
+  if (is.null(session)) {
     stop("`switch_module`: must runs in a shiny module")
   }
   query_str <- shiny::isolate(shiny::getQueryString(session = session))

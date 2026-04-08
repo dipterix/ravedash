@@ -15,14 +15,14 @@ presets_loader_3dviewer <- function(
   comp$no_save <- TRUE
 
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
     threeBrain::threejsBrainOutput(
       outputId = id,
       height = height,
       reportSize = FALSE
     )
   }
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
     tools <- register_rave_session(session)
     loader_project <- comp$get_dependent_component(loader_project_id)
     loader_subject <- comp$get_dependent_component(loader_subject_id)
@@ -38,12 +38,12 @@ presets_loader_3dviewer <- function(
     brain_proxy <- threeBrain::brain_proxy(outputId = "loader_3d_viewer", session = session)
 
     get_loading_table <- function() {
-      if(!loader_subject$sv$is_valid()){ return(NULL) }
+      if (!loader_subject$sv$is_valid()) { return(NULL) }
       subject <- get_subject()
 
       all_electrodes <- subject$electrodes
 
-      if(!length(all_electrodes)) { return(NULL) }
+      if (!length(all_electrodes)) { return(NULL) }
 
       subject_code <- subject$subject_code
       project_name <- subject$project_name
@@ -79,7 +79,7 @@ presets_loader_3dviewer <- function(
     shiny::bindEvent(
       observe({
         tbl <- electrode_table()
-        if(!is.data.frame(tbl)) { return() }
+        if (!is.data.frame(tbl)) { return() }
         brain_proxy$set_electrode_data(data = tbl, palettes = list(Value = c("pink", "orange", "gray80")))
       }),
       local_reactives$brain_flag,
@@ -89,10 +89,10 @@ presets_loader_3dviewer <- function(
 
     shiny::bindEvent(
       observe({
-        theme <- shidashi::get_theme(tools$theme_event)
+        theme <- shidashi::get_theme(session = session)
         brain_proxy$set_background(theme$background)
       }),
-      shidashi::get_theme(tools$theme_event),
+      shidashi::get_theme(session = session),
       ignoreNULL = TRUE, ignoreInit = TRUE
     )
 
@@ -106,23 +106,23 @@ presets_loader_3dviewer <- function(
 
       brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
 
-      if(is.null(brain)) {
+      if (is.null(brain)) {
         local_reactives$brain_flag <- NULL
         stop("No brain instance")
       }
 
       tbl <- get_loading_table()
-      if(is.data.frame(tbl) && nrow(tbl)) {
+      if (is.data.frame(tbl) && nrow(tbl)) {
         brain$set_electrode_values(tbl)
       }
 
-      theme <- shidashi::get_theme(tools$theme_event)
+      theme <- shidashi::get_theme(session = session)
 
       logger("Re-generate loader's viewer", level = 'trace')
 
       local_reactives$brain_flag <- Sys.time()
 
-      if( new_brain ) {
+      if ( new_brain ) {
         camera_position <- c(0, 0, 500)
         camera_up <- c(0, 1, 0)
 
@@ -142,7 +142,7 @@ presets_loader_3dviewer <- function(
           custom_javascript = sprintf(
             '
                   // Remove the focus box
-                  if( canvas.focus_box ) {
+                  if ( canvas.focus_box ) {
                     canvas.focus_box.visible = false;
                   }
 
@@ -152,7 +152,7 @@ presets_loader_3dviewer <- function(
                   canvas.mainCamera.updateProjectionMatrix();
 
                   // Let shiny know the viewer is ready
-                  if( window.Shiny ) {
+                  if ( window.Shiny ) {
                     window.Shiny.setInputValue("%s", "%f");
                   }
 
@@ -225,14 +225,14 @@ presets_loader_3dviewer2 <- function(
   comp$depends <- c(loader_project_id, loader_subject_id, loader_electrodes_id)
   comp$no_save <- TRUE
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
     threeBrain::threejsBrainOutput(
       outputId = id,
       height = height,
       reportSize = FALSE
     )
   }
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
     tools <- register_rave_session(session)
     loader_project <- comp$get_dependent_component(loader_project_id)
     loader_subject <- comp$get_dependent_component(loader_subject_id)
@@ -247,12 +247,12 @@ presets_loader_3dviewer2 <- function(
     brain_proxy <- threeBrain::brain_proxy(outputId = "loader_3d_viewer", session = session)
 
     get_loading_table <- function() {
-      if(!loader_subject$sv$is_valid()){ return(NULL) }
+      if (!loader_subject$sv$is_valid()) { return(NULL) }
       subject <- get_subject()
 
       all_electrodes <- subject$electrodes
 
-      if(!length(all_electrodes)) { return(NULL) }
+      if (!length(all_electrodes)) { return(NULL) }
 
       subject_code <- subject$subject_code
       project_name <- subject$project_name
@@ -287,8 +287,8 @@ presets_loader_3dviewer2 <- function(
     shiny::bindEvent(
       observe({
         tbl <- electrode_table()
-        if(!is.data.frame(tbl)) { return() }
-        if(!length(tbl$Value)) { return() }
+        if (!is.data.frame(tbl)) { return() }
+        if (!length(tbl$Value)) { return() }
         # values <- unique(tbl$Value)
         # if("Loading" %in% c(values)) {
         #   palettes <- list(Value = dipsaus::col2hexStr(c("orange", "gray80")))
@@ -305,10 +305,10 @@ presets_loader_3dviewer2 <- function(
 
     shiny::bindEvent(
       observe({
-        theme <- shidashi::get_theme(tools$theme_event)
+        theme <- shidashi::get_theme(session = session)
         brain_proxy$set_background(theme$background)
       }),
-      shidashi::get_theme(tools$theme_event),
+      shidashi::get_theme(session = session),
       ignoreNULL = TRUE, ignoreInit = TRUE
     )
 
@@ -321,23 +321,23 @@ presets_loader_3dviewer2 <- function(
 
       brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
 
-      if(is.null(brain)) {
+      if (is.null(brain)) {
         local_reactives$brain_flag <- NULL
         stop("No brain instance")
       }
 
       tbl <- get_loading_table()
-      if(is.data.frame(tbl) && nrow(tbl)) {
+      if (is.data.frame(tbl) && nrow(tbl)) {
         brain$set_electrode_values(tbl)
       }
 
-      theme <- shidashi::get_theme(tools$theme_event)
+      theme <- shidashi::get_theme(session = session)
 
       logger("Re-generate loader's viewer", level = 'trace')
 
       local_reactives$brain_flag <- Sys.time()
 
-      if( new_brain ) {
+      if ( new_brain ) {
         camera_position <- c(0, 0, 500)
         camera_up <- c(0, 1, 0)
 
@@ -357,7 +357,7 @@ presets_loader_3dviewer2 <- function(
           custom_javascript = sprintf(
             '
                   // Remove the focus box
-                  if( canvas.focus_box ) {
+                  if ( canvas.focus_box ) {
                     canvas.focus_box.visible = false;
                   }
 
@@ -367,7 +367,7 @@ presets_loader_3dviewer2 <- function(
                   canvas.mainCamera.updateProjectionMatrix();
 
                   // Let shiny know the viewer is ready
-                  if( window.Shiny ) {
+                  if ( window.Shiny ) {
                     window.Shiny.setInputValue("%s", "%f");
                   }
 

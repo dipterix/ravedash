@@ -61,7 +61,7 @@ DEFAULT_PALETTES <- local({
   set <- function(type = c("line", "heatmap"), name, col) {
     stopifnot("length(col) must >= 3 to set a palette" = length(col) >= 3)
     type <- match.arg(type)
-    if(type == "line") {
+    if (type == "line") {
       LINE[[ name ]] <<- col
     } else {
       HEATMAP[[ name ]] <<- col
@@ -254,7 +254,7 @@ get_function_from <- function(name, package) {
 #' finished_text()
 #'
 #' @export
-be_patient_text <- function(candidates){
+be_patient_text <- function(candidates) {
   if (missing(candidates)) {
     sp <- c(
       "Please be patient, running in progress...",

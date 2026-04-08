@@ -5,11 +5,11 @@
 presets_loader_project <- function(
   id = "loader_project_name", varname = "project_name",
   label = "Project"
-){
+) {
 
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
     choices <- ravecore::get_projects(refresh = FALSE)
     shidashi::register_input(
       shiny::selectInput(
@@ -24,12 +24,12 @@ presets_loader_project <- function(
       description = "RAVE project name to load data from."
     )
   }
-  comp$add_rule(function(value){
-    if(length(value) != 1 || is.na(value)){
+  comp$add_rule(function(value) {
+    if (length(value) != 1 || is.na(value)) {
       return("Missing project name. Please choose one.")
     }
     project <- ravecore::as_rave_project(value, strict = FALSE)
-    if(!dir.exists(project$path)){
+    if (!dir.exists(project$path)) {
       return(ravepipeline::glue("Cannot find path to project `{value}`"))
     }
     return(NULL)

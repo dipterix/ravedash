@@ -1,4 +1,4 @@
-session_root <- function(ensure = FALSE){
+session_root <- function(ensure = FALSE) {
   path <- ravepipeline::raveio_getopt("ravedash_session_root", default = NA)
   if (length(path) != 1 || is.na(path) || !is.character(path)) {
     path <- ravepipeline::raveio_getopt("tensor_temp_path", default = NA)
@@ -7,13 +7,13 @@ session_root <- function(ensure = FALSE){
     }
   }
 
-  if ( ensure && !dir.exists(path) ){
+  if ( ensure && !dir.exists(path) ) {
     ravepipeline::dir_create2(path)
   }
   normalizePath(path, mustWork = FALSE)
 }
 
-ensure_template <- function(path, use_cache = TRUE){
+ensure_template <- function(path, use_cache = TRUE) {
 
 
   template_path <- file.path(R_user_dir("raveio", 'data'), 'rave-pipelines')
@@ -24,7 +24,7 @@ ensure_template <- function(path, use_cache = TRUE){
 
   fs <- list.files(template_path, full.names = TRUE, recursive = FALSE)
   ravepipeline::dir_create2(path)
-  for(f in fs){
+  for(f in fs) {
     file.copy(f, to = path, overwrite = TRUE, copy.date = TRUE, recursive = TRUE)
   }
   # remove <path>/modules
@@ -111,7 +111,7 @@ resolve_app_root <- function(app_root, ensure = FALSE) {
 #'
 #' @examples
 #'
-#' if (interactive()){
+#' if (interactive()) {
 #'
 #'   sess <- new_session()
 #'   sess$launch_session()
@@ -140,11 +140,11 @@ new_session <- function(update = FALSE, app_root = NULL) {
   src_root <- R_user_dir("raveio", 'data')
   src_pipeline <- file.path(R_user_dir("raveio", 'data'), "pipelines")
 
-  if (!dir.exists(src_pipeline)){
+  if (!dir.exists(src_pipeline)) {
     stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
   }
   pipelines <- ravepipeline::pipeline_list(root_path = src_pipeline)
-  if (!length(pipelines)){
+  if (!length(pipelines)) {
     stop("No pipeline found. This is often caused by incomplete installation. Please make sure your RAVE installation is complete by opening R and follow the steps below:\n  * Check if the packages are up-to-date by the following command, and update RAVE if needed. \n    ravemanager::version_info()\n  * If everything is up-to-date, run\n    options(timeout = 3600)\n    ravemanager::finalize_installation()")
   }
 
@@ -158,7 +158,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
 
   pipeline_path <- file.path(app_path, "_pipelines")
 
-  for(pipeline in pipelines){
+  for(pipeline in pipelines) {
     p <- ravepipeline::pipeline_find(pipeline)
     ravepipeline::pipeline_fork(
       src = p, dest = file.path(pipeline_path, pipeline)
@@ -169,7 +169,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
   module_root_path <- file.path(R_user_dir("raveio", 'data'), "shidashi_modules")
   source_path <- file.path(module_root_path, "modules")
   target_path <- file.path(app_path, "modules")
-  if (file.exists(target_path)){
+  if (file.exists(target_path)) {
     unlink(target_path, recursive = TRUE)
   }
   file.copy(
@@ -178,7 +178,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
   )
 
   module_conf <- ravepipeline::load_yaml(file.path(module_root_path, "modules.yaml"))
-  groups <- lapply(module_conf$modules, function(item){
+  groups <- lapply(module_conf$modules, function(item) {
     if (length(item$group) == 1) {
       order <- c(item$order, 99999L)
       order <- min(order, na.rm = TRUE)
@@ -190,7 +190,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
   })
   groups <- do.call("rbind", dipsaus::drop_nulls(groups))
   if (length(groups)) {
-    groups <- lapply(split(groups, groups$group), function(item){
+    groups <- lapply(split(groups, groups$group), function(item) {
       list(
         name = item$group[[1]],
         order = min(item$order),
@@ -352,8 +352,8 @@ launch_session <- function(
       options$page_title <- c(options$page_title, options$page_title)
     }
     site_config <- c(site_config, c(
-      'page_title <- function(complete = TRUE){',
-      '  if (complete){',
+      'page_title <- function(complete = TRUE) {',
+      '  if (complete) {',
       sprintf('    re <- "%s"', options$page_title[[1]]),
       '  } else {',
       sprintf('    re <- "%s"', options$page_title[[2]]),
@@ -722,7 +722,7 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
 }
 
 #' @export
-`print.rave-dash-session` <- function(x, ...){
+`print.rave-dash-session` <- function(x, ...) {
   vname <- substitute(x)
   session_id <- x$session_id
   if (is.list(x) && length(x$app_path) == 1) {
@@ -739,7 +739,7 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
   timestamp <- strftime(timestamp, usetz = FALSE)
   timestamp <- paste(timestamp, tz)
 
-  if (dir.exists(session_path)){
+  if (dir.exists(session_path)) {
     cat("  Path:", session_path, "\n")
   } else {
     cat("  Path:", session_path, "(invalid path)\n")
@@ -754,15 +754,15 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
 
 #' @rdname rave-session
 #' @export
-remove_session <- function(x){
+remove_session <- function(x) {
   UseMethod("remove_session")
 }
 
 #' @export
-remove_session.default <- function(x){
-  if (grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x)){
+remove_session.default <- function(x) {
+  if (grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x)) {
     session_path <- file.path(session_root(), x)
-    if (dir.exists(session_path)){
+    if (dir.exists(session_path)) {
       unlink(session_path, recursive = TRUE)
       return(invisible(TRUE))
     }
@@ -772,9 +772,9 @@ remove_session.default <- function(x){
 
 #' @export
 `remove_session.rave-dash-session` <- function(x) {
-  if (grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x$session_id)){
+  if (grepl("^session-[0-9]{6}-[0-9]{6}-[^\\-]+-[A-Z0-9]{4}$", x$session_id)) {
     session_path <- file.path(session_root(), x$session_id)
-    if (dir.exists(session_path)){
+    if (dir.exists(session_path)) {
       unlink(session_path, recursive = TRUE)
       return(invisible(TRUE))
     }
@@ -794,7 +794,7 @@ remove_all_sessions <- function() {
 
 #' @rdname rave-session
 #' @export
-list_session <- function(path = session_root(), order = c("none", "ascend", "descend")){
+list_session <- function(path = session_root(), order = c("none", "ascend", "descend")) {
   order <- match.arg(order)
 
   path <- resolve_app_root(path)
@@ -863,7 +863,7 @@ start_session <- function(
               session <- new_session(app_root = app_root)
             }
           }
-        }, error = function(e){ NULL })
+        }, error = function(e) { NULL })
       }
 
     }

@@ -33,7 +33,7 @@ scroll the input and output separately.}
 }
 \description{
 Provides simple layout, with inputs on the left, and outputs
-on the right. Only useful in \code{'shidashi'} framework.
+on the right. Only useful in \pkg{'shidashi'} framework.
 }
 \examples{
 

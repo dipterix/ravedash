@@ -91,7 +91,7 @@
 #'
 #'   shiny::bindEvent(
 #'     shiny::observe({
-#'       if(watch_loader_opened()){
+#'       if (watch_loader_opened()) {
 #'         close_loader()
 #'       } else {
 #'         open_loader()
@@ -112,7 +112,7 @@
 #'
 #' }
 #'
-#' if(interactive()){
+#' if(interactive()) {
 #'   shinyApp(ui, server)
 #' }
 #'
@@ -354,22 +354,20 @@ get_session_by_rave_id <- function(rave_id) {
 
 #' @rdname rave-runtime-events
 #' @export
-get_rave_event <- function(key, session = shiny::getDefaultReactiveDomain()){
+get_rave_event <- function(key, session = shiny::getDefaultReactiveDomain()) {
   force(key)
-  tool <- register_rave_session(session)
-
-  return(tool$rave_event[[key]])
+  return(shidashi::get_event(key, session = session))
 }
 
 #' @rdname rave-runtime-events
 #' @export
-open_loader <- function(session = shiny::getDefaultReactiveDomain()){
+open_loader <- function(session = shiny::getDefaultReactiveDomain()) {
   fire_rave_event('open_loader', Sys.time())
 }
 
 #' @rdname rave-runtime-events
 #' @export
-close_loader <- function(session = shiny::getDefaultReactiveDomain()){
+close_loader <- function(session = shiny::getDefaultReactiveDomain()) {
   fire_rave_event('open_loader', NULL)
 }
 
@@ -390,7 +388,7 @@ watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()){
   # 1. load from pipeline settings only
   # 2. combinations of subject default and pipeline settings
 
-  if(length(res) && is.list(res)){
+  if (length(res) && is.list(res)) {
     return(structure(
       TRUE,
       timestamp = res$timestamp,
@@ -410,7 +408,7 @@ current_shiny_theme <- function(
 ) {
   if (shiny_is_running()) {
     tool <- register_rave_session(session = session)
-    return(shidashi::get_theme(tool$theme_event, session = session))
+    return(shidashi::get_theme(session = session))
   } else {
     if (missing(default)) {
       default <- list(
@@ -450,12 +448,12 @@ current_shiny_theme <- function(
 #' ravedash_footer("my_module")
 #'
 #' # server code to set message
-#' server <- function(input, output, session){
+#' server <- function(input, output, session) {
 #'
-#'   module_server_common(input, output, session, function(){
+#'   module_server_common(input, output, session, function() {
 #'
 #'     # check if data has been loaded
-#'     if(data_loaded) {
+#'     if (data_loaded) {
 #'
 #'       # if yes, then set the footer message
 #'       fire_rave_event("loader_message",
@@ -534,7 +532,7 @@ ravedash_footer <- function(
         #   shiny_icons$sync,
         #   "Auto re-calculation: ", shiny::textOutput(
         #     outputId = ns("__recalculation_message__"),
-        #     container = function(...){
+        #     container = function(...) {
         #       shiny::span(style = "color: #007bff", ...)
         #     })
         # ),
@@ -687,7 +685,7 @@ get_active_pipeline <- function(
     session = shiny::getDefaultReactiveDomain()) {
 
   module_info <- get_active_module_info(session = session)
-  if(!is.list(module_info) || is.null(module_info$id)) {
+  if (!is.list(module_info) || is.null(module_info$id)) {
     return(NULL)
   }
 
@@ -709,7 +707,7 @@ get_active_pipeline <- function(
 run_analysis_button <- function(
     label = "Run analysis (Ctrl+Enter)",
     icon = NULL, width = NULL, type = "primary",
-    btn_type = c("button", "link"), class = "", style = "", ...){
+    btn_type = c("button", "link"), class = "", style = "", ...) {
   if (length(type) > 1) {
     type <- type[[1]]
   }
@@ -721,7 +719,7 @@ run_analysis_button <- function(
 
   btn_type <- match.arg(btn_type)
 
-  if(btn_type == "button") {
+  if (btn_type == "button") {
     stopifnot(
       "type must be in 'default', 'primary', 'info', 'success', 'warning', 'danger'" =
         length(type) == 0 ||

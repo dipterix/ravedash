@@ -1,11 +1,11 @@
 
 
 
-safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "error"){
+safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "error") {
 
   # rlang::try_fetch({
   #   force(expr)
-  # }, error = function(e){
+  # }, error = function(e) {
   #   expr_str <- deparse(expr_)
   #   e <- rlang::error_cnd(
   #     class = c("rave_eval_error", "rave_error"),
@@ -19,7 +19,7 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
   #     ),
   #     parent = e
   #   )
-  #   if(is.function(onFailure)){
+  #   if (is.function(onFailure)) {
   #     onFailure(e)
   #   }
   #
@@ -27,7 +27,7 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
   #   # logger(paste(c("Wrapped expressions:", deparse(expr_)), collapse = "\n"),
   #   #        .sep = "\n", level = log_error, use_glue = FALSE)
   #
-  #   if(shiny_is_running()) {
+  #   if (shiny_is_running()) {
   #     try({
   #       ravedash::error_notification(
   #         cond = e, title = "Coding Error", type = "danger",
@@ -48,8 +48,8 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
   tryCatch({
     # force(expr)
     eval(expr_, envir = parent_frame)
-  }, error = function(e){
-    if(is.function(onFailure)){
+  }, error = function(e) {
+    if (is.function(onFailure)) {
       try({ onFailure(e) })
     }
 
@@ -69,14 +69,14 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
 
 observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...,
                     error_wrapper = c("none", "notification", "alert"),
-                    watch_data = getOption("ravedash.auto_watch_data", FALSE)){
+                    watch_data = getOption("ravedash.auto_watch_data", FALSE)) {
   error_wrapper <- match.arg(error_wrapper)
-  if(!quoted){
+  if (!quoted) {
     x <- substitute(x)
   }
-  if(watch_data) {
+  if (watch_data) {
     x <- bquote({
-      if(!shiny::isolate(asNamespace('ravedash')$watch_data_loaded())) {
+      if (!shiny::isolate(asNamespace('ravedash')$watch_data_loaded())) {
         asNamespace('ravedash')$logger("Data not loaded...")
         return(invisible())
       }
@@ -109,10 +109,10 @@ observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL,
   )
 
 
-  if(!is.environment(env)){
+  if (!is.environment(env)) {
     env <- parent.frame()
   }
-  if(is.null(domain)){
+  if (is.null(domain)) {
     domain <- shiny::getDefaultReactiveDomain()
   }
   shiny::observe(
@@ -173,12 +173,12 @@ safe_observe <- observe
 #'
 #' ui <- function(req) {
 #'   query_string <- req$QUERY_STRING
-#'   if(length(query_string) != 1) {
+#'   if (length(query_string) != 1) {
 #'     query_string <- "/"
 #'   }
 #'   query_result <- httr::parse_url(query_string)
 #'
-#'   if(!identical(toupper(query_result$query$standalone), "TRUE")) {
+#'   if (!identical(toupper(query_result$query$standalone), "TRUE")) {
 #'     # normal page
 #'     basicPage(
 #'       actionButton("btn", "Click Me"),
@@ -197,7 +197,7 @@ safe_observe <- observe
 #'       query_string <- session$clientData$url_search
 #'       query_result <- httr::parse_url(query_string)
 #'
-#'       if(!identical(toupper(query_result$query$standalone), "TRUE")) {
+#'       if (!identical(toupper(query_result$query$standalone), "TRUE")) {
 #'         # normal page
 #'         register_rave_session(session = session, .rave_id = rave_id)
 #'         output$plot <- renderPlot({
@@ -233,14 +233,14 @@ standalone_viewer <- function(
 
   # query_string <- "/?type=widget&output_id=plot_overall&rave_id=Pnd8MuxNVsZGcbrRWn8G&module=standalone_viewer"
 
-  if(length(outputId) != 1 || is.na(outputId) || !nchar(outputId)) {
+  if (length(outputId) != 1 || is.na(outputId) || !nchar(outputId)) {
     stop("The output ID is blank or invalid.")
   }
 
   # get module session
-  if(missing(module_session) || !is.environment(module_session)) {
+  if (missing(module_session) || !is.environment(module_session)) {
     module_session <- get_session_by_rave_id(rave_id)
-    if(is.null(module_session)) {
+    if (is.null(module_session)) {
       stop("There is no shiny-session with provided `rave_id`. Please specify a valid `module_session` or `rave_id`")
     }
   }
@@ -250,7 +250,7 @@ standalone_viewer <- function(
 
   # get module information
   module_info <- get_active_module_info(session = module_session)
-  if(!is.null(module_info)) {
+  if (!is.null(module_info)) {
     module_id <- module_info$id
   }
 
@@ -262,7 +262,7 @@ standalone_viewer <- function(
   ns2 <- shiny::NS(module_id)
   render_function <- module_session$getOutput(ns2(outputId))
 
-  if(!is.function(render_function)) {
+  if (!is.function(render_function)) {
     stop("Cannot find render function for output: ", outputId)
   }
 
@@ -300,10 +300,10 @@ standalone_viewer <- function(
       inputs <- shiny::reactiveValuesToList(root_session$input)
       nms <- names(inputs)
       nms <- nms[startsWith(nms, ns2("")) & !startsWith(nms, "@")]
-      if(length(nms)) {
+      if (length(nms)) {
         for(nm in nms) {
           signature <- dipsaus::digest(inputs[[nm]])
-          if(!identical(signature, local_data[[nm]])) {
+          if (!identical(signature, local_data[[nm]])) {
             dipsaus::set_shiny_input(
               session = module_session,
               inputId = nm,

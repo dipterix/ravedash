@@ -253,7 +253,7 @@ with_log_modal <- function(
     session = shiny::getDefaultReactiveDomain(), ...) {
 
   ns <- session$ns
-  if(!quoted) {
+  if (!quoted) {
     expr <- substitute(expr)
   }
 
@@ -344,7 +344,7 @@ with_log_modal <- function(
 
     logger("Job done: [{ title }]", level = "trace", use_glue = TRUE)
 
-    if(is.function(callback)) {
+    if (is.function(callback)) {
       callback( result )
     }
   }

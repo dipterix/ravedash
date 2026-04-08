@@ -43,7 +43,7 @@ simple_layout <- function(
 ) {
 
   input_width <- as.integer(input_width)
-  if(input_width < 1 || input_width > 11){
+  if (input_width < 1 || input_width > 11) {
     stop("`input_width` must be an integer between 2 to 11")
   }
   container_class <- if (container_fixed) {
@@ -123,7 +123,7 @@ simple_layout <- function(
 #' )
 #'
 #' @export
-group_box <- function(title, ..., class = NULL){
+group_box <- function(title, ..., class = NULL) {
   class <- shidashi::combine_html_class(class, "group-input-box")
   shiny::div(class = class, ..., title = title)
 }

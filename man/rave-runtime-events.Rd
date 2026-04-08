@@ -165,7 +165,7 @@ server <- function(input, output, session) {
 
   shiny::bindEvent(
     shiny::observe({
-      cat("Loader is", ifelse(watch_loader_opened(), "opened", "closed"), "\n")
+      cat("Loader ", ifelse(watch_loader_opened(), "opened", "closed"), "\n")
     }),
     watch_loader_opened(),
     ignoreNULL = TRUE

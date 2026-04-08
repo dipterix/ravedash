@@ -9,7 +9,7 @@ plotting_to_file <- function() {
     inherits = FALSE
   )
 
-  if(length(i) < grDevices::dev.cur()){
+  if (length(i) < grDevices::dev.cur()) {
     return (FALSE)
   }
 
@@ -36,7 +36,7 @@ round_to_nearest <- function(x, val = 10) {
 
 ..get_nearest_i <- function(from,to, lower_only=FALSE) {
 
-  if(lower_only) {
+  if (lower_only) {
     res <- sapply(from, function(.x) {
       to2 = to[to<= .x]
       which.min(abs(.x-to2))

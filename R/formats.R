@@ -14,7 +14,7 @@ get_pretty_digits <- function(x, allow_negative_round=FALSE) {
 
   dig = 0
 
-  if(allow_negative_round && max_x > 100 ) {
+  if (allow_negative_round && max_x > 100 ) {
     dig = -1
   } else if(max_x < 1) {
     dig = abs(floor(log10(max_x)))

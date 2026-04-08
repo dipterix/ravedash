@@ -9,8 +9,8 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
   li <- NULL
   dep <- NULL
 
-  ensure_li <- function(){
-    if(is.null(li)){
+  ensure_li <- function() {
+    if (is.null(li)) {
       li <<- list(
         brain = "brain",
         bars = "bars",
@@ -54,7 +54,7 @@ shiny_icons <- structure(list(), class = "ravedash_shiny_icons")
         wrench = "wrench"
       )
     }
-    if(is.null(dep)) {
+    if (is.null(dep)) {
       dep <<- htmltools::htmlDependency(
         name = "fontawesome-free-ravedash",
         version = "5.15.4",
