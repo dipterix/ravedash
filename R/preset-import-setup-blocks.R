@@ -12,7 +12,7 @@ presets_import_setup_blocks <- function(
   comp$no_save <- c("", "msg", "actions", "format_details", "action_dbl_confirm",
                     "block_preview", "")
 
-  all_formats <- ravecore::IMPORT_FORMATS[c(1,2,3,4,7)]
+  all_formats <- ravecore::IMPORT_FORMATS[c(1, 2, 3, 4, 7)]
   regexps <- c(
     "\\.(h5|mat)$",
     "\\.(h5|mat)$",
@@ -31,7 +31,7 @@ presets_import_setup_blocks <- function(
       ),
       class_body = "",
       body_main = shiny::div(
-        class = 'padding-10',
+        class = "padding-10",
         shiny::fluidRow(
           shiny::column(
             width = 6L,
@@ -324,9 +324,9 @@ presets_import_setup_blocks <- function(
       fmt_idx <- info$format
       if (length(fmt_idx) != 1 || !fmt_idx %in% seq_along(all_formats)) { return() }
 
-      switch (
+      switch(
         as.character(fmt_idx),
-        '1' = {
+        "1" = {
           paste0("In each block folder, one Matlab/HDF5 file stands for one electrode. ",
                  "File name should match with format XXX1.h5 or xxx2.mat. ",
                  "Each file only contains a one-dimensional vector. ",
@@ -348,7 +348,7 @@ presets_import_setup_blocks <- function(
           #   )
           # )
         },
-        '2' = {
+        "2" = {
           paste0("A single Matlab/HDF5 file containing all electrode information. ",
                  "Data must be a matrix. One of the dimension must be electrodes, ",
                  "the other dimension must be time points. ",
@@ -369,7 +369,7 @@ presets_import_setup_blocks <- function(
           #     )
           #   ))
         },
-        '5' = {
+        "5" = {
           paste0("In each block folder, one Neuro-Event file [.nev] and corresponding NSX files [.ns1, .ns2, ..., .ns6] containing electrode data.")
         },
         {
@@ -413,7 +413,7 @@ presets_import_setup_blocks <- function(
 
       regexp <- regexps[[fmt_idx]]
 
-      for(block in blocks) {
+      for (block in blocks) {
         fs <- list.files(file.path(preproc$raw_path, block), pattern = regexp, recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
         if (length(fs) > max_components) {
           fs <- c(fs[seq_len(max_components - 1)], "...")

@@ -103,7 +103,7 @@ presets_loader_3dviewer <- function(
     gen_brain <- function(new_brain) {
       subject <- get_subject()
 
-      brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
+      brain <- ravecore::rave_brain(subject, surfaces = "pial", overlays = NULL, annotations = NULL)
 
       if (is.null(brain)) {
         local_reactives$brain_flag <- NULL
@@ -117,7 +117,7 @@ presets_loader_3dviewer <- function(
 
       theme <- shidashi::get_theme(session = session)
 
-      logger("Re-generate loader's viewer", level = 'trace')
+      logger("Re-generate loader's viewer", level = "trace")
 
       local_reactives$brain_flag <- Sys.time()
 
@@ -317,7 +317,7 @@ presets_loader_3dviewer2 <- function(
     gen_brain <- function(new_brain) {
       subject <- get_subject()
 
-      brain <- ravecore::rave_brain(subject, surfaces = 'pial', overlays = NULL, annotations = NULL)
+      brain <- ravecore::rave_brain(subject, surfaces = "pial", overlays = NULL, annotations = NULL)
 
       if (is.null(brain)) {
         local_reactives$brain_flag <- NULL
@@ -331,7 +331,7 @@ presets_loader_3dviewer2 <- function(
 
       theme <- shidashi::get_theme(session = session)
 
-      logger("Re-generate loader's viewer", level = 'trace')
+      logger("Re-generate loader's viewer", level = "trace")
 
       local_reactives$brain_flag <- Sys.time()
 

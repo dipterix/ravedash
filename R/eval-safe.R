@@ -39,7 +39,7 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
   expr_ <- substitute(expr)
 
   parent_frame <- parent.frame()
-  current_env <- getOption('rlang_trace_top_env', NULL)
+  current_env <- getOption("rlang_trace_top_env", NULL)
   options(rlang_trace_top_env = parent_frame)
   on.exit({
     options(rlang_trace_top_env = current_env)

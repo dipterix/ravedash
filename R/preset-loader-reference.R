@@ -21,7 +21,7 @@ presets_loader_reference <- function(
           shiny::selectInput(
             inputId = id,
             label = label,
-            choices = '',
+            choices = "",
             selected = NULL,
             multiple = FALSE
           ),

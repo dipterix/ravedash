@@ -15,7 +15,7 @@ RAVEShinyComponent <- R6::R6Class(
       depends <- self$container$components[self$depends]
 
       deps_has_validator <- FALSE
-      for(dep in depends) {
+      for (dep in depends) {
         if (!inherits(dep, "RAVEShinyComponent")) {
           next
         }
@@ -28,7 +28,7 @@ RAVEShinyComponent <- R6::R6Class(
       }
       sv <- shinyvalidate::InputValidator$new(session = session)
       if (deps_has_validator || self$validators$size()) {
-        for(dep in depends) {
+        for (dep in depends) {
           if (!is.null(dep$sv)) {
             sv$add_validator(validator = dep$sv)
           }
@@ -90,7 +90,7 @@ RAVEShinyComponent <- R6::R6Class(
         stop("`get_repository` requires the preset to be registered to a component container.")
       }
       pipeline_repository <- self$repository_name
-      if (!self$container$data[['@has']](pipeline_repository)) {
+      if (!self$container$data[["@has"]](pipeline_repository)) {
         repository <- ravepipeline::pipeline_read(
           var_names = pipeline_repository,
           pipe_dir = self$container$pipeline_path
@@ -242,7 +242,7 @@ RAVEShinyComponent <- R6::R6Class(
       if (!is.environment(session)) {
         stop("`collect_settings` must be called within shiny reactive context!")
       }
-      if (!inherits(map, 'fastmap2')) {
+      if (!inherits(map, "fastmap2")) {
         map <- dipsaus::fastmap2()
       }
       if (isTRUE(self$no_save)) {
@@ -276,9 +276,9 @@ RAVEShinyComponent <- R6::R6Class(
       }
 
       vnames <- sprintf("%s__%s", self$varname, sub_ids)
-      vnames[sub_ids == ''] <- self$varname
+      vnames[sub_ids == ""] <- self$varname
       re <- structure(shiny::isolate(lapply(sub_ids, function(id) {
-        if (id == '') {
+        if (id == "") {
           return(session$input[[self$id]])
         } else {
           return(session$input[[self$get_sub_element_id(id, with_namespace = FALSE)]])
@@ -302,7 +302,7 @@ RAVEShinyComponent <- R6::R6Class(
 
     ui_func = function(ui) {
       if (!missing(ui)) {
-        if (!is.function(ui) || !all(c('id', 'value', 'depends') %in% names(formals(ui)))) {
+        if (!is.function(ui) || !all(c("id", "value", "depends") %in% names(formals(ui)))) {
           stop("`ui` must be a function that takes three parameters: `id`, `value`, and `depends`")
         }
         private$.ui_func <- function() {
@@ -317,7 +317,7 @@ RAVEShinyComponent <- R6::R6Class(
     },
     server_func = function(server) {
       if (!missing(server)) {
-        if (!is.function(server) || !all(c('input', 'output', 'session') %in% names(formals(server)))) {
+        if (!is.function(server) || !all(c("input", "output", "session") %in% names(formals(server)))) {
           stop("`server` must be a function that takes three parameters: `input`, `output`, and `session`")
         }
         private$.server_func <- server

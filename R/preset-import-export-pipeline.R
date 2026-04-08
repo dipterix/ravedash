@@ -30,7 +30,7 @@ presets_import_export_subject_pipeline <- function(
   get_repo <- function() {
 
     data_loaded <- isTRUE(shiny::isolate(watch_data_loaded()))
-    has_repository <- comp$container$data[['@has']](pipeline_repository)
+    has_repository <- comp$container$data[["@has"]](pipeline_repository)
 
     if (!data_loaded) {
       if ( has_repository ) {
@@ -395,7 +395,7 @@ presets_import_export_subject_pipeline <- function(
 
           shiny::showModal(
             shiny::modalDialog(
-              title = "Import Pipeline", size = 'l', easyClose = FALSE,
+              title = "Import Pipeline", size = "l", easyClose = FALSE,
               shiny::p(
                 "The pipeline is located. Please choose variables to import from the settings file. Leave it blank to import all."
               ),
@@ -534,7 +534,7 @@ presets_import_export_subject_pipeline <- function(
               new_repository <- ravepipeline::pipeline_read(pipeline_repository, pipe_dir = pipeline_path)
               comp$container$data$repository <- new_repository
 
-              ravedash::fire_rave_event('data_loaded', list(
+              ravedash::fire_rave_event("data_loaded", list(
                 force = TRUE,
                 timestamp = Sys.time()
               ))
@@ -558,7 +558,7 @@ presets_import_export_subject_pipeline <- function(
                   e$message
                 )
               )
-              ravedash::fire_rave_event('data_loaded', FALSE)
+              ravedash::fire_rave_event("data_loaded", FALSE)
               logger_error_condition(e)
             }
           )

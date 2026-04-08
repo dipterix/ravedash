@@ -114,7 +114,7 @@ presets_import_setup_native <- function(
             title = "Create new project",
             easyClose = FALSE,
             shiny::div(
-              class = 'fill-width',
+              class = "fill-width",
               shiny::textInput(
                 inputId = comp$get_sub_element_id("new_project_name", with_namespace = TRUE),
                 label = "Enter a valid project name:",
@@ -179,9 +179,9 @@ presets_import_setup_native <- function(
           new_project_name <- ""
         }
         new_project_name <- trimws(new_project_name, which = "both")
-        if (new_project_name == '') {
+        if (new_project_name == "") {
           msg <- "The project name cannot be blank"
-        } else if( tolower(new_project_name) %in% tolower(all_projects) ) {
+        } else if ( tolower(new_project_name) %in% tolower(all_projects) ) {
           msg <- "Project has already existed"
         } else if (!grepl("^[a-zA-Z0-9][a-zA-Z0-9_-]{0,}$", new_project_name)) {
           msg <- "The subject code is invalid: can only contain letters, digits, dash (-), or underscore (_). The first letter should only contain letters and digits. For example, `my-project_0123` is valid, but `_project`, `project!@#$` are invalid."
@@ -299,7 +299,7 @@ presets_import_setup_native <- function(
             disabled = TRUE,
             label = validation$reason
           )
-        } else if(validation$initialized) {
+        } else if (validation$initialized) {
           dipsaus::updateActionButtonStyled(
             session = session,
             inputId = comp$get_sub_element_id("actions", with_namespace = FALSE),

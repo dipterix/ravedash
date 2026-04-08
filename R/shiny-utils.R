@@ -218,13 +218,13 @@ get_rave_event <- function(key, session = shiny::getDefaultReactiveDomain()) {
 #' @rdname rave-runtime-events
 #' @export
 open_loader <- function(session = shiny::getDefaultReactiveDomain()) {
-  fire_rave_event('open_loader', Sys.time())
+  fire_rave_event("open_loader", Sys.time())
 }
 
 #' @rdname rave-runtime-events
 #' @export
 close_loader <- function(session = shiny::getDefaultReactiveDomain()) {
-  fire_rave_event('open_loader', NULL)
+  fire_rave_event("open_loader", NULL)
 }
 
 #' @rdname rave-runtime-events
@@ -424,7 +424,7 @@ ravedash_footer <- function(
             `shidashi-action` = '{"method": "card", "args": [{"selector": ".ravedash-input-card", "method": "expand"}]}',
             `data-toggle` = "tooltip",
             title = "Expand all input cards",
-            shiny_icons['plus']
+            shiny_icons["plus"]
           ),
           shiny::a(
             class = "btn btn-default shidashi-button",
@@ -432,13 +432,13 @@ ravedash_footer <- function(
             `shidashi-action` = '{"method": "card", "args": [{"selector": ".ravedash-input-card", "method": "collapse"}]}',
             `data-toggle` = "tooltip",
             title = "Collapse all input cards",
-            shiny_icons['minus']
+            shiny_icons["minus"]
           ),
           shiny::a(
             class = "btn btn-default rave-button",
             href = "#",
             `rave-action` = '{"type": "simplify_toggle"}',
-            shiny_icons['simplybuilt'],
+            shiny_icons["simplybuilt"],
             `data-toggle` = "tooltip",
             title = "Show more/fewer options"
           )

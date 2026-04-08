@@ -97,7 +97,7 @@ resolve_app_root <- function(app_root, ensure = FALSE) {
 #' @param page_title session web page title and logo text; can have length
 #' of either one (page title and logo text are the same); or length of two,
 #' with page title be the first element and logo text be the second.
-#' @param sidebar_open whether to open the side-bar by default; default 
+#' @param sidebar_open whether to open the side-bar by default; default
 #' \code{TRUE} when more than one module is to be displayed
 #' @param dry_run whether to dry-run (do not launch) the 'RAVE' session
 #' @param ...,.list named list of key-value pairs of session options. The
@@ -184,7 +184,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
 
   pipeline_path <- file.path(app_path, "_pipelines")
 
-  for(pipeline in pipelines) {
+  for (pipeline in pipelines) {
     p <- ravepipeline::pipeline_find(pipeline)
     ravepipeline::pipeline_fork(
       src = p, dest = file.path(pipeline_path, pipeline)
@@ -241,7 +241,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
   module_conf$divider[["Add-ons"]] <- list(order = 99.99)
 
   ravepipeline::save_yaml(
-    module_conf, 
+    module_conf,
     file = file.path(app_path, "modules.yaml")
   )
   ravepipeline::save_yaml(
@@ -391,7 +391,7 @@ launch_session <- function(
     page_title = NULL
   )
 
-  for(nm in names(options)) {
+  for (nm in names(options)) {
     default_options[[nm]] <- options[[nm]]
   }
 
@@ -772,7 +772,7 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
   }
 
   map <- session_getopt(namespace = namespace)
-  for(k in nms) {
+  for (k in nms) {
     map[[k]] <- new_map[[k]]
   }
 
@@ -808,7 +808,7 @@ session_setopt <- function(..., .list = NULL, namespace = "default") {
   timestamp <- sub("\\-[a-zA-Z0-9]{4}$", "", session_id)
   timestamp <- strsplit(timestamp, "-")[[1]]
   tz <- timestamp[[4]]
-  timestamp <- paste(timestamp[c(2,3)], collapse = "-")
+  timestamp <- paste(timestamp[c(2, 3)], collapse = "-")
   timestamp <- strptime(timestamp, "%y%m%d-%H%M%S")
   timestamp <- strftime(timestamp, usetz = FALSE)
   timestamp <- paste(timestamp, tz)
@@ -860,7 +860,7 @@ remove_session.default <- function(x) {
 #' @export
 remove_all_sessions <- function() {
   sess <- list_session()
-  for(s in sess) {
+  for (s in sess) {
     remove_session(s)
   }
   invisible()
@@ -1115,7 +1115,7 @@ session_log <- function(x, max_lines = 200, modules = NULL) {
     timestamp <- strptime(timestamp, format = "%Y-%m-%d %H:%M:%S")
     nas <- dipsaus::deparse_svec( which(is.na(timestamp)), concatenate = FALSE)
 
-    for(ns_idx in nas) {
+    for (ns_idx in nas) {
       idx <- dipsaus::parse_svec(ns_idx)
       if (length(idx)) {
         midx <- idx[[1]]

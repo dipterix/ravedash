@@ -10,18 +10,18 @@ plotting_to_file <- function() {
   )
 
   if (length(i) < grDevices::dev.cur()) {
-    return (FALSE)
+    return(FALSE)
   }
 
-  i = i[[grDevices::dev.cur()]]
+  i <- i[[grDevices::dev.cur()]]
 
-  return (
-    isTRUE('dipsaus_dev_name' %in% names(attributes(i)) || i %in% c('pdf', 'png', 'jpeg'))
+  return(
+    isTRUE("dipsaus_dev_name" %in% names(attributes(i)) || i %in% c("pdf", "png", "jpeg"))
   )
 
 }
 
-clip_x <- function (x, lim) {
+clip_x <- function(x, lim) {
   if (length(lim) == 1) {
     lim = c(lim, -lim)
   }
@@ -34,16 +34,16 @@ round_to_nearest <- function(x, val = 10) {
   val * round(x / val)
 }
 
-..get_nearest_i <- function(from,to, lower_only=FALSE) {
+..get_nearest_i <- function(from, to, lower_only = FALSE) {
 
   if (lower_only) {
     res <- sapply(from, function(.x) {
-      to2 = to[to<= .x]
-      which.min(abs(.x-to2))
+      to2 = to[to <= .x]
+      which.min(abs(.x - to2))
     })
   } else {
     res <- sapply(from, function(.x) {
-      which.min(abs(.x-to))
+      which.min(abs(.x - to))
     })
   }
 
@@ -54,16 +54,16 @@ round_to_nearest <- function(x, val = 10) {
   stats::approxfun(to, seq_along(to))(from)
 }
 
-..get_nearest_val <- function(from,to) {
-  to[..get_nearest_i(from,to)]
+..get_nearest_val <- function(from, to) {
+  to[..get_nearest_i(from, to)]
 }
 
-`%near%` <- function(x, y, eps=1e-4) {
-  abs(x-y) < eps
+`%near%` <- function(x, y, eps = 1e-4) {
+  abs(x - y) < eps
 }
 
 
-`%within%` <- function (a, b) {
+`%within%` <- function(a, b) {
   (a >= min(b)) & (a <= max(b))
 }
 

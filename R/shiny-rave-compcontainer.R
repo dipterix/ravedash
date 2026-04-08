@@ -91,8 +91,8 @@ RAVEShinyComponentContainer <- R6::R6Class(
 
     add_components = function(..., .list = list()) {
       comps <- c(list(...), .list)
-      for(comp in comps) {
-        stopifnot(inherits(comp, 'RAVEShinyComponent'))
+      for (comp in comps) {
+        stopifnot(inherits(comp, "RAVEShinyComponent"))
         self$components[[comp$id]] <- comp
         comp$container <- self
       }
@@ -151,7 +151,7 @@ RAVEShinyComponentContainer <- R6::R6Class(
       } else {
         ids <- ids[ids %in% names(self$components)]
       }
-      for(nm in ids) {
+      for (nm in ids) {
         self$components[[nm]]$collect_settings(map = map)
       }
       map
@@ -165,9 +165,9 @@ RAVEShinyComponentContainer <- R6::R6Class(
       }
       re <- lapply(ids, function(nm) {
         comp <- self$components[[nm]]
-        sub_ids <- c('', comp$sub_elements)
+        sub_ids <- c("", comp$sub_elements)
         sub_ids <- sapply(sub_ids, function(sub_id) {
-          if (sub_id == '') { sub_id <- NULL }
+          if (sub_id == "") { sub_id <- NULL }
           comp$get_sub_element_id(sub_id, with_namespace = FALSE)
         })
         sub_ids
@@ -176,8 +176,8 @@ RAVEShinyComponentContainer <- R6::R6Class(
     },
 
     reset_data = function() {
-      self$data[['@reset']]()
-      self$cache[['@reset']]()
+      self$data[["@reset"]]()
+      self$cache[["@reset"]]()
     },
 
     get_pipeline = function() {

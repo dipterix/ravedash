@@ -366,7 +366,7 @@ with_log_modal <- function(
         length(logfile) != 1 ||
           is.na(logfile) ||
           !file.exists(logfile) ||
-          logfile == ''
+          logfile == ""
       ) {
         msg <- NULL
       } else {

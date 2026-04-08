@@ -82,7 +82,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     } else {
       logger("`module_server_common`: session must be provided in production. Using mock session to debug.", level = "warning")
       root_session <- shiny::MockShinySession$new()
-      session <- session$makeScope(module_id)
+      session <- root_session$makeScope(module_id)
       input <- session$input
       output <- session$output
     }
@@ -285,7 +285,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
           traceback(e)
         }), collapse = "\n")
         shidashi::show_notification(
-          title = "Error found!", autohide = FALSE, close = TRUE, type = 'danger',
+          title = "Error found!", autohide = FALSE, close = TRUE, type = "danger",
           message = shiny::div(
             "Found an error while trying to check this module. The debug message is displayed below.",
             shiny::hr(),
@@ -300,11 +300,11 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
         shidashi::clear_notifications()
         logger("Skip loader interface", level = "debug")
         close_loader()
-        fire_rave_event('data_loaded', Sys.time())
+        fire_rave_event("data_loaded", Sys.time())
       } else {
         logger("Opening loader interface")
         open_loader()
-        fire_rave_event('data_loaded', FALSE)
+        fire_rave_event("data_loaded", FALSE)
       }
     }),
     get_rave_event("data_changed"),
@@ -493,7 +493,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       auto_recalculate(v)
       msg <- sprintf("Auto re-calculation is turned %s", ifelse(v, "ON", "OFF"))
       shidashi::show_notification(
-        message = msg, title = "Info", type = 'success',
+        message = msg, title = "Info", type = "success",
         close = TRUE, autohide = TRUE
       )
     }),
@@ -534,7 +534,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   # Message near Back-to-top button (ravedash footer)
   output[["__loader_short_message__"]] <- shiny::renderText({
-    msg <- trimws(paste(get_rave_event('loader_message'), collapse = ""))
+    msg <- trimws(paste(get_rave_event("loader_message"), collapse = ""))
     if (!nzchar(msg)) {
       msg <- "Toggle data selector"
     }
@@ -915,9 +915,9 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       "Function to turn auto-recalculation on and off. Usage:\n",
       "# Obtain the server utility functions",
       "server_tools <- get_default_handlers()\n",
-      'server_tools$auto_recalculate(TRUE)    # Turn on forever',
-      'server_tools$auto_recalculate(FALSE)   # Turn off forever',
-      'server_tools$auto_recalculate(1)       # Turn on once'
+      "server_tools$auto_recalculate(TRUE)    # Turn on forever",
+      "server_tools$auto_recalculate(FALSE)   # Turn off forever",
+      "server_tools$auto_recalculate(1)       # Turn on once"
     )
   )
 
@@ -928,8 +928,8 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       "Shiny reactive to tell if the module is active or hidden. Usage:\n",
       "# Obtain the server utility functions",
       "server_tools <- get_default_handlers()\n",
-      'server_tools$module_is_active()                   # current module',
-      'server_tools$module_is_active("another_module")   # whether another module is active'
+      "server_tools$module_is_active()                   # current module",
+      "server_tools$module_is_active(\"another_module\")   # whether another module is active"
     )
   )
 

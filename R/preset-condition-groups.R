@@ -13,7 +13,7 @@ presets_condition_groups <- function(
   get_repo <- function() {
 
     data_loaded <- isTRUE(shiny::isolate(watch_data_loaded()))
-    has_repository <- comp$container$data[['@has']](pipeline_repository)
+    has_repository <- comp$container$data[["@has"]](pipeline_repository)
 
     if (!data_loaded) {
       if ( has_repository ) {

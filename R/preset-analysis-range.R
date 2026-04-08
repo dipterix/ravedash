@@ -22,7 +22,7 @@ presets_analysis_ranges <- function(
   get_repo <- function() {
 
     data_loaded <- isTRUE(shiny::isolate(watch_data_loaded()))
-    has_repository <- comp$container$data[['@has']](pipeline_repository)
+    has_repository <- comp$container$data[["@has"]](pipeline_repository)
 
     if (!data_loaded) {
       if ( has_repository ) {
@@ -140,7 +140,7 @@ presets_analysis_ranges <- function(
 
       if (!length(analysis_ranges)) {
         analysis_ranges <- default_analysis_ranges
-      } else if(length(analysis_ranges) > max_components) {
+      } else if (length(analysis_ranges) > max_components) {
         analysis_ranges <- analysis_ranges[seq_len(max_components)]
       }
 
@@ -199,7 +199,7 @@ presets_analysis_ranges <- function(
               value = value
             )
           })
-        } else if(analysis_lock == 3) {
+        } else if (analysis_lock == 3) {
           value <- comp$current_value[[1]]$time
           lapply(seq_len(max_components), function(ii) {
             shiny::updateSliderInput(

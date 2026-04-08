@@ -30,7 +30,7 @@ presets_analysis_electrode_selector2 <- function(
   get_repo <- function() {
 
     data_loaded <- isTRUE(shiny::isolate(watch_data_loaded()))
-    has_repository <- comp$container$data[['@has']](pipeline_repository)
+    has_repository <- comp$container$data[["@has"]](pipeline_repository)
 
     if (!data_loaded) {
       if ( has_repository ) {
@@ -229,7 +229,7 @@ presets_analysis_electrode_selector2 <- function(
       # 2. subject's default
       # 3. guess default
       electrode_category_selector <- get_default(
-        sub_id = category_str, missing = c('freesurferlabel', "FSLabel",
+        sub_id = category_str, missing = c("freesurferlabel", "FSLabel",
                                            comp$get_sub_element_input(category_str)),
         constraint = electrode_table_names
       )
@@ -402,7 +402,7 @@ presets_analysis_electrode_selector2 <- function(
       electrode_table_names <- names(repository$electrode_table)
       if (!length(category) || !isTRUE(category %in% electrode_table_names)) {
         category <- get_default(
-          sub_id = category_str, missing = c('freesurferlabel', "FSLabel"),
+          sub_id = category_str, missing = c("freesurferlabel", "FSLabel"),
           constraint = electrode_table_names
         )
         logger("Updating `{id}__{category_str}`, value: {category} ({length(electrode_table_names)})",
