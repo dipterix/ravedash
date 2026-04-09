@@ -43,6 +43,10 @@ shidashi::disable_recalculate_badge
 #' @export
 shidashi::set_card_badge
 
+#' @importFrom shidashi switch_module
+#' @export
+shidashi::switch_module
+
 #' @importFrom ravepipeline logger
 #' @export
 ravepipeline::logger

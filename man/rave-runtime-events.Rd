@@ -109,8 +109,15 @@ save or load pipeline}
 loaded}
 \item{\code{'open_loader'}, \code{'toggle_loader'}}{notifies the internal
 server code to show or hide the data loading panel}
-\item{\code{'active_module'}}{internally used to store current active
-module information}
+\item{\code{'active_module'}}{internally populated by the action
+dispatcher when the module first loads (and whenever a
+\code{type = "active_module"} rave-action arrives). Returns a list with
+elements \code{type}, \code{id}, \code{parent_frame}, and \code{rave_id}.
+This key is \strong{reserved}: external code must not call
+\code{fire_rave_event("active_module", ...)} directly.
+To obtain the currently active module, prefer
+\code{\link{get_active_module_info}()}, which reads from the
+\code{shidashi} module registry and is always up-to-date.}
 }
 }
 
@@ -127,7 +134,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   # Create event registries
-  register_rave_session()
+  shidashi::register_session()
 
   shiny::bindEvent(
     shiny::observe({
