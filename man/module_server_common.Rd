@@ -21,7 +21,9 @@ if loader needs to be open to load data.}
 
 \item{...}{ignored}
 
-\item{session}{shiny session}
+\item{session}{shiny session; \code{\link[shidashi]{init_app}} must be
+called before this function so that the shidashi session registry is
+initialized.}
 
 \item{parse_env}{environment used to parse module}
 }
