@@ -4,7 +4,6 @@
 #' @importFrom shinyvalidate InputValidator
 #' @importFrom R6 R6Class
 #' @importFrom checkmate assert
-#' @importFrom ravepipeline logger
 NULL
 
 gray_label_color <- "#c8c9ca"
@@ -16,12 +15,12 @@ DEFAULT_PALETTES <- local({
 
   LINE <- list(
     "Beautiful Field" = c(
-      "orange", "dodgerblue3", "darkgreen", "orangered", "brown",  
+      "orange", "dodgerblue3", "darkgreen", "orangered", "brown",
       "purple3"),
     "J5" = c(
       "#407899", "#deba6f", "#65743a", "#de6449", "#4B296B"),
     "Okabe-Ito" = c(
-      "black", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+      "black", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
       "#0072B2", "#D55E00", "#CC79A7", "gray60"),
     "Okabe-Ito 2" = c(
       "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
@@ -35,7 +34,7 @@ DEFAULT_PALETTES <- local({
       "#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e",
       "#e6ab02", "#a6761d", "#656565"),
     "R4" = c(
-      "black", "#DF536B", "#61D04F", "#2297E6", "#28E2E5", 
+      "black", "#DF536B", "#61D04F", "#2297E6", "#28E2E5",
       "#CD0BBC", "#F5C710", "gray62"),
     "R4Permed" = c(
       "#2297E6", "#F5C710", "#61D04F", "#DF536B", "#CD0BBC"),
@@ -61,8 +60,8 @@ DEFAULT_PALETTES <- local({
 
   HEATMAP <- list(
     BlueWhiteRed = rev(c(
-      "#67001f", "#b2182b", "#d6604d", "#f4a582", "#fddbc7", 
-      "#ffffff", "#d1e5f0", "#92c5de", "#4393c3", "#2166ac", 
+      "#67001f", "#b2182b", "#d6604d", "#f4a582", "#fddbc7",
+      "#ffffff", "#d1e5f0", "#92c5de", "#4393c3", "#2166ac",
       "#053061")),
     BlueGrayRed = rev(c(
       "#67001f", "#b2182b", "#d6604d", "#f4a582", "#b4b4b4",

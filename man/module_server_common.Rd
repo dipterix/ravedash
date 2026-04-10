@@ -34,28 +34,9 @@ data loader panel.
 }
 \examples{
 
-# Debug in non-reactive session: create fake session
-fake_session <- shiny::MockShinySession$new()
-
-# register common-server function
-module_server_common(module_id = "mock-session",
-                     session = fake_session)
-server_tools <- get_default_handlers(fake_session)
-
-# Print each function to see the usage
-
-server_tools$auto_recalculate
-
-server_tools$run_analysis_onchange
-
-server_tools$run_analysis_flag
-
-server_tools$module_is_active
-
-server_tools$simplify_view
-
 # 'RAVE' module server function
 server <- function(input, output, session, ...) {
+  shidashi::init_app()
 
   pipeline_path <- "PATH to module pipeline"
 

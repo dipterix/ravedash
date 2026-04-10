@@ -2,7 +2,9 @@
 #' @description Common shiny server function to enable modules that requires
 #' data loader panel.
 #' @param module_id 'RAVE' module ID
-#' @param session shiny session
+#' @param session shiny session; \code{\link[shidashi]{init_app}} must be
+#' called before this function so that the shidashi session registry is
+#' initialized.
 #' @param check_data_loaded a function that takes zero to one argument and
 #' must return either \code{TRUE} if data has been loaded or \code{FALSE}
 #' if loader needs to be open to load data.
@@ -11,28 +13,9 @@
 #' @return A list of server utility functions; see 'Examples' below.
 #' @examples
 #'
-#' # Debug in non-reactive session: create fake session
-#' fake_session <- shiny::MockShinySession$new()
-#'
-#' # register common-server function
-#' module_server_common(module_id = "mock-session",
-#'                      session = fake_session)
-#' server_tools <- get_default_handlers(fake_session)
-#'
-#' # Print each function to see the usage
-#'
-#' server_tools$auto_recalculate
-#'
-#' server_tools$run_analysis_onchange
-#'
-#' server_tools$run_analysis_flag
-#'
-#' server_tools$module_is_active
-#'
-#' server_tools$simplify_view
-#'
 #' # 'RAVE' module server function
 #' server <- function(input, output, session, ...) {
+#'   shidashi::init_app()
 #'
 #'   pipeline_path <- "PATH to module pipeline"
 #'

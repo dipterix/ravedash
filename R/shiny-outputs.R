@@ -16,7 +16,7 @@ plotOutput2 <- function(outputId, class = NULL,
 
   res <- shiny::plotOutput(
     outputId = outputId,
-    height = width, width = height, ...
+    width = width, height = height, ...
   )
 
   res$attribs$class <- shidashi::combine_html_class(res$attribs$class, class)

@@ -1,27 +1,7 @@
-#' @name logger
-#' @title Logger system used by 'RAVE'
+#' @name with_error_notification
+#' @title Evaluate with automatic error handlers in dashboard
 #' @description Keep track of messages printed by modules
-#' @param ...,.envir,.sep passed to \code{glue}, if
-#' \code{use_glue} is true
-#' @param use_glue whether to use \code{glue} to combine
-#' \code{...}; default is false
-#' @param calc_delta whether to calculate time difference between current
-#' message and previous message; default is \code{'auto'}, which prints
-#' time difference when \code{level} is \code{'debug'}.
-#' This behavior can be changed by altering \code{calc_delta} by a logical
-#' \code{TRUE} to enable or \code{FALSE} to disable.
-#' @param level the level of message, choices are \code{'info'} (default),
-#' \code{'success'}, \code{'warning'}, \code{'error'}, \code{'fatal'},
-#' \code{'debug'}, \code{'trace'}
-#' @param module_id 'RAVE' module identification string, or name-space; default
-#' is \code{'ravedash'}
-#' @param reset_timer whether to reset timer used by \code{calc_delta}
-#' @param root_path root directory if you want log messages to be saved to
-#' hard disks; if \code{root_path} is \code{NULL}, \code{""}, or
-#' \code{\link{nullfile}}, then logger path will be unset.
-#' @param max_bytes maximum file size for each logger partitions
-#' @param max_files maximum number of partition files to hold the log; old
-#' files will be deleted.
+#' @param ... passed to other methods
 #' @param type which type of logging should be set; default is \code{'console'},
 #' if file log is enabled through \code{set_logger_path}, \code{type} could be
 #' \code{'file'} or \code{'both'}. Default log level is \code{'info'} on
@@ -36,37 +16,12 @@
 #' \code{\link[dipsaus]{shiny_alert2}} or
 #' \code{\link[shidashi]{show_notification}}
 #' @param prefix additional messages to display in the notification or alert
-#' @return The message without time-stamps
-#'
-#' @examples
-#' logger("This is a message")
-#'
-#' a <- 1
-#' logger("A message with glue: a={a}")
-#'
-#' logger("A message without glue: a={a}", use_glue = FALSE)
-#'
-#'
-#' logger("Message A", calc_delta = TRUE, reset_timer = TRUE)
-#' logger("Seconds before logging another message", calc_delta = TRUE)
-#'
-#'
-#' # by default, debug and trace messages won't be displayed
-#' logger('debug message', level = 'debug')
-#'
-#' # adjust logger level, make sure `module_id` is a valid RAVE module ID
-#' logger_threshold('debug', module_id = NULL)
-#'
-#' # Debug message will display
-#' logger('debug message', level = 'debug')
-#'
-#' # Trace message will not display as it's lower than debug level
-#' logger('trace message', level = 'trace')
+#' @return The condition \code{cond} if errored out, or the evaluated results
 #'
 NULL
 
 
-#' @rdname logger
+#' @rdname with_error_notification
 #' @export
 error_notification <- function(
   cond,
@@ -105,7 +60,7 @@ error_notification <- function(
   invisible(cond)
 }
 
-#' @rdname logger
+#' @rdname with_error_notification
 #' @export
 error_alert <- function(
   cond,
@@ -142,7 +97,7 @@ error_alert <- function(
   invisible(cond)
 }
 
-#' @rdname logger
+#' @rdname with_error_notification
 #' @export
 with_error_notification <- function(
   expr, envir = parent.frame(), quoted = FALSE, ...
@@ -170,7 +125,7 @@ with_error_notification <- function(
   )
 }
 
-#' @rdname logger
+#' @rdname with_error_notification
 #' @export
 with_error_alert <- function(
   expr,
