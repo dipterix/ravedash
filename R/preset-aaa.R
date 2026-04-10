@@ -38,13 +38,12 @@
 #' existing references
 #' @param checks whether to check if subject has been applied with 'Notch'
 #' filters or 'Wavelet'; default is both.
-#' @param gadgets gadget types to include; see \code{type} argument in function
-#' \code{\link{output_gadget}}
 #' @param start_simple whether to start in simple view and hide optional inputs
 #' @param multiple whether to allow multiple inputs
 #' @param allow_new whether to allow new subject to be created; ignored when
 #' checks exist
 #' @param allow_stitch whether to allow stitching the events
+#' @param ... ignored, typically reserved for obsolete arguments
 #' @returns A \code{'RAVEShinyComponent'} instance.
 #' @seealso \code{\link{new_rave_shiny_component_container}}
 NULL

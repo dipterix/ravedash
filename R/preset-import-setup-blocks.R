@@ -5,14 +5,14 @@ presets_import_setup_blocks <- function(
   label = "Format & session blocks",
   import_setup_id = "import_setup",
   max_components = 5
-){
+) {
 
   comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- import_setup_id
   comp$no_save <- c("", "msg", "actions", "format_details", "action_dbl_confirm",
                     "block_preview", "")
 
-  all_formats <- ravecore::IMPORT_FORMATS[c(1,2,3,4,7)]
+  all_formats <- ravecore::IMPORT_FORMATS[c(1, 2, 3, 4, 7)]
   regexps <- c(
     "\\.(h5|mat)$",
     "\\.(h5|mat)$",
@@ -21,7 +21,7 @@ presets_import_setup_blocks <- function(
     "\\.(nev|ns[1-6])$"
   )
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
 
     shidashi::card2(
       title = label,
@@ -31,7 +31,7 @@ presets_import_setup_blocks <- function(
       ),
       class_body = "",
       body_main = shiny::div(
-        class = 'padding-10',
+        class = "padding-10",
         shiny::fluidRow(
           shiny::column(
             width = 6L,
@@ -111,14 +111,14 @@ presets_import_setup_blocks <- function(
     )
 
     output[[comp$get_sub_element_id("msg", FALSE)]] <- shiny::renderText({
-      if(isTRUE(local_reactives$valid_setup)) {
+      if (isTRUE(local_reactives$valid_setup)) {
         "Subject folder has been created. Please choose session blocks."
       } else {
         local_reactives$validation_message
       }
     })
 
-    disable_ui <- function(){
+    disable_ui <- function() {
       dipsaus::updateActionButtonStyled(
         session = session,
         inputId = comp$get_sub_element_id("actions", with_namespace = FALSE),
@@ -147,20 +147,20 @@ presets_import_setup_blocks <- function(
         # ))
         info <- basic_setups()
         is_valid <- TRUE
-        if(!is.list(info)){
+        if (!is.list(info)) {
           local_reactives$validation_message <- "Waiting..."
           is_valid <- FALSE
         }
-        if(!isTRUE(info$valid)){
+        if (!isTRUE(info$valid)) {
           local_reactives$validation_message <- "Please select valid project and subject in the previous step."
           is_valid <- FALSE
         }
-        if(!isTRUE(info$initialized)) {
+        if (!isTRUE(info$initialized)) {
           local_reactives$validation_message <- "Subject folders have not been created yet. Please create them in the previous step."
           is_valid <- FALSE
         }
 
-        if(!is_valid) {
+        if (!is_valid) {
           disable_ui()
           return()
         }
@@ -179,7 +179,7 @@ presets_import_setup_blocks <- function(
           selected = names(all_formats)[[format_selection]]
         )
 
-        if(any(preproc$data_imported)) {
+        if (any(preproc$data_imported)) {
           shiny::updateSelectInput(
             session = session,
             inputId = comp$get_sub_element_id("session_block", FALSE),
@@ -217,7 +217,7 @@ presets_import_setup_blocks <- function(
     block_setups <- shiny::bindEvent(
       shiny::reactive({
         info <- basic_setups()
-        if(!is.list(info) || !isTRUE(info$initialized)) {
+        if (!is.list(info) || !isTRUE(info$initialized)) {
           return(list(
             valid = FALSE,
             reason = "Waiting for previous steps"
@@ -228,7 +228,7 @@ presets_import_setup_blocks <- function(
           names(all_formats) %in% comp$get_sub_element_input("format")
         )
 
-        if(!length(info$blocks)) {
+        if (!length(info$blocks)) {
           return(list(
             valid = FALSE,
             reason = "No block(s) selected"
@@ -241,14 +241,14 @@ presets_import_setup_blocks <- function(
                                            subject_code = subject_code, strict = FALSE)
         preproc <- subject$preprocess_settings
 
-        if(any(preproc$data_imported)) {
+        if (any(preproc$data_imported)) {
           info$any_imported <- TRUE
           info$current_blocks <- preproc$blocks
           info$current_format <- preproc$data$format %OF% seq_along(all_formats)
 
         } else {
           info$any_imported <- FALSE
-          if(length(preproc$blocks)) {
+          if (length(preproc$blocks)) {
             info$current_blocks <- preproc$blocks
           } else {
             info$current_blocks <- info$blocks
@@ -271,7 +271,7 @@ presets_import_setup_blocks <- function(
     shiny::bindEvent(
       ravedash::safe_observe({
         info <- block_setups()
-        if(!isTRUE(info$valid)) {
+        if (!isTRUE(info$valid)) {
           dipsaus::updateActionButtonStyled(
             session = session,
             inputId = comp$get_sub_element_id("actions", with_namespace = FALSE),
@@ -280,7 +280,7 @@ presets_import_setup_blocks <- function(
           )
           return()
         } else {
-          if(setequal(info$current_blocks, info$blocks) &&
+          if (setequal(info$current_blocks, info$blocks) &&
              isTRUE(info$current_format == info$format)) {
 
             settings <- ravepipeline::load_yaml(comp$container$settings_path)
@@ -320,13 +320,13 @@ presets_import_setup_blocks <- function(
     output[[comp$get_sub_element_id("format_details", FALSE)]] <- shiny::renderText({
 
       info <- block_setups()
-      if(!is.list(info) || !isTRUE(info$valid)) { return() }
+      if (!is.list(info) || !isTRUE(info$valid)) { return() }
       fmt_idx <- info$format
-      if(length(fmt_idx) != 1 || !fmt_idx %in% seq_along(all_formats)) { return() }
+      if (length(fmt_idx) != 1 || !fmt_idx %in% seq_along(all_formats)) { return() }
 
-      switch (
+      switch(
         as.character(fmt_idx),
-        '1' = {
+        "1" = {
           paste0("In each block folder, one Matlab/HDF5 file stands for one electrode. ",
                  "File name should match with format XXX1.h5 or xxx2.mat. ",
                  "Each file only contains a one-dimensional vector. ",
@@ -348,7 +348,7 @@ presets_import_setup_blocks <- function(
           #   )
           # )
         },
-        '2' = {
+        "2" = {
           paste0("A single Matlab/HDF5 file containing all electrode information. ",
                  "Data must be a matrix. One of the dimension must be electrodes, ",
                  "the other dimension must be time points. ",
@@ -369,7 +369,7 @@ presets_import_setup_blocks <- function(
           #     )
           #   ))
         },
-        '5' = {
+        "5" = {
           paste0("In each block folder, one Neuro-Event file [.nev] and corresponding NSX files [.ns1, .ns2, ..., .ns6] containing electrode data.")
         },
         {
@@ -392,7 +392,7 @@ presets_import_setup_blocks <- function(
 
     output[[comp$get_sub_element_id("block_preview", FALSE)]] <- shiny::renderPrint({
       info <- block_setups()
-      if(!is.list(info) || !isTRUE(info$valid)) {
+      if (!is.list(info) || !isTRUE(info$valid)) {
         return("Please choose valid blocks and format")
       }
       fmt_idx <- info$format
@@ -405,7 +405,7 @@ presets_import_setup_blocks <- function(
                                 strict = FALSE)
       preproc <- subject$preprocess_settings
 
-      if(!dir.exists(preproc$raw_path)) {
+      if (!dir.exists(preproc$raw_path)) {
         return("Cannot find raw data path")
       }
 
@@ -413,9 +413,9 @@ presets_import_setup_blocks <- function(
 
       regexp <- regexps[[fmt_idx]]
 
-      for(block in blocks) {
+      for (block in blocks) {
         fs <- list.files(file.path(preproc$raw_path, block), pattern = regexp, recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
-        if(length(fs) > max_components) {
+        if (length(fs) > max_components) {
           fs <- c(fs[seq_len(max_components - 1)], "...")
         }
         print(dipsaus::print_directory_tree(sprintf("%s (session folder)", block),
@@ -425,16 +425,16 @@ presets_import_setup_blocks <- function(
     })
 
     # blocks, format, any_imported
-    set_data <- function(preproc, info){
+    set_data <- function(preproc, info) {
       ravedash::logger("Current subject: ", preproc$subject$subject_id, level = "info")
       new_blocks <- info$blocks
       format <- info$format
 
-      if(any(preproc$data_imported)) {
+      if (any(preproc$data_imported)) {
 
-        if(!isFALSE(preproc$data$stringent)){
+        if (!isFALSE(preproc$data$stringent)) {
 
-          if(!setequal(preproc$blocks, new_blocks)) {
+          if (!setequal(preproc$blocks, new_blocks)) {
             ravedash::logger("Subject is set with less stringent validation.", level = "info")
             preproc$data$stringent <- FALSE
           }
@@ -484,7 +484,7 @@ presets_import_setup_blocks <- function(
       ravedash::safe_observe({
 
         info <- block_setups()
-        if(!is.list(info) || !isTRUE(info$valid)) {
+        if (!is.list(info) || !isTRUE(info$valid)) {
           shidashi::show_notification(
             title = "Error", type = "danger", autohide = FALSE,
             message = paste(c(
@@ -498,7 +498,7 @@ presets_import_setup_blocks <- function(
 
 
         format_idx <- info$format
-        if(!length(format_idx)){
+        if (!length(format_idx)) {
           shidashi::show_notification(
             title = "Error", type = "danger", autohide = FALSE,
             message = paste(c(
@@ -517,7 +517,7 @@ presets_import_setup_blocks <- function(
                                            subject_code = subject_code, strict = FALSE)
         preproc <- subject$preprocess_settings
 
-        if(info$any_imported && !setequal(preproc$blocks, new_blocks)) {
+        if (info$any_imported && !setequal(preproc$blocks, new_blocks)) {
           shidashi::show_notification(
             title = "Block inconsistent", type = "warning",
             autohide = FALSE, close = TRUE,

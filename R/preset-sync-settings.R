@@ -16,8 +16,8 @@ presets_loader_sync_project_subject <- function(
 ) {
   force(from_module)
 
-  if(!is.null(from_module)) {
-    if(
+  if (!is.null(from_module)) {
+    if (
       length(from_module) != 1 ||
       is.na(from_module) ||
       !is.character(from_module)
@@ -30,10 +30,10 @@ presets_loader_sync_project_subject <- function(
   comp$depends <- c(loader_project_id, loader_subject_id)
   comp$no_save <- id
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
     shiny::actionLink(inputId = id, label = label)
   }
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
     loader_project <- comp$get_dependent_component(loader_project_id)
     loader_subject <- comp$get_dependent_component(loader_subject_id)
 
@@ -41,7 +41,7 @@ presets_loader_sync_project_subject <- function(
       safe_observe({
 
         # check if the module exists
-        if(is.null(from_module)) {
+        if (is.null(from_module)) {
           session_cache <- session_getopt(
             c("project_name", "subject_code"), default = NULL)
           project_name <- session_cache$project_name
@@ -49,14 +49,14 @@ presets_loader_sync_project_subject <- function(
         } else {
           pipeline <- tryCatch({
             ravepipeline::pipeline(pipeline_name = from_module)
-          }, error = function(e){ NULL })
-          if(is.null(pipeline)) { return() }
+          }, error = function(e) { NULL })
+          if (is.null(pipeline)) { return() }
           project_name <- pipeline$get_settings(key = project_varname, default = NULL)
           subject_code <- pipeline$get_settings(key = subject_varname, default = NULL)
         }
 
 
-        if(
+        if (
           inherits(loader_project, "RAVEShinyComponent") &&
           length(project_name) == 1 && !is.na(project_name) &&
           is.character(project_name)
@@ -67,7 +67,7 @@ presets_loader_sync_project_subject <- function(
             selected = project_name
           )
         }
-        if(
+        if (
           inherits(loader_subject, "RAVEShinyComponent") &&
           length(subject_code) == 1 &&
           !is.na(subject_code) &&

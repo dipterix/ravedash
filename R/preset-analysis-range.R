@@ -7,7 +7,7 @@ presets_analysis_ranges <- function(
   max_components = 2
 ) {
   max_components <- as.integer(max_components)
-  if(max_components < 1L){ max_components <- 1L }
+  if (max_components < 1L) { max_components <- 1L }
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$repository_name <- pipeline_repository
 
@@ -15,23 +15,23 @@ presets_analysis_ranges <- function(
   analysis_lock_str <- "lock"
   analysis_lock_choices <- c("Unlocked", "Lock frequency", "Lock time")
 
-  if(max_components == 1L) {
+  if (max_components == 1L) {
     comp$no_save <- analysis_lock_str
   }
 
-  get_repo <- function(){
+  get_repo <- function() {
 
     data_loaded <- isTRUE(shiny::isolate(watch_data_loaded()))
-    has_repository <- comp$container$data[['@has']](pipeline_repository)
+    has_repository <- comp$container$data[["@has"]](pipeline_repository)
 
-    if(!data_loaded) {
-      if( has_repository ) {
+    if (!data_loaded) {
+      if ( has_repository ) {
         comp$container$data[["@remove"]](pipeline_repository)
       }
       return(NULL)
     }
 
-    if(!has_repository) {
+    if (!has_repository) {
       logger("Trying to get repository object...", level = "trace")
       repository <- ravepipeline::pipeline_read(var_names = pipeline_repository,
                                           pipe_dir = comp$container$pipeline_path)
@@ -39,15 +39,15 @@ presets_analysis_ranges <- function(
     } else {
       repository <- comp$container$data[[pipeline_repository]]
     }
-    if(!inherits(repository, "rave_repository")) {
+    if (!inherits(repository, "rave_repository")) {
       return(NULL)
     }
     repository
   }
 
-  get_subject <- function(){
+  get_subject <- function() {
     repo <- get_repo()
-    if(inherits(repo, "rave_repository")) {
+    if (inherits(repo, "rave_repository")) {
       subject <- repo$subject
       return(subject)
     }
@@ -57,7 +57,7 @@ presets_analysis_ranges <- function(
   get_default <- function(sub_id, missing = NULL, use_cache = TRUE, constraint = NULL) {
     vname <- comp$get_sub_element_varnames(sub_id)
     subject <- get_subject()
-    if(inherits(subject, "RAVESubject")) {
+    if (inherits(subject, "RAVESubject")) {
       missing <- subject$get_default(vname,
                                      default_if_missing = missing, simplify = TRUE)
     }
@@ -67,7 +67,7 @@ presets_analysis_ranges <- function(
 
   # component_container$add_components(comp)
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
 
     input_card(
       class_header = "shidashi-anchor",
@@ -118,13 +118,13 @@ presets_analysis_ranges <- function(
     )
   }
 
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
 
     # get pipeline's default, or subject's default, or program default
-    reset <- function(...){
+    reset <- function(...) {
       logger("Reset {id}", level = "trace", use_glue = TRUE)
       repo <- get_repo()
-      if(is.null(repo)) { return() }
+      if (is.null(repo)) { return() }
 
       time_range <- range(c(unlist(repo$time_windows), repo$time_windows))
       freq_range <- range(repo$frequency)
@@ -138,9 +138,9 @@ presets_analysis_ranges <- function(
       analysis_lock <- get_default(sub_id = analysis_lock_str, constraint = analysis_lock_choices)
       analysis_ranges <- get_default(sub_id = NULL, missing = default_analysis_ranges)
 
-      if(!length(analysis_ranges)){
+      if (!length(analysis_ranges)) {
         analysis_ranges <- default_analysis_ranges
-      } else if(length(analysis_ranges) > max_components){
+      } else if (length(analysis_ranges) > max_components) {
         analysis_ranges <- analysis_ranges[seq_len(max_components)]
       }
 
@@ -162,12 +162,12 @@ presets_analysis_ranges <- function(
 
     }
 
-    initialize_with_new_data_reactive <- function(){
+    initialize_with_new_data_reactive <- function() {
       shidashi::clear_notifications(
         class = "_presets_analysis_ranges_error_",
         session = session)
       repository <- get_repo()
-      if(is.null(repository)){
+      if (is.null(repository)) {
         shidashi::show_notification(
           title = "Initialization Error",
           message = c(
@@ -190,18 +190,18 @@ presets_analysis_ranges <- function(
     shiny::bindEvent(
       observe({
         analysis_lock <- which(analysis_lock_choices %in% comp$get_sub_element_input(analysis_lock_str))
-        if(!length(analysis_lock) || analysis_lock == 1){ return() }
-        if(analysis_lock == 2){
+        if (!length(analysis_lock) || analysis_lock == 1) { return() }
+        if (analysis_lock == 2) {
           value <- comp$current_value[[1]]$frequency
-          lapply(seq_len(max_components), function(ii){
+          lapply(seq_len(max_components), function(ii) {
             shiny::updateSliderInput(
               session = session, inputId = sprintf("%s_frequency_%d", base_id, ii),
               value = value
             )
           })
-        } else if(analysis_lock == 3){
+        } else if (analysis_lock == 3) {
           value <- comp$current_value[[1]]$time
-          lapply(seq_len(max_components), function(ii){
+          lapply(seq_len(max_components), function(ii) {
             shiny::updateSliderInput(
               session = session, inputId = sprintf("%s_time_%d", base_id, ii),
               value = value
@@ -220,9 +220,9 @@ presets_analysis_ranges <- function(
                          base_id,
                          seq_len(max_components)),
       uniform = as.list(rep("I", max_components)),
-      updates = lapply(seq_len(max_components), function(ii){
-        function(value){
-          if(isTRUE(comp$get_sub_element_input(analysis_lock_str) == analysis_lock_choices[[2]])){
+      updates = lapply(seq_len(max_components), function(ii) {
+        function(value) {
+          if (isTRUE(comp$get_sub_element_input(analysis_lock_str) == analysis_lock_choices[[2]])) {
             shiny::updateSliderInput(
               session = session, inputId = sprintf("%s_frequency_%d", base_id, ii),
               value = value
@@ -235,9 +235,9 @@ presets_analysis_ranges <- function(
       input = input, session = session,
       inputIds = sprintf("%s_time_%d", base_id, seq_len(max_components)),
       uniform = as.list(rep("I", max_components)),
-      updates = lapply(seq_len(max_components), function(ii){
-        function(value){
-          if(isTRUE(comp$get_sub_element_input(analysis_lock_str) == analysis_lock_choices[[3]])){
+      updates = lapply(seq_len(max_components), function(ii) {
+        function(value) {
+          if (isTRUE(comp$get_sub_element_input(analysis_lock_str) == analysis_lock_choices[[3]])) {
             shiny::updateSliderInput(
               session = session, inputId = sprintf("%s_time_%d", base_id, ii),
               value = value
@@ -248,7 +248,7 @@ presets_analysis_ranges <- function(
     )
 
     comp$set_tool("reset", reset, server_needed = TRUE)
-    comp$set_tool("initialize_with_new_data", function(){
+    comp$set_tool("initialize_with_new_data", function() {
       shiny::isolate(initialize_with_new_data_reactive())
     }, server_needed = TRUE)
 

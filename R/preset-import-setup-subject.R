@@ -3,18 +3,18 @@
 presets_import_setup_native <- function(
   id = "import_setup",
   label = "Select project & subject"
-){
+) {
 
   comp <- RAVEShinyComponent$new(id = id)
   comp$no_save <- c("", "format_details", "actions", "new_project_name",
                     "new_project_name_dismiss", "new_project_name_confirm")
 
 
-  get_projects <- function(refresh = FALSE){
+  get_projects <- function(refresh = FALSE) {
     ravecore::get_projects(refresh = refresh)
   }
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
 
     all_projects <- c(get_projects(TRUE), "[New Project]")
     raw_root <- ravepipeline::raveio_getopt("raw_data_dir")
@@ -106,7 +106,7 @@ presets_import_setup_native <- function(
 
         project_name <- comp$get_sub_element_input("project_name")
 
-        if(isTRUE(project_name == "[New Project]")){
+        if (isTRUE(project_name == "[New Project]")) {
 
           ravedash::logger("Opening up a modal to create new project", level = "trace")
 
@@ -114,7 +114,7 @@ presets_import_setup_native <- function(
             title = "Create new project",
             easyClose = FALSE,
             shiny::div(
-              class = 'fill-width',
+              class = "fill-width",
               shiny::textInput(
                 inputId = comp$get_sub_element_id("new_project_name", with_namespace = TRUE),
                 label = "Enter a valid project name:",
@@ -144,7 +144,7 @@ presets_import_setup_native <- function(
       ravedash::safe_observe({
         # check current project size
         all_projects <- get_projects(refresh = TRUE)
-        if(!length(all_projects)) {
+        if (!length(all_projects)) {
           ravedash::logger("Dismiss button is pressed but there is no project", level = "trace")
           shidashi::show_notification(
             "You haven't created any project yet. Please create one so you can start to import subjects.", type = "warning", close = TRUE, autohide = TRUE
@@ -175,18 +175,18 @@ presets_import_setup_native <- function(
 
         msg <- NULL
 
-        if(!length(new_project_name)) {
+        if (!length(new_project_name)) {
           new_project_name <- ""
         }
         new_project_name <- trimws(new_project_name, which = "both")
-        if(new_project_name == ''){
+        if (new_project_name == "") {
           msg <- "The project name cannot be blank"
-        } else if( tolower(new_project_name) %in% tolower(all_projects) ){
+        } else if ( tolower(new_project_name) %in% tolower(all_projects) ) {
           msg <- "Project has already existed"
-        } else if (!grepl("^[a-zA-Z0-9][a-zA-Z0-9_-]{0,}$", new_project_name)){
+        } else if (!grepl("^[a-zA-Z0-9][a-zA-Z0-9_-]{0,}$", new_project_name)) {
           msg <- "The subject code is invalid: can only contain letters, digits, dash (-), or underscore (_). The first letter should only contain letters and digits. For example, `my-project_0123` is valid, but `_project`, `project!@#$` are invalid."
         }
-        if(length(msg)){
+        if (length(msg)) {
           ravedash::logger("Invalid new project name: `{new_project_name}`", level = "trace", use_glue = TRUE)
           shidashi::show_notification(
             title = "The project name is invalid",
@@ -218,7 +218,7 @@ presets_import_setup_native <- function(
     input_ready <- shiny::bindEvent(
       shiny::reactive({
         valid <- comp$sv$is_valid()
-        if(!valid){
+        if (!valid) {
           return(list(
             valid = FALSE,
             reason = "Project/subject is invalid. Please fix the inputs above"
@@ -229,8 +229,8 @@ presets_import_setup_native <- function(
         subject_code <- comp$get_sub_element_input("subject_code")
         # format <- comp$get_sub_element_input("format")
 
-        if(!length(project_name) || project_name == "" ||
-           !length(subject_code) || trimws(subject_code) == "" ){
+        if (!length(project_name) || project_name == "" ||
+           !length(subject_code) || trimws(subject_code) == "" ) {
           return(list(valid = FALSE, reason = "Blank project/subject found. Please enter the inputs"))
         }
         subject <- ravecore::RAVESubject$new(project_name = project_name,
@@ -238,7 +238,7 @@ presets_import_setup_native <- function(
                                              strict = FALSE)
         preproc <- subject$preprocess_settings
 
-        if(dir.exists(subject$preprocess_path)) {
+        if (dir.exists(subject$preprocess_path)) {
 
           settings <- ravepipeline::load_yaml(comp$container$settings_path)
           comp$collect_settings(map = settings)
@@ -257,14 +257,14 @@ presets_import_setup_native <- function(
           ))
         } else {
           # if( format == "Native" ) {
-            if(!dir.exists(preproc$raw_path)) {
+            if (!dir.exists(preproc$raw_path)) {
               return(list(
                 valid = FALSE,
                 reason = sprintf("Cannot find raw folder for subject `%s`", subject_code)
               ))
             }
           # } else if(format == "BIDS") {
-          #   if(!length(dirs$bids_subject_path) || !dir.exists(dirs$bids_subject_path)) {
+          #   if (!length(dirs$bids_subject_path) || !dir.exists(dirs$bids_subject_path)) {
           #     return(list(
           #       valid = FALSE,
           #       reason = sprintf("Cannot find raw folder for BIDS subject `%s`", subject_code)
@@ -292,14 +292,14 @@ presets_import_setup_native <- function(
     shiny::bindEvent(
       ravedash::safe_observe({
         validation <- input_ready()
-        if(!validation$valid){
+        if (!validation$valid) {
           dipsaus::updateActionButtonStyled(
             session = session,
             inputId = comp$get_sub_element_id("actions", with_namespace = FALSE),
             disabled = TRUE,
             label = validation$reason
           )
-        } else if(validation$initialized){
+        } else if (validation$initialized) {
           dipsaus::updateActionButtonStyled(
             session = session,
             inputId = comp$get_sub_element_id("actions", with_namespace = FALSE),
@@ -323,7 +323,7 @@ presets_import_setup_native <- function(
     shiny::bindEvent(
       ravedash::safe_observe({
         validator <- input_ready()
-        if(!isTRUE(validator$valid) || !isFALSE(validator$initialized)) { return() }
+        if (!isTRUE(validator$valid) || !isFALSE(validator$initialized)) { return() }
         # Create a new subject!
         project_name <- validator$project_name
         subject_code <- validator$subject_code
@@ -347,11 +347,11 @@ presets_import_setup_native <- function(
   # ------------------------------- Validators --------------------------------
   comp$add_rule(
     sub_id = "project_name",
-    rule = function(value){
-      if(!length(value)){
+    rule = function(value) {
+      if (!length(value)) {
         return("The project name cannot be blank")
       }
-      if(value == "[New Project]"){
+      if (value == "[New Project]") {
         return("Please enter the new project name in the pop-up modal message")
       }
       invisible()
@@ -360,18 +360,18 @@ presets_import_setup_native <- function(
 
   comp$add_rule(
     sub_id = "new_project_name",
-    rule = function(value){
-      if(
+    rule = function(value) {
+      if (
         length(value) == 1 &&
         isTRUE(comp$get_sub_element_input("project_name") == "[New Project]")
-      ){
-        if(!nchar(value)){ return() }
+      ) {
+        if (!nchar(value)) { return() }
         all_projects <- tolower(get_projects())
-        if( tolower(value) %in% all_projects ){
+        if ( tolower(value) %in% all_projects ) {
           return("Project has already existed (case-insensitive)")
         }
         result <- grepl("^[a-zA-Z0-9][a-zA-Z0-9_-]{0,}$", value)
-        if(!result){
+        if (!result) {
           return("The subject code is invalid: can only contain letters, digits, dash (-), or underscore (_). The first letter should only contain letters and digits.")
         }
       }
@@ -381,13 +381,13 @@ presets_import_setup_native <- function(
 
   comp$add_rule(
     sub_id = "subject_code",
-    rule = function(value){
-      if(!length(value)){
+    rule = function(value) {
+      if (!length(value)) {
         value <- ""
       }
-      if(trimws(value) == "") { return() }
+      if (trimws(value) == "") { return() }
 
-      if(!grepl("^[a-zA-Z0-9][a-zA-Z0-9_-]{0,}$", value)) {
+      if (!grepl("^[a-zA-Z0-9][a-zA-Z0-9_-]{0,}$", value)) {
         return("The subject code is invalid: can only contain letters, digits, dash (-), or underscore (_). The first letter should only contain letters and digits.")
       }
 

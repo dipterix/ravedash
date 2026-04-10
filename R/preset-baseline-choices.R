@@ -24,19 +24,19 @@ presets_baseline_choices <- function(
   # comp$no_save <- c(reset_str, category_choices_str, selected_electrode_text_str)
 
   # repository_name <- "repository"
-  get_repo <- function(){
+  get_repo <- function() {
 
     data_loaded <- isTRUE(shiny::isolate(watch_data_loaded()))
-    has_repository <- comp$container$data[['@has']](pipeline_repository)
+    has_repository <- comp$container$data[["@has"]](pipeline_repository)
 
-    if(!data_loaded) {
-      if( has_repository ) {
+    if (!data_loaded) {
+      if ( has_repository ) {
         comp$container$data[["@remove"]](pipeline_repository)
       }
       return(NULL)
     }
 
-    if(!has_repository) {
+    if (!has_repository) {
       logger("Trying to get repository object...", level = "trace")
       repository <- ravepipeline::pipeline_read(var_names = pipeline_repository,
                                           pipe_dir = comp$container$pipeline_path)
@@ -44,7 +44,7 @@ presets_baseline_choices <- function(
     } else {
       repository <- comp$container$data[[pipeline_repository]]
     }
-    if(!inherits(repository, "rave_repository")) {
+    if (!inherits(repository, "rave_repository")) {
       return(NULL)
     }
     repository
@@ -53,7 +53,7 @@ presets_baseline_choices <- function(
   get_default <- function(sub_id, missing = NULL, use_cache = TRUE, constraint = NULL) {
     vname <- comp$get_sub_element_varnames(sub_id)
     repo <- get_repo()
-    if(inherits(repo, "rave_repository")) {
+    if (inherits(repo, "rave_repository")) {
       subject <- repo$subject
       missing <- subject$get_default(vname,
                                      default_if_missing = missing, simplify = TRUE)
@@ -64,7 +64,7 @@ presets_baseline_choices <- function(
 
   # component_container$add_components(comp)
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
 
     input_card(
       class_header = "shidashi-anchor",
@@ -123,20 +123,20 @@ presets_baseline_choices <- function(
     )
   }
 
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
 
-    comp$ready_to_collect <- function(){
+    comp$ready_to_collect <- function() {
       shiny::isolate(isFALSE(watch_loader_opened()))
     }
 
     # get pipeline's default, or subject's default, or program default
-    reset <- function(...){
+    reset <- function(...) {
       logger("Reset {id}", level = "trace", use_glue = TRUE)
       repo <- get_repo()
-      if(is.null(repo)) { return() }
+      if (is.null(repo)) { return() }
 
       time_range <- range(c(unlist(repo$time_windows), repo$time_windows))
-      if(time_range[1] <= 0){
+      if (time_range[1] <= 0) {
         default_baseline_windows <- c(time_range[1], 0)
       } else {
         default_baseline_windows <- c(time_range[1], time_range[1])
@@ -149,12 +149,12 @@ presets_baseline_choices <- function(
                                             constraint = baseline_along_choices)
       baseline_windows <- get_default(baseline_windows_str,
                                       missing = c(time_range[1], max(time_range[1], 0)))
-      baseline_windows <- lapply(baseline_windows, function(x){
+      baseline_windows <- lapply(baseline_windows, function(x) {
         unlist(x$window_interval)
       })
       baseline_windows <- tryCatch({
         ravecore::validate_time_window(baseline_windows)
-      }, error = function(e){
+      }, error = function(e) {
         list(c(time_range[1], max(time_range[1], 0)))
       })
 
@@ -175,7 +175,7 @@ presets_baseline_choices <- function(
             max = time_range[[2]]
           )
         ),
-        value = lapply(baseline_windows, function(x){
+        value = lapply(baseline_windows, function(x) {
           list(window_interval = x)
         })
       )
@@ -183,12 +183,12 @@ presets_baseline_choices <- function(
 
     }
 
-    initialize_with_new_data_reactive <- function(){
+    initialize_with_new_data_reactive <- function() {
       shidashi::clear_notifications(
         class = "_presets_baseline_choices_error_",
         session = session)
       repository <- get_repo()
-      if(is.null(repository)){
+      if (is.null(repository)) {
         shidashi::show_notification(
           title = "Initialization Error",
           message = c(
@@ -215,7 +215,7 @@ presets_baseline_choices <- function(
       # )
 
     comp$set_tool("reset", reset, server_needed = TRUE)
-    comp$set_tool("initialize_with_new_data", function(){
+    comp$set_tool("initialize_with_new_data", function() {
       shiny::isolate(initialize_with_new_data_reactive())
     }, server_needed = TRUE)
 

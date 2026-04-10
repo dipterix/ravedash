@@ -8,16 +8,16 @@ presets_loader_subject <- function(
   loader_project_id = "loader_project_name",
   checks = c("notch", "wavelet"),
   allow_new = FALSE
-){
+) {
   force(checks)
-  if(length(checks)) {
+  if (length(checks)) {
     allow_new <- FALSE
   }
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- loader_project_id
   comp$no_save <- c("create_new", "cancel_new", "new_subject_code")
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
     shidashi::register_input(
       shiny::selectInput(
         inputId = id,
@@ -31,18 +31,18 @@ presets_loader_subject <- function(
       description = "Subject code within the selected project."
     )
   }
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
     loader_project <- comp$get_dependent_component(loader_project_id)
 
-    get_subject <- function(){
+    get_subject <- function() {
       project_name <- loader_project$current_value
       subject_code <- comp$current_value
       subject_id <- sprintf("%s/%s", project_name, subject_code)
-      if(length(subject_id) != 1){
+      if (length(subject_id) != 1) {
         return(NULL)
       }
       subject <- comp$container$get_cache("loader_subject_instance", default = NULL)
-      if(!inherits(subject, "RAVESubject") ||
+      if (!inherits(subject, "RAVESubject") ||
          !identical(subject$subject_id, subject_id)) {
 
         subject <- ravecore::as_rave_subject(subject_id, strict = FALSE)
@@ -55,7 +55,7 @@ presets_loader_subject <- function(
 
     shiny::bindEvent(
       observe({
-        if(!loader_project$sv$is_valid()){ return() }
+        if (!loader_project$sv$is_valid()) { return() }
         project_name <- input[[loader_project$id]]
         project <- ravecore::as_rave_project(project_name)
         all_subjects <- project$subjects()
@@ -65,7 +65,7 @@ presets_loader_subject <- function(
           use_cache = TRUE
         )
 
-        if(allow_new) {
+        if (allow_new) {
           all_subjects <- c("[New Subject]", all_subjects)
         }
 
@@ -80,19 +80,19 @@ presets_loader_subject <- function(
     new_subject_validator$add_rule(
       comp$get_sub_element_id("new_subject_code", with_namespace = FALSE),
       rule = function(value) {
-        if(!loader_project$sv$is_valid()) {
+        if (!loader_project$sv$is_valid()) {
           return("Invalid project name. Please dismiss this modal and choose a valid project name first")
         }
-        if(!length(value) || !nzchar(value)) {
+        if (!length(value) || !nzchar(value)) {
           return("Subject code cannot be blank")
         }
         project_name <- loader_project$get_sub_element_input()
         project <- ravecore::as_rave_project(project_name)
         all_subjects <- project$subjects()
-        if(value %in% all_subjects) {
+        if (value %in% all_subjects) {
           return("Subject exists. Dismiss the modal and choose this subject in the subject selector")
         }
-        if(!grepl("^[a-zA-Z][a-zA-Z0-9_-]{0,}$", value)){
+        if (!grepl("^[a-zA-Z][a-zA-Z0-9_-]{0,}$", value)) {
           return("Invalid subject code, must start with letters `a-z` and can only contain letters, digits (0-9), underscore `_` or dash `-`")
         }
 
@@ -105,9 +105,9 @@ presets_loader_subject <- function(
 
     shiny::bindEvent(
       observe({
-        if(!loader_project$sv$is_valid()){ return() }
+        if (!loader_project$sv$is_valid()) { return() }
         subject_code <- comp$get_sub_element_input()
-        if( !identical(subject_code, "[New Subject]") ) { return() }
+        if ( !identical(subject_code, "[New Subject]") ) { return() }
 
         new_subject_validator$enable()
 
@@ -155,7 +155,7 @@ presets_loader_subject <- function(
 
     shiny::bindEvent(
       observe({
-        if( isFALSE(new_subject_validator$is_valid()) ) {
+        if ( isFALSE(new_subject_validator$is_valid()) ) {
           dipsaus::updateActionButtonStyled(
             session = session,
             inputId = comp$get_sub_element_id("create_new", with_namespace = FALSE),
@@ -175,13 +175,13 @@ presets_loader_subject <- function(
 
     shiny::bindEvent(
       observe({
-        if(!loader_project$sv$is_valid()){
+        if (!loader_project$sv$is_valid()) {
           shiny::removeModal(session = session)
           shiny::updateSelectInput(session = session, inputId = comp$id,
                                    selected = character())
           stop("Project is invalid. Please choose a valid project first.")
         }
-        if(!new_subject_validator$is_valid()) {
+        if (!new_subject_validator$is_valid()) {
           stop("Input subject code is invalid")
         }
 
@@ -195,7 +195,7 @@ presets_loader_subject <- function(
         ravepipeline::dir_create2(subject$preprocess_settings$raw_path)
 
         all_subjects <- subject$project$subjects()
-        if(allow_new) {
+        if (allow_new) {
           all_subjects <- c("[New Subject]", all_subjects)
         }
 
@@ -212,28 +212,28 @@ presets_loader_subject <- function(
     comp$set_tool("get_subject", value = get_subject, server_needed = TRUE)
 
   }
-  comp$add_rule(function(subject_code){
-    if(length(subject_code) != 1 || is.na(subject_code) ){
+  comp$add_rule(function(subject_code) {
+    if (length(subject_code) != 1 || is.na(subject_code) ) {
       return("Subject must not be blank.")
     }
 
     subject_code <- gsub("^sub-", "", trimws(subject_code), ignore.case = TRUE)
-    if(!nzchar(subject_code)) {
+    if (!nzchar(subject_code)) {
       return("Subject must not be blank.")
     }
-    if(grepl("^[^a-zA-Z0-9]", subject_code)) {
+    if (grepl("^[^a-zA-Z0-9]", subject_code)) {
       return("Invalid subject code.")
     }
 
     loader_project <- comp$get_dependent_component(loader_project_id)
 
     project_name <- loader_project$current_value
-    if(is.null(project_name)){
+    if (is.null(project_name)) {
       return("No project name found.")
     }
     subject_id <- sprintf("%s/%s", project_name, subject_code)
     subject <- comp$container$get_cache("loader_subject_instance", default = NULL)
-    if(!inherits(subject, "RAVESubject") ||
+    if (!inherits(subject, "RAVESubject") ||
        !identical(subject$subject_id, subject_id)) {
 
       subject <- ravecore::as_rave_subject(subject_id, strict = FALSE)
@@ -242,22 +242,22 @@ presets_loader_subject <- function(
     }
 
 
-    if(!dir.exists(subject$path)){
+    if (!dir.exists(subject$path)) {
       return("Subject directory is broken or missing.")
     }
-    if("notch" %in% checks) {
-      if(!any(subject$preprocess_settings$notch_filtered)) {
+    if ("notch" %in% checks) {
+      if (!any(subject$preprocess_settings$notch_filtered)) {
         return("Please run notch filter on this subject first.")
       }
     }
-    if("wavelet" %in% checks) {
-      if(!any(subject$preprocess_settings$has_wavelet)) {
+    if ("wavelet" %in% checks) {
+      if (!any(subject$preprocess_settings$has_wavelet)) {
         return("Please run wavelet on this subject first.")
       }
     }
-    if("3dviewer" %in% checks) {
+    if ("3dviewer" %in% checks) {
       fspath <- subject$freesurfer_path
-      if(length(fspath) != 1 || is.na(fspath) || !isTRUE(dir.exists(fspath))) {
+      if (length(fspath) != 1 || is.na(fspath) || !isTRUE(dir.exists(fspath))) {
         return("Please generate or import surface/volume reconstruction first.")
       }
     }
@@ -277,16 +277,16 @@ presets_loader_subject_only <- function(
     varname = "subject_code",
     label = "Subject",
     multiple = FALSE
-){
+) {
   force(multiple)
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
     choices <- list.dirs(ravepipeline::raveio_getopt("raw_data_dir"),
                          full.names = FALSE, recursive = FALSE)
     choices <- choices[grepl("^[a-zA-Z][a-zA-Z0-9_-]{0,}$", choices)]
 
-    if(multiple) {
+    if (multiple) {
       value <- value[value %in% choices]
     } else {
       value <- value %OF% choices

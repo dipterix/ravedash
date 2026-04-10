@@ -44,12 +44,12 @@ data_loaded <- TRUE
 ravedash_footer("my_module")
 
 # server code to set message
-server <- function(input, output, session){
+server <- function(input, output, session) {
 
-  module_server_common(input, output, session, function(){
+  module_server_common(input, output, session, function() {
 
     # check if data has been loaded
-    if(data_loaded) {
+    if (data_loaded) {
 
       # if yes, then set the footer message
       fire_rave_event("loader_message",

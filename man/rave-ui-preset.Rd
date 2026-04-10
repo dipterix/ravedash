@@ -93,7 +93,7 @@ presets_loader_3dviewer(
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
   loader_electrodes_id = "loader_electrode_text",
-  gadgets = c("standalone", "download")
+  ...
 )
 
 presets_loader_3dviewer2(
@@ -102,7 +102,7 @@ presets_loader_3dviewer2(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   loader_electrodes_id = "loader_electrode_text",
-  gadgets = c("standalone", "download")
+  ...
 )
 
 presets_loader_electrodes(
@@ -213,8 +213,7 @@ different to the default}
 \item{loader_electrodes_id}{the ID of \code{presets_loader_electrodes} if
 different to the default}
 
-\item{gadgets}{gadget types to include; see \code{type} argument in function
-\code{\link{output_gadget}}}
+\item{...}{ignored, typically reserved for obsolete arguments}
 
 \item{allow_stitch}{whether to allow stitching the events}
 

@@ -21,7 +21,9 @@ if loader needs to be open to load data.}
 
 \item{...}{ignored}
 
-\item{session}{shiny session}
+\item{session}{shiny session; \code{\link[shidashi]{init_app}} must be
+called before this function so that the shidashi session registry is
+initialized.}
 
 \item{parse_env}{environment used to parse module}
 }
@@ -34,34 +36,15 @@ data loader panel.
 }
 \examples{
 
-# Debug in non-reactive session: create fake session
-fake_session <- shiny::MockShinySession$new()
-
-# register common-server function
-module_server_common(module_id = "mock-session",
-                     session = fake_session)
-server_tools <- get_default_handlers(fake_session)
-
-# Print each function to see the usage
-
-server_tools$auto_recalculate
-
-server_tools$run_analysis_onchange
-
-server_tools$run_analysis_flag
-
-server_tools$module_is_active
-
-server_tools$simplify_view
-
 # 'RAVE' module server function
-server <- function(input, output, session, ...){
+server <- function(input, output, session, ...) {
+  shidashi::init_app()
 
   pipeline_path <- "PATH to module pipeline"
 
   module_server_common(
     module_id = session$ns(NULL),
-    check_data_loaded = function(first_time){
+    check_data_loaded = function(first_time) {
 
       re <- tryCatch({
         # Try to read data from pipeline results
@@ -76,7 +59,7 @@ server <- function(input, output, session, ...){
 
         # Return TRUE indicating data has been loaded
         TRUE
-      }, error = function(e){
+      }, error = function(e) {
 
         # Fire event to remove footer message
         ravedash::fire_rave_event('loader_message', NULL)

@@ -10,10 +10,10 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
   stopifnot(!is.null(session))
 
   available_reports <- pipeline$available_reports
-  if(!length(available_reports)) { return() }
+  if (!length(available_reports)) { return() }
 
   labels <- unname(unlist(lapply(available_reports, "[[", "label")))
-  if(!length(labels)) { return() }
+  if (!length(labels)) { return() }
 
   ns <- session$ns
 
@@ -23,7 +23,7 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
     nms <- unname(unlist(lapply(available_reports, "[[", "name")))
     reports <- available_reports[nms %in% report_names]
 
-    if(!length(reports)) {
+    if (!length(reports)) {
       show_notification(
         title = "No report to generate!",
         type = "warning",
@@ -54,7 +54,7 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
           params$type <- "widget"
           params$project_name <- subject$project_name
           params$subject_code <- subject$subject_code
-          if(!length(params$report_filename)) {
+          if (!length(params$report_filename)) {
             params$report_filename <- basename(dirname(path))
           }
           params <- unlist(lapply(names(params), function(nm) {
@@ -78,7 +78,7 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
                   path
                 )
               ),
-              if(!is.null(url)) {
+              if (!is.null(url)) {
                 shiny::a(target = "_blank", href = url, class = "btn btn-sm btn-success",
                          shiny::span("View report ", shiny_icons$external_link))
               }
@@ -147,7 +147,7 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
     close(conn)
 
     current_selection <- shiny::isolate(as.character(settings$input$`_report_label`))
-    if(!length(current_selection)) {
+    if (!length(current_selection)) {
       current_selection <- labels
     }
 

@@ -8,20 +8,20 @@ presets_loader_reference <- function(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   mode = c("default", "create")
-){
+) {
   mode <- match.arg(mode)
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
   comp$no_save <- "default"
 
-  if(mode == "default") {
-    comp$ui_func <- function(id, value, depends){
+  if (mode == "default") {
+    comp$ui_func <- function(id, value, depends) {
       shiny::tagList(shidashi::flex_item(
         shidashi::register_input(
           shiny::selectInput(
             inputId = id,
             label = label,
-            choices = '',
+            choices = "",
             selected = NULL,
             multiple = FALSE
           ),
@@ -39,7 +39,7 @@ presets_loader_reference <- function(
       ))
     }
   } else {
-    comp$ui_func <- function(id, value, depends){
+    comp$ui_func <- function(id, value, depends) {
       shiny::tagList(shidashi::flex_item(
         shidashi::register_input(
           shiny::selectInput(
@@ -56,7 +56,7 @@ presets_loader_reference <- function(
     }
   }
 
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
     loader_project <- comp$get_dependent_component(loader_project_id)
     loader_subject <- comp$get_dependent_component(loader_subject_id)
 
@@ -65,16 +65,16 @@ presets_loader_reference <- function(
     shiny::bindEvent(
       observe({
         open_loader <- watch_loader_opened(session = session)
-        if(!open_loader){ return() }
-        if(!loader_subject$sv$is_valid()){ return() }
+        if (!open_loader) { return() }
+        if (!loader_subject$sv$is_valid()) { return() }
 
         subject <- get_subject()
         ref_choices <- subject$reference_names
 
-        if(mode == "default") {
+        if (mode == "default") {
 
           default_refname <- subject$get_default("reference_name")
-          if(length(default_refname)){
+          if (length(default_refname)) {
             default_refname <- default_refname[[1]]
             shinyWidgets::updatePrettyCheckbox(
               session, inputId = comp$get_sub_element_id("default", FALSE),

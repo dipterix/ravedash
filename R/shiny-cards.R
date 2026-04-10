@@ -55,11 +55,15 @@ NULL
 #'
 #'
 #' @export
-set_card_url_scheme <- function(module_id, root, sep = "/"){
-  stopifnot2(length(root) == 1 && is.character(root), msg = "`root` must be a character with length of one")
-  stopifnot2(length(sep) == 1 && is.character(sep), msg = "`sep` must be a character with length of one")
+set_card_url_scheme <- function(module_id, root, sep = "/") {
+  stopifnot(
+    "`root` must be a character with length of one" =
+      length(root) == 1 && is.character(root),
+    "`sep` must be a character with length of one" =
+      length(sep) == 1 && is.character(sep)
+  )
   urls <- getOption("ravedash.urls", NULL)
-  if(!inherits(urls, "fastmap2")){
+  if (!inherits(urls, "fastmap2")) {
     urls <- dipsaus::list_to_fastmap2(as.list(urls))
     options("ravedash.urls" = urls)
   }
@@ -79,24 +83,24 @@ set_card_url_scheme <- function(module_id, root, sep = "/"){
 #' @export
 card_href <- function(title, type = "input",
                       module_id = NULL) {
-  if(length(title) >= 2){
+  if (length(title) >= 2) {
     title <- title[[1]]
   }
-  if(!length(title)){
+  if (!length(title)) {
     return("#")
   }
   title <- tolower(gsub("[^a-zA-Z0-9]", "", title))
 
-  if(!length(module_id)){
+  if (!length(module_id)) {
     session <- shiny::getDefaultReactiveDomain()
-    if(length(session)){
+    if (length(session)) {
       module_id <- session$ns(NULL)
     }
   }
 
-  if(!length(module_id) || module_id == "" || module_id == "mock-session") {
+  if (!length(module_id) || module_id == "" || module_id == "mock-session") {
     module <- get_active_module_info()
-    if(is.list(module)){
+    if (is.list(module)) {
       module_id <- module$id
     } else {
       module_id <- "<placeholder for module ID>"
@@ -127,15 +131,15 @@ input_card <- function(title, ...,
                        href = "auto", tools = NULL,
                        footer = NULL, append_tools = TRUE,
                        toggle_advanced = FALSE,
-                       module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())){
+                       module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())) {
 
-  if(identical(href, "auto")){
+  if (identical(href, "auto")) {
     href <- card_href(title, type = "input",
                       module_id = module_id)
   }
 
-  if(href %in% c("", "#", "/")) {
-    if( append_tools ) {
+  if (href %in% c("", "#", "/")) {
+    if ( append_tools ) {
       all_tools <- list(
         shidashi::card_tool(widget = "collapse"),
         tools
@@ -148,7 +152,7 @@ input_card <- function(title, ...,
     }
 
   } else {
-    if( append_tools ) {
+    if ( append_tools ) {
       all_tools <- list(
         shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
         shidashi::card_tool(widget = "collapse"),
@@ -163,7 +167,7 @@ input_card <- function(title, ...,
     }
   }
 
-  if(toggle_advanced){
+  if (toggle_advanced) {
     footer <- shiny::tagList(
       footer,
       shiny::tags$small(
@@ -172,7 +176,7 @@ input_card <- function(title, ...,
       )
     )
   }
-  class <- dipsaus::combine_html_class(class, "ravedash-input-card")
+  class <- shidashi::combine_html_class(class, "ravedash-input-card")
   shidashi::card(title = title, ..., class = class, tools = all_tools, class_body = class_body, class_foot = class_foot, footer = footer, class_header = class_header)
 }
 
@@ -182,14 +186,14 @@ input_card <- function(title, ...,
 output_card <- function(title, ..., class = "", class_body = "padding-10",
                         class_foot = "padding-10", href = "auto",
                         tools = NULL, append_tools = TRUE,
-                        module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())){
+                        module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())) {
 
-  if(identical(href, "auto")){
+  if (identical(href, "auto")) {
     href <- card_href(title, type = "output", module_id = module_id)
   }
 
-  if(href %in% c("", "#", "/")) {
-    if( append_tools ){
+  if (href %in% c("", "#", "/")) {
+    if ( append_tools ) {
       all_tools <- list(
         shidashi::card_tool(widget = "collapse"),
         shidashi::card_tool(widget = "maximize"),
@@ -204,7 +208,7 @@ output_card <- function(title, ..., class = "", class_body = "padding-10",
     }
 
   } else {
-    if( append_tools ){
+    if ( append_tools ) {
       all_tools <- list(
         shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
         shidashi::card_tool(widget = "collapse"),
@@ -222,7 +226,7 @@ output_card <- function(title, ..., class = "", class_body = "padding-10",
 
   }
 
-  class <- dipsaus::combine_html_class(class, "ravedash-output-card")
+  class <- shidashi::combine_html_class(class, "ravedash-output-card")
   shidashi::card(title = title, ..., class = class, tools = all_tools, class_body = class_body, class_foot = class_foot)
 }
 
@@ -232,14 +236,14 @@ output_card <- function(title, ..., class = "", class_body = "padding-10",
 output_cardset <- function(title, ..., class = "", class_body = "no-padding",
                         class_foot = "padding-10", href = "auto",
                         tools = NULL, append_tools = TRUE,
-                        module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())){
+                        module_id = get0("module_id", ifnotfound = NULL, envir = parent.frame())) {
 
-  if(identical(href, "auto")){
+  if (identical(href, "auto")) {
     href <- card_href(title, type = "output", module_id = module_id)
   }
 
-  if(href %in% c("", "#", "/")) {
-    if( append_tools ){
+  if (href %in% c("", "#", "/")) {
+    if ( append_tools ) {
       all_tools <- list(
         shidashi::card_tool(widget = "collapse"),
         shidashi::card_tool(widget = "maximize"),
@@ -254,7 +258,7 @@ output_cardset <- function(title, ..., class = "", class_body = "no-padding",
     }
 
   } else {
-    if( append_tools ){
+    if ( append_tools ) {
       all_tools <- list(
         shidashi::card_tool(widget = "link", href = href, icon = shiny_icons$help),
         shidashi::card_tool(widget = "collapse"),
@@ -272,7 +276,7 @@ output_cardset <- function(title, ..., class = "", class_body = "no-padding",
 
   }
 
-  class <- dipsaus::combine_html_class(class, "ravedash-output-card-tabs")
+  class <- shidashi::combine_html_class(class, "ravedash-output-card-tabs")
 
   shidashi::card_tabset(title = title, tools = all_tools, class = class, class_body = class_body, class_foot = class_foot, ...)
 }

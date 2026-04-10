@@ -8,11 +8,11 @@ presets_loader_electrodes <- function(
   label = "Electrodes",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code"
-){
+) {
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
 
-  comp$ui_func <- function(id, value, depends){
+  comp$ui_func <- function(id, value, depends) {
     shidashi::register_input(
       shiny::textInput(
         inputId = id,
@@ -25,7 +25,7 @@ presets_loader_electrodes <- function(
       description = "Electrodes to load. Format: comma-separated ranges, e.g. '1-84,90-100'."
     )
   }
-  comp$server_func <- function(input, output, session){
+  comp$server_func <- function(input, output, session) {
     loader_project <- comp$get_dependent_component(loader_project_id)
     loader_subject <- comp$get_dependent_component(loader_subject_id)
 
@@ -33,14 +33,14 @@ presets_loader_electrodes <- function(
 
     shiny::bindEvent(
       observe({
-        if(!loader_subject$sv$is_valid()){ return() }
+        if (!loader_subject$sv$is_valid()) { return() }
         subject <- get_subject()
-        if(is.null(subject)){ return() }
+        if (is.null(subject)) { return() }
 
         # electrodes
         # check if subject is last input
         electrode_text <- dipsaus::deparse_svec(subject$electrodes)
-        if(isTRUE(loader_subject$get_settings_value(use_cache = TRUE) == subject$subject_code)) {
+        if (isTRUE(loader_subject$get_settings_value(use_cache = TRUE) == subject$subject_code)) {
           electrode_text <- comp$get_settings_value(default = electrode_text, use_cache = TRUE)
         }
         shiny::updateTextInput(

@@ -32,7 +32,7 @@ new_rave_shiny_component_container <- function(
   module_id, pipeline_name,
   pipeline_path = ravepipeline::pipeline_find(pipeline_name),
   settings_file = "settings.yaml"
-){
+) {
 
   RAVEShinyComponentContainer$new(
     module_id = module_id, pipeline_name = pipeline_name,
@@ -62,12 +62,12 @@ RAVEShinyComponentContainer <- R6::R6Class(
       pipeline_name = module_id,
       pipeline_path = ravepipeline::pipeline_find(pipeline_name),
       settings_file = "settings.yaml"
-    ){
+    ) {
       settings_path <- file.path(pipeline_path, settings_file)
       sel <- file.exists(settings_path)
       settings_path <- settings_path[sel]
       pipeline_path <- pipeline_path[sel]
-      if(!length(settings_path)){
+      if (!length(settings_path)) {
         stop("Invalid pipeline_path and settings_file combinations: cannot find pipeline settings file")
       }
       private$.settings_file <- settings_file
@@ -89,19 +89,19 @@ RAVEShinyComponentContainer <- R6::R6Class(
       self$cache <- dipsaus::fastmap2()
     },
 
-    add_components = function(..., .list = list()){
+    add_components = function(..., .list = list()) {
       comps <- c(list(...), .list)
-      for(comp in comps){
-        stopifnot(inherits(comp, 'RAVEShinyComponent'))
+      for (comp in comps) {
+        stopifnot(inherits(comp, "RAVEShinyComponent"))
         self$components[[comp$id]] <- comp
         comp$container <- self
       }
     },
 
-    get_cache = function(key, default = NULL){
-      if(self$cache$`@has`(key)){
+    get_cache = function(key, default = NULL) {
+      if (self$cache$`@has`(key)) {
         item <- self$cache[[key]]
-        if(Sys.time() - item$timestamp < item$expire_after) {
+        if (Sys.time() - item$timestamp < item$expire_after) {
           return(item$value)
         } else {
           self$cache$`@remove`(key)
@@ -110,7 +110,7 @@ RAVEShinyComponentContainer <- R6::R6Class(
       default
     },
 
-    set_cache = function(key, value, expire_after = Inf){
+    set_cache = function(key, value, expire_after = Inf) {
       self$cache[[key]] <- list(
         timestamp = Sys.time(),
         value = value,
@@ -118,15 +118,15 @@ RAVEShinyComponentContainer <- R6::R6Class(
       )
     },
 
-    initialize_with_new_data = function(){
+    initialize_with_new_data = function() {
       ravedash::logger("Initializing ", private$.module_id, " with new data", level = "trace")
 
       # # Do we need to reset data? or should we manually reset?
       # self$data[["@reset"]]()
-      lapply(names(self$components), function(id){
+      lapply(names(self$components), function(id) {
         try({
           tool <- self$components[[id]]$get_tool("initialize_with_new_data", missing_ok = TRUE)
-          if(is.function(tool)){
+          if (is.function(tool)) {
             ravedash::logger("Initializing ", id, level = "trace")
             tool()
           }
@@ -136,38 +136,38 @@ RAVEShinyComponentContainer <- R6::R6Class(
 
     validate_server = function(session) {
 
-      if(!identical(session$ns(NULL), private$.module_id)){
+      if (!identical(session$ns(NULL), private$.module_id)) {
         stop("RAVEShinyComponentContainer$register_server: session namespace inconsistent with module_id")
       }
 
     },
 
-    collect_settings = function(ids, map = NULL){
-      if(!inherits(map, "fastmap2")){
+    collect_settings = function(ids, map = NULL) {
+      if (!inherits(map, "fastmap2")) {
         map <- dipsaus::fastmap2()
       }
-      if(missing(ids)){
+      if (missing(ids)) {
         ids <- names(self$components)
       } else {
         ids <- ids[ids %in% names(self$components)]
       }
-      for(nm in ids){
+      for (nm in ids) {
         self$components[[nm]]$collect_settings(map = map)
       }
       map
     },
 
-    get_input_ids = function(ids){
-      if(missing(ids)){
+    get_input_ids = function(ids) {
+      if (missing(ids)) {
         ids <- names(self$components)
       } else {
         ids <- ids[ids %in% names(self$components)]
       }
-      re <- lapply(ids, function(nm){
+      re <- lapply(ids, function(nm) {
         comp <- self$components[[nm]]
-        sub_ids <- c('', comp$sub_elements)
-        sub_ids <- sapply(sub_ids, function(sub_id){
-          if(sub_id == ''){ sub_id <- NULL }
+        sub_ids <- c("", comp$sub_elements)
+        sub_ids <- sapply(sub_ids, function(sub_id) {
+          if (sub_id == "") { sub_id <- NULL }
           comp$get_sub_element_id(sub_id, with_namespace = FALSE)
         })
         sub_ids
@@ -175,9 +175,9 @@ RAVEShinyComponentContainer <- R6::R6Class(
       unique(unlist(re))
     },
 
-    reset_data = function(){
-      self$data[['@reset']]()
-      self$cache[['@reset']]()
+    reset_data = function() {
+      self$data[["@reset"]]()
+      self$cache[["@reset"]]()
     },
 
     get_pipeline = function() {
@@ -186,19 +186,19 @@ RAVEShinyComponentContainer <- R6::R6Class(
 
   ),
   active = list(
-    module_id = function(){
+    module_id = function() {
       private$.module_id
     },
-    pipeline_name = function(){
+    pipeline_name = function() {
       private$.pipeline_name
     },
-    pipeline_path = function(){
+    pipeline_path = function() {
       private$.pipeline_path
     },
-    settings_path = function(){
+    settings_path = function() {
       private$.settings_path
     },
-    settings_file = function(){
+    settings_file = function() {
       private$.settings_file
     }
   )
