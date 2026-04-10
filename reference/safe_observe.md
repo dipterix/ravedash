@@ -28,9 +28,9 @@ safe_observe(
 
   handler when error is encountered, choices are `'none'`,
   `'notification'` (see
-  [`error_notification`](https://dipterix.org/ravedash/reference/logger.md)),
+  [`error_notification`](https://dipterix.org/ravedash/reference/with_error_notification.md)),
   or `'alert'` (see
-  [`error_alert`](https://dipterix.org/ravedash/reference/logger.md))
+  [`error_alert`](https://dipterix.org/ravedash/reference/with_error_notification.md))
 
 - watch_data:
 

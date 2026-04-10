@@ -72,7 +72,7 @@ presets_loader_3dviewer(
   loader_subject_id = "loader_subject_code",
   loader_reference_id = "loader_reference_name",
   loader_electrodes_id = "loader_electrode_text",
-  gadgets = c("standalone", "download")
+  ...
 )
 
 presets_loader_3dviewer2(
@@ -81,7 +81,7 @@ presets_loader_3dviewer2(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   loader_electrodes_id = "loader_electrode_text",
-  gadgets = c("standalone", "download")
+  ...
 )
 
 presets_loader_electrodes(
@@ -223,10 +223,9 @@ presets_loader_sync_project_subject(
 
   the ID of `presets_loader_electrodes` if different to the default
 
-- gadgets:
+- ...:
 
-  gadget types to include; see `type` argument in function
-  [`output_gadget`](https://dipterix.org/ravedash/reference/output_gadget.md)
+  ignored, typically reserved for obsolete arguments
 
 - allow_stitch:
 

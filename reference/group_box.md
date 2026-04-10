@@ -40,11 +40,6 @@ A 'HTML' tag
 
 library(shiny)
 library(shidashi)
-#> 
-#> Attaching package: ‘shidashi’
-#> The following object is masked from ‘package:ravedash’:
-#> 
-#>     register_output
 library(ravedash)
 
 group_box(

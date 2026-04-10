@@ -1,6 +1,8 @@
 # Obtain caching object for current run-time shiny session
 
-Cache small objects such as inputs or configurations
+**Deprecated.** This function is no longer used by RAVE modules.
+
+Cache small objects such as inputs or configurations.
 
 ## Usage
 

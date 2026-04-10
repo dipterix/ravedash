@@ -23,7 +23,7 @@ there.
 To download the template, simply run the following one-time command:
 
 ``` r
-raveio::pipeline_install_github('rave-ieeg/rave-pipelines')
+ravepipeline::pipeline_install_github("rave-ieeg/rave-pipelines")
 ```
 
 ## Manage the dashboard

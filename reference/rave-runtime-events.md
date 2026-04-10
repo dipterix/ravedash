@@ -21,8 +21,6 @@ fire_rave_event(
   .internal_ok = FALSE
 )
 
-get_session_by_rave_id(rave_id)
-
 get_rave_event(key, session = shiny::getDefaultReactiveDomain())
 
 open_loader(session = shiny::getDefaultReactiveDomain())
@@ -62,13 +60,13 @@ current_shiny_theme(default, session = shiny::getDefaultReactiveDomain())
 
   internally used
 
-- rave_id, .rave_id:
-
-  internally used to store unique session identification key
-
 - default:
 
   default value if not found
+
+- rave_id, .rave_id:
+
+  deprecated, no longer used
 
 ## Value
 
@@ -78,16 +76,18 @@ See 'Details'
 
 These goal of these event functions is to simplify the dashboard logic
 without understanding the details or passing global variables around.
-Everything starts with `register_rave_session`. This function registers
-a unique identification to session, and adds bunch of registry to
-monitor the changes of themes, built-in, and custom events. If you have
-called
+Everything starts with
+[`shidashi::register_session`](https://dipterix.org/shidashi/reference/register_session.html).
+This function registers session event handlers and theme observers. If
+you have called
 [`module_server_common`](https://dipterix.org/ravedash/reference/module_server_common.md),
-then `register_rave_session` has already been called.
+then session registration has already been done.
 
 - `register_rave_session`:
 
-  make initial registries, must be called, returns a list of registries
+  **Deprecated.** Use
+  [`shidashi::register_session()`](https://dipterix.org/shidashi/reference/register_session.html)
+  instead.
 
 - `fire_rave_event`:
 
@@ -151,7 +151,15 @@ The following event keys are built-in. Please do not fire them using
 
 - `'active_module'`:
 
-  internally used to store current active module information
+  internally populated by the action dispatcher when the module first
+  loads (and whenever a `type = "active_module"` rave-action arrives).
+  Returns a list with elements `type`, `id`, `parent_frame`, and
+  `rave_id`. This key is **reserved**: external code must not call
+  `fire_rave_event("active_module", ...)` directly. To obtain the
+  currently active module, prefer
+  [`get_active_module_info()`](https://dipterix.org/ravedash/reference/get_active_module_info.md),
+  which reads from the `shidashi` module registry and is always
+  up-to-date.
 
 ## Examples
 
@@ -167,7 +175,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   # Create event registries
-  register_rave_session()
+  shidashi::register_session()
 
   shiny::bindEvent(
     shiny::observe({
@@ -187,7 +195,7 @@ server <- function(input, output, session) {
 
   shiny::bindEvent(
     shiny::observe({
-      if(watch_loader_opened()){
+      if (watch_loader_opened()) {
         close_loader()
       } else {
         open_loader()
@@ -200,7 +208,7 @@ server <- function(input, output, session) {
 
   shiny::bindEvent(
     shiny::observe({
-      cat("Loader is", ifelse(watch_loader_opened(), "opened", "closed"), "\n")
+      cat("Loader ", ifelse(watch_loader_opened(), "opened", "closed"), "\n")
     }),
     watch_loader_opened(),
     ignoreNULL = TRUE
@@ -208,7 +216,7 @@ server <- function(input, output, session) {
 
 }
 
-if(interactive()){
+if(interactive()) {
   shinyApp(ui, server)
 }
 ```

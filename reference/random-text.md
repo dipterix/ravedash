@@ -25,8 +25,8 @@ finished_text(candidates)
 
 ``` r
 be_patient_text()
-#> [1] "Grab a cup of coffee, this might take a while... (Can I get the decaf one? Thanks)"
+#> [1] "Please be patient, running in progress..."
 
 finished_text()
-#> [1] "Please proceed to the next step"
+#> [1] "Have you finished your coffee? I have finished my work haha."
 ```

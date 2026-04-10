@@ -33,7 +33,10 @@ module_server_common(
 
 - session:
 
-  shiny session
+  shiny session;
+  [`init_app`](https://dipterix.org/shidashi/reference/init_app.html)
+  must be called before this function so that the shidashi session
+  registry is initialized.
 
 - parse_env:
 
@@ -46,75 +49,15 @@ A list of server utility functions; see 'Examples' below.
 ## Examples
 
 ``` r
-# Debug in non-reactive session: create fake session
-fake_session <- shiny::MockShinySession$new()
-
-# register common-server function
-module_server_common(module_id = "mock-session",
-                     session = fake_session)
-server_tools <- get_default_handlers(fake_session)
-
-# Print each function to see the usage
-
-server_tools$auto_recalculate
-#> Function to turn auto-recalculation on and off. Usage:
-#> 
-#> # Obtain the server utility functions
-#> server_tools <- get_default_handlers()
-#> 
-#> server_tools$auto_recalculate(TRUE)    # Turn on forever
-#> server_tools$auto_recalculate(FALSE)   # Turn off forever
-#> server_tools$auto_recalculate(1)       # Turn on once
-
-server_tools$run_analysis_onchange
-#> Function to set input IDs to watch. These inputs will trigger auto re-calculate. Usage:
-#> 
-#> # Obtain the server utility functions
-#> server_tools <- get_default_handlers()
-#> 
-#> server_tools$run_analysis_onchange(c("inputId_1", "inputId_2", ...))
-
-server_tools$run_analysis_flag
-#> Flag to run analysis pipeline. Usage:
-#> 
-#> # Obtain the server utility functions
-#> server_tools <- get_default_handlers()
-#> 
-#> shiny::bindEvent(
-#>   shiny::observe({
-#>     <Run your algorithms, e.g. `ravepipeline::pipeline_run(...)>
-#>   }),
-#>   server_tools$run_analysis_flag(),
-#>   ignoreNULL = TRUE, ignoreInit = TRUE
-#> )
-
-server_tools$module_is_active
-#> Shiny reactive to tell if the module is active or hidden. Usage:
-#> 
-#> # Obtain the server utility functions
-#> server_tools <- get_default_handlers()
-#> 
-#> server_tools$module_is_active()                   # current module
-#> server_tools$module_is_active("another_module")   # whether another module is active
-
-server_tools$simplify_view
-#> Show, hide, or toggle display of elements with `rave-optional` HTML class. Usage:
-#> 
-#> # Obtain the server utility functions
-#> server_tools <- get_default_handlers()
-#> 
-#> server_tools$simplify_view()       # Toggle optional view
-#> server_tools$simplify_view('yes')  # Show optional view
-#> server_tools$simplify_view('no')   # Hide optional view
-
 # 'RAVE' module server function
-server <- function(input, output, session, ...){
+server <- function(input, output, session, ...) {
+  shidashi::init_app()
 
   pipeline_path <- "PATH to module pipeline"
 
   module_server_common(
     module_id = session$ns(NULL),
-    check_data_loaded = function(first_time){
+    check_data_loaded = function(first_time) {
 
       re <- tryCatch({
         # Try to read data from pipeline results
@@ -129,7 +72,7 @@ server <- function(input, output, session, ...){
 
         # Return TRUE indicating data has been loaded
         TRUE
-      }, error = function(e){
+      }, error = function(e) {
 
         # Fire event to remove footer message
         ravedash::fire_rave_event('loader_message', NULL)

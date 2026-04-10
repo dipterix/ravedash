@@ -1,7 +1,7 @@
 # Simple input-output layout
 
 Provides simple layout, with inputs on the left, and outputs on the
-right. Only useful in `'shidashi'` framework.
+right. Only useful in 'shidashi' framework.
 
 ## Usage
 

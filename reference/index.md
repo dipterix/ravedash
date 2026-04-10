@@ -2,13 +2,6 @@
 
 ## All functions
 
-- [`card_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
-  [`card_recalculate_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
-  [`enable_recalculate_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
-  [`disable_recalculate_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
-  [`set_card_badge()`](https://dipterix.org/ravedash/reference/card_badge.md)
-  : Create a badge widget located at card header
-
 - [`set_card_url_scheme()`](https://dipterix.org/ravedash/reference/card_url.md)
   [`card_href()`](https://dipterix.org/ravedash/reference/card_url.md) :
   Set 'URL' scheme for modules
@@ -27,25 +20,14 @@
   [`flex_group_box()`](https://dipterix.org/ravedash/reference/group_box.md)
   : Group input elements into a box with title
 
-- [`logger()`](https://dipterix.org/ravedash/reference/logger.md)
-  [`set_logger_path()`](https://dipterix.org/ravedash/reference/logger.md)
-  [`logger_threshold()`](https://dipterix.org/ravedash/reference/logger.md)
-  [`logger_error_condition()`](https://dipterix.org/ravedash/reference/logger.md)
-  [`error_notification()`](https://dipterix.org/ravedash/reference/logger.md)
-  [`error_alert()`](https://dipterix.org/ravedash/reference/logger.md)
-  [`with_error_notification()`](https://dipterix.org/ravedash/reference/logger.md)
-  [`with_error_alert()`](https://dipterix.org/ravedash/reference/logger.md)
-  : Logger system used by 'RAVE'
-
 - [`module_server_common()`](https://dipterix.org/ravedash/reference/module_server_common.md)
   : Default module server function
 
 - [`new_rave_shiny_component_container()`](https://dipterix.org/ravedash/reference/new_rave_shiny_component_container.md)
   : Creates a container for preset components
 
-- [`output_gadget()`](https://dipterix.org/ravedash/reference/output_gadget.md)
-  [`output_gadget_container()`](https://dipterix.org/ravedash/reference/output_gadget.md)
-  : 'RAVE' dashboard output gadgets
+- [`output_gadget_container()`](https://dipterix.org/ravedash/reference/obsolete.md)
+  : Obsolete functions
 
 - [`plotOutput2()`](https://dipterix.org/ravedash/reference/plotOutput2.md)
   : Shiny plot output with minimum height and additional classes
@@ -62,7 +44,6 @@
 - [`register_rave_session()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
   [`get_default_handlers()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
   [`fire_rave_event()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
-  [`get_session_by_rave_id()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
   [`get_rave_event()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
   [`open_loader()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
   [`close_loader()`](https://dipterix.org/ravedash/reference/rave-runtime-events.md)
@@ -105,12 +86,6 @@
 - [`ravedash_footer()`](https://dipterix.org/ravedash/reference/ravedash_footer.md)
   : A hovering footer at bottom-right
 
-- [`register_output_options()`](https://dipterix.org/ravedash/reference/register_output.md)
-  [`get_output_options()`](https://dipterix.org/ravedash/reference/register_output.md)
-  [`register_output()`](https://dipterix.org/ravedash/reference/register_output.md)
-  [`get_output()`](https://dipterix.org/ravedash/reference/register_output.md)
-  : Register output and output options
-
 - [`run_analysis_button()`](https://dipterix.org/ravedash/reference/run_analysis_button.md)
   : Button to trigger analysis
 
@@ -132,16 +107,15 @@
 - [`simple_layout()`](https://dipterix.org/ravedash/reference/simple_layout.md)
   : Simple input-output layout
 
-- [`standalone_viewer()`](https://dipterix.org/ravedash/reference/standalone_viewer.md)
-  : Register shiny-output options to allow display in stand-alone
-  viewers
-
-- [`switch_module()`](https://dipterix.org/ravedash/reference/switch_module.md)
-  : Drive 'RAVE' browser to switch to another module
-
 - [`temp_file()`](https://dipterix.org/ravedash/reference/temp_file.md)
   [`temp_dir()`](https://dipterix.org/ravedash/reference/temp_file.md) :
   Create a random temporary file path for current session
+
+- [`error_notification()`](https://dipterix.org/ravedash/reference/with_error_notification.md)
+  [`error_alert()`](https://dipterix.org/ravedash/reference/with_error_notification.md)
+  [`with_error_notification()`](https://dipterix.org/ravedash/reference/with_error_notification.md)
+  [`with_error_alert()`](https://dipterix.org/ravedash/reference/with_error_notification.md)
+  : Evaluate with automatic error handlers in dashboard
 
 - [`with_log_modal()`](https://dipterix.org/ravedash/reference/with_log_modal.md)
   : Evaluate script in the background and show the results from shiny
