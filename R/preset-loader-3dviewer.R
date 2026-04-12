@@ -49,7 +49,7 @@ presets_loader_3dviewer <- function(
       electrodes_text <- loader_electrodes$current_value
       reference_name <- loader_reference$current_value
 
-      electrodes <- dipsaus::parse_svec(electrodes_text)
+      electrodes <- parse_svec(electrodes_text)
 
       valid_electrodes <- subject$valid_electrodes(reference_name = reference_name)
       val <- rep("Not Loading", length(all_electrodes))
@@ -256,7 +256,7 @@ presets_loader_3dviewer2 <- function(
       project_name <- subject$project_name
       electrodes_text <- loader_electrodes$current_value
 
-      electrodes <- dipsaus::parse_svec(electrodes_text)
+      electrodes <- parse_svec(electrodes_text)
 
       valid_electrodes <- subject$electrodes
       val <- rep("Not Loading", length(all_electrodes))

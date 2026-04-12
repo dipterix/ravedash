@@ -212,6 +212,29 @@ with_log_modal <- function(
     expr <- substitute(expr)
   }
 
+  # wrap job
+  workdir <- normalizePath(tempfile(pattern = "ravetmplog_"), mustWork = FALSE)
+  ravepipeline::dir_create2(workdir)
+  logfile <- file.path(workdir, "stdout.log")
+
+  fun <- function() {}
+  environment(fun) <- new.env(parent = parent.frame())
+  body(fun) <- expr
+  env <- new.env(parent = emptyenv())
+
+  task <- shiny::ExtendedTask$new(function(...) {
+    env$job_id <- ravepipeline::start_job(
+      fun = fun,
+      log_path = "stdout.log",
+      workdir = workdir,
+      method = "callr",
+      ensure_init = TRUE,
+      name = title,
+      ...
+    )
+    ravepipeline::as.promise(env$job_id)
+  })
+
   shiny::showModal(
     shiny::modalDialog(
       title = title,
@@ -224,7 +247,7 @@ with_log_modal <- function(
           shiny::tags$pre(
             .noWS = c("outside", "after-begin", "before-end"),
             shiny::tags$code(
-              id = ns("verbatim_log___"),
+              id = ns("@verbatim_log"),
               class = "shiny-text-output hljs-literal",
               style = "word-wrap:break-word;width: 100%;white-space: pre-wrap;",
               .noWS = c("outside", "after-begin", "before-end")
@@ -241,17 +264,17 @@ with_log_modal <- function(
     session = session
   )
 
-  shiny::bindEvent(
+  dismiss_handler <- shiny::bindEvent(
     safe_observe({
       shiny::removeModal(session = session)
-    }),
+    }, domain = session),
     session$input[["@dismiss_modal"]],
     once = TRUE,
     ignoreNULL = TRUE, ignoreInit = TRUE
   )
 
   local_reactives <- shiny::reactiveValues()
-  session$output[["verbatim_log___"]] <- shiny::renderPrint({
+  session$output[["@verbatim_log"]] <- shiny::renderPrint({
     cat(local_reactives$msg, sep = "\n")
   })
 
@@ -261,102 +284,66 @@ with_log_modal <- function(
     session$sendCustomMessage(
       "shidashi.set_html",
       list(
-        selector = sprintf("code#%s", ns("verbatim_log___")),
+        selector = sprintf("code#%s", ns("@verbatim_log")),
         content = msg
       )
     )
   }
 
-  logfile <- normalizePath(tempfile(pattern = "ravetmplog_"), mustWork = FALSE)
-  logfile2 <- paste0(logfile, ".bak")
+  shiny::bindEvent(
+    shiny::observe({
+      status <- task$status()
+      if (!isTRUE(status %in% c("success", "error"))) { return() }
+      dipsaus::updateActionButtonStyled(
+        session = session, inputId = "@dismiss_modal",
+        disabled = FALSE, label = "Dismiss")
 
-  check <- dipsaus::rs_exec(
-    expr = expr,
-    quoted = TRUE,
-    as_promise = FALSE,
-    focus_on_console = TRUE,
-    nested_ok = TRUE,
-    name = title,
-    rs = FALSE,
-    wait = FALSE,
-    args = "--no-save --no-restore --slave",
-    stdout = logfile,
-    stderr = logfile
+      if (is.function(callback)) {
+        result <- task$result()
+        callback(result)
+      }
+    }, domain = session),
+    task$result(),
+    ignoreNULL = FALSE,
+    ignoreInit = FALSE
   )
 
   logger("Initalizing job: [{ title }]", level = "trace", use_glue = TRUE)
   renderMsg("Initializing...")
 
+  task$invoke(...)
 
-  final <- function(result, has_error = FALSE) {
+  check <- function() {
+    status <- tryCatch(
+      {
+        shiny::isolate(task$status())
+      },
+      error = function(e) {
+        "success"
+      }
+    )
 
-    dipsaus::updateActionButtonStyled(
-      session = session, inputId = "@dismiss_modal",
-      disabled = FALSE, label = "Dismiss")
-
-    unlink(logfile)
-    unlink(logfile2)
-
-    logger("Job done: [{ title }]", level = "trace", use_glue = TRUE)
-
-    if (is.function(callback)) {
-      callback( result )
+    if (file.exists(logfile)) {
+      log <- readLines(logfile, warn = FALSE)
+    } else {
+      log <- "Waiting for outputs..."
     }
+
+    if (isTRUE(status %in% c("success", "error"))) {
+      unlink(logfile)
+      log <- c(log, sprintf("Task finished with status: %s", status))
+      logger("Job done: [{ title }]", level = "trace", use_glue = TRUE)
+      renderMsg(log)
+    } else {
+      renderMsg(log)
+      later::later(check, 0.5)
+    }
+
+    return()
+
   }
 
-  promise_f <- get_function_from("promise", "promises")
-  then_f <- get_function_from("then", "promises")
-
-  promise <- promise_f(function(resolve, reject) {
-
-    later <- get_function_from("later", "later")
-
-    listener <- function() {
-      if (is.function(check)) {
-        code <- check()
-      } else {
-        code <- check
-      }
-      if (
-        length(logfile) != 1 ||
-          is.na(logfile) ||
-          !file.exists(logfile) ||
-          logfile == ""
-      ) {
-        msg <- NULL
-      } else {
-        file.copy(logfile, logfile2, overwrite = TRUE)
-        suppressWarnings({
-          msg <- readLines(logfile2)
-        })
-        if (!length(msg) || isTRUE(msg == "")) {
-          msg <- "Waiting for outputs..."
-        }
-      }
-
-      if (code == 0) {
-        renderMsg(c(msg, "Finished."))
-        resolve(attr(code, "rs_exec_result"))
-      } else if (code < 0) {
-        renderMsg(c(msg, "An error is detected."))
-        reject(attr(code, "rs_exec_error"))
-      } else {
-        renderMsg(msg)
-        later(listener, delay = 0.5)
-      }
-    }
-    listener()
-  })
-
-  then_f(
-    promise,
-    onFulfilled = function(result) {
-      final(result = result, has_error = FALSE)
-    },
-    onRejected = function(e) {
-      final(result = e, has_error = TRUE)
-    }
-  )
+  check()
 }
 
 

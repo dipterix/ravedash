@@ -220,7 +220,7 @@ new_session <- function(update = FALSE, app_root = NULL) {
       ))
     }
   })
-  groups <- do.call("rbind", dipsaus::drop_nulls(groups))
+  groups <- do.call("rbind", drop_nulls(groups))
   if (length(groups)) {
     groups <- lapply(split(groups, groups$group), function(item) {
       list(
@@ -509,7 +509,7 @@ launch_session <- function(
   }
 
   pandoc <- ""
-  if (dipsaus::package_installed("rmarkdown")) {
+  if (package_installed("rmarkdown")) {
     rmarkdown <- asNamespace("rmarkdown")
     pandoc <- rmarkdown$pandoc_exec()
     if (length(pandoc) && !is.na(pandoc[[1]]) && file.exists(pandoc[[1]])) {
@@ -1032,7 +1032,7 @@ shutdown_session <- function(
     session$sendCustomMessage("shidashi.shutdown_session", message = list())
 
     # shutdown jupyter
-    if ( jupyter && dipsaus::package_installed("rpymat") ) {
+    if ( jupyter && package_installed("rpymat") ) {
       try({
         jupyter_confpath <- file.path(current_session_path(), "jupyter.yaml")
         if (length(jupyter_confpath) == 1 && !is.na(jupyter_confpath) &&
@@ -1113,10 +1113,10 @@ session_log <- function(x, max_lines = 200, modules = NULL) {
     timestamp <- substring(
       gsub("^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)[ ]{0, }", "", s), 1, 19)
     timestamp <- strptime(timestamp, format = "%Y-%m-%d %H:%M:%S")
-    nas <- dipsaus::deparse_svec( which(is.na(timestamp)), concatenate = FALSE)
+    nas <- deparse_svec( which(is.na(timestamp)), concatenate = FALSE)
 
     for (ns_idx in nas) {
-      idx <- dipsaus::parse_svec(ns_idx)
+      idx <- parse_svec(ns_idx)
       if (length(idx)) {
         midx <- idx[[1]]
         if (midx > 1) {

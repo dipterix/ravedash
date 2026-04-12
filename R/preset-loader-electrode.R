@@ -39,7 +39,7 @@ presets_loader_electrodes <- function(
 
         # electrodes
         # check if subject is last input
-        electrode_text <- dipsaus::deparse_svec(subject$electrodes)
+        electrode_text <- deparse_svec(subject$electrodes)
         if (isTRUE(loader_subject$get_settings_value(use_cache = TRUE) == subject$subject_code)) {
           electrode_text <- comp$get_settings_value(default = electrode_text, use_cache = TRUE)
         }

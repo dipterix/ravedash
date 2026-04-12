@@ -1,16 +1,23 @@
 Package: ravedash
 Type: Package
 Title: Dashboard for Reproducible Visualization of 'iEEG'
-Version: 0.1.3.43
+Version: 0.1.3.44
 Authors@R: c(
-    person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph"))
+    person("Zhengjia", "Wang", email = "dipterix.wang@gmail.com", role = c("aut", "cre", "cph")),
+    person("Xiang", "Zhang", email = "xiang.zhang@pennmedicine.upenn.edu", role = c("aut")),
+    person("John", "Magnotti", email = "john.magnotti@pennmedicine.upenn.edu", role = c("aut")),
+    person("Michael", "Beauchamp", email = "michael.beauchamp@pennmedicine.upenn.edu", role = c("aut")),
+    person("Trustees of the University of Pennsylvania", role = "cph",
+            comment = "All files in this package unless explicitly stated in the file")
     )
-Description: Dashboard system to display the analysis results produced by 'RAVE'
-    (Magnotti J.F., Wang Z., Beauchamp M.S. (2020), Reproducible analysis 
-    and visualizations of 'iEEG' <doi:10.1016/j.neuroimage.2020.117341>). 
+Description: Dashboard system to display the analysis results produced by 
+    'RAVE', Magnotti J.F., Wang Z., Beauchamp M.S. (2020), 
+    <doi:10.1016/j.neuroimage.2020.117341>; see <https://rave.wiki> for
+    more documentations.  
     Provides infrastructure to integrate customized analysis pipelines into
     dashboard modules, including file structures, front-end widgets, and 
-    event handlers.
+    event handlers; see <https://github.com/rave-ieeg/rave-pipelines> for
+    implementation details.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-US
@@ -26,8 +33,8 @@ Imports:
     shinyWidgets (>= 0.6.2),
     threeBrain (>= 0.2.4),
     shinyvalidate,
-    htmlwidgets,
     R6,
+    later,
     checkmate,
     cachem (>= 1.0.6)
 Suggests: 

@@ -214,7 +214,7 @@ presets_analysis_electrode_selector2 <- function(
       electrode_table <- electrode_table[electrode_table$Electrode %in% electrodes, ]
       electrode_table_names <- names(electrode_table)
 
-      electrode_text <- dipsaus::parse_svec(get_default(sub_id = NULL, missing = NULL))
+      electrode_text <- parse_svec(get_default(sub_id = NULL, missing = NULL))
       electrode_text <- electrode_text[electrode_text %in% repo$electrode_list]
       if (!length(electrode_text)) {
         electrode_text <- electrodes[[1]]
@@ -222,7 +222,7 @@ presets_analysis_electrode_selector2 <- function(
       if (!multiple) {
         electrode_text <- electrode_text[[1]]
       }
-      electrode_text <- dipsaus::deparse_svec(electrode_text)
+      electrode_text <- deparse_svec(electrode_text)
 
       # get category selector in the following sequence
       # 1. settings.yaml (pipeline settings)
@@ -242,7 +242,7 @@ presets_analysis_electrode_selector2 <- function(
         choices = electrode_table_names,
         selected = electrode_category_selector
       )
-      electrode_list_text <- dipsaus::deparse_svec(repo$electrode_list, collapse = ", ")
+      electrode_list_text <- deparse_svec(repo$electrode_list, collapse = ", ")
       logger("Updating `{id}`, value: {electrode_text}, label: Select electrode by number (currently loaded: {electrode_list_text})", level = "trace", use_glue = TRUE)
 
       if (multiple) {
@@ -273,7 +273,7 @@ presets_analysis_electrode_selector2 <- function(
         function(electrode_text) {
           repository <- get_repo()
           if (is.null(repository)) { return(NULL) }
-          electrodes <- dipsaus::parse_svec(electrode_text)
+          electrodes <- parse_svec(electrode_text)
           electrodes <- electrodes[electrodes %in% repository$electrode_list]
           if (!length(electrodes)) { electrodes <- NULL }
           electrodes
@@ -283,7 +283,7 @@ presets_analysis_electrode_selector2 <- function(
           repository <- get_repo()
           if (is.null(repository)) { return(NULL) }
           category_name <- comp$get_sub_element_input(category_str)
-          current_electrodes <- dipsaus::parse_svec(comp$current_value)
+          current_electrodes <- parse_svec(comp$current_value)
           current_electrodes <- current_electrodes[current_electrodes %in% repository$electrode_list]
           if (!length(current_electrodes)) { current_electrodes <- NULL }
 
@@ -313,9 +313,9 @@ presets_analysis_electrode_selector2 <- function(
         function(electrodes) {
           if (length(electrodes)) {
             if (multiple) {
-              new_value <- dipsaus::deparse_svec(electrodes)
+              new_value <- deparse_svec(electrodes)
               if (!identical(new_value, comp$current_value)) {
-                val <- dipsaus::deparse_svec(electrodes)
+                val <- deparse_svec(electrodes)
                 logger("Updating `{id}`, value: {val}", level = "trace", use_glue = TRUE)
                 shiny::updateTextInput(
                   session = session, inputId = id,
@@ -393,7 +393,7 @@ presets_analysis_electrode_selector2 <- function(
         return()
       }
       # ssss
-      electrodes <- dipsaus::parse_svec(get_default(NULL, missing = ""))
+      electrodes <- parse_svec(get_default(NULL, missing = ""))
       electrodes <- electrodes[electrodes %in% repository$electrode_list]
       if (!length(electrodes)) {
         electrodes <- repository$electrode_list[[1]]
@@ -437,7 +437,7 @@ presets_analysis_electrode_selector2 <- function(
         electrodes <- electrodes[[1]]
       }
 
-      v <- dipsaus::deparse_svec(electrodes)
+      v <- deparse_svec(electrodes)
       if (multiple && identical(v, comp$current_value)) {
         v <- sprintf("%s ", v)
       }
@@ -448,7 +448,7 @@ presets_analysis_electrode_selector2 <- function(
       #   value = v
       # )
 
-      electrode_list_text <- dipsaus::deparse_svec(repository$electrode_list, collapse = ", ")
+      electrode_list_text <- deparse_svec(repository$electrode_list, collapse = ", ")
       logger("Updating `{id}`, value: {v}, label: Select electrode by number (currently loaded: {electrode_list_text})", level = "trace", use_glue = TRUE)
       if (multiple) {
         shiny::updateTextInput(
@@ -492,7 +492,7 @@ presets_analysis_electrode_selector2 <- function(
       selected_electrode_text_str,
       with_namespace = FALSE
     )]] <- shiny::renderText({
-      dipsaus::deparse_svec(dipsaus::parse_svec(comp$current_value))
+      deparse_svec(parse_svec(comp$current_value))
     })
 
     shiny::bindEvent(
@@ -500,7 +500,7 @@ presets_analysis_electrode_selector2 <- function(
         repository <- get_repo()
         if (is.null(repository)) { return(NULL) }
         if (!length(repository$electrode_list)) { return(NULL) }
-        current_electrodes <- dipsaus::parse_svec(comp$current_value)
+        current_electrodes <- parse_svec(comp$current_value)
         if (length(current_electrodes) || any(current_electrodes %in% repository$electrode_list)) {
           elec <- current_electrodes[current_electrodes %in% repository$electrode_list]
           elec <- elec[[1]]
@@ -528,7 +528,7 @@ presets_analysis_electrode_selector2 <- function(
         repository <- get_repo()
         if (is.null(repository)) { return(NULL) }
         if (!length(repository$electrode_list)) { return(NULL) }
-        current_electrodes <- dipsaus::parse_svec(comp$current_value)
+        current_electrodes <- parse_svec(comp$current_value)
         if (length(current_electrodes) || any(current_electrodes %in% repository$electrode_list)) {
           elec <- current_electrodes[current_electrodes %in% repository$electrode_list]
           elec <- elec[[1]]
