@@ -221,18 +221,19 @@ with_log_modal <- function(
   environment(fun) <- new.env(parent = parent.frame())
   body(fun) <- expr
   env <- new.env(parent = emptyenv())
+  env$job_id <- ravepipeline::start_job(
+    fun = fun,
+    log_path = "stdout.log",
+    workdir = workdir,
+    method = "callr",
+    ensure_init = TRUE,
+    name = title,
+    ...
+  )
+  env$promise <- ravepipeline::as.promise(env$job_id)
 
-  task <- shiny::ExtendedTask$new(function(...) {
-    env$job_id <- ravepipeline::start_job(
-      fun = fun,
-      log_path = "stdout.log",
-      workdir = workdir,
-      method = "callr",
-      ensure_init = TRUE,
-      name = title,
-      ...
-    )
-    ravepipeline::as.promise(env$job_id)
+  task <- shiny::ExtendedTask$new(function() {
+    env$promise
   })
 
   shiny::showModal(
@@ -311,7 +312,7 @@ with_log_modal <- function(
   logger("Initalizing job: [{ title }]", level = "trace", use_glue = TRUE)
   renderMsg("Initializing...")
 
-  task$invoke(...)
+  task$invoke()
 
   check <- function() {
     status <- tryCatch(
@@ -344,6 +345,7 @@ with_log_modal <- function(
   }
 
   check()
+  env$promise
 }
 
 
