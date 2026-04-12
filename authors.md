@@ -4,6 +4,15 @@
 
 - **Zhengjia Wang**. Author, maintainer, copyright holder.
 
+- **Xiang Zhang**. Author.
+
+- **John Magnotti**. Author.
+
+- **Michael Beauchamp**. Author.
+
+- **Trustees of the University of Pennsylvania**. Copyright holder.  
+  All files in this package unless explicitly stated in the file
+
 ## Citation
 
 Source:
