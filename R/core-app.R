@@ -919,6 +919,20 @@ start_session <- function(
   } else if (isTRUE(new)) {
     session <- new_session(app_root = app_root)
   } else {
+
+    # Try to get template last updated, auto using new template after 30 days
+    template_timstamp <- Sys.time() - 2592000
+    template_timstamp_path <- file.path(R_user_dir("raveio", "data"), "rave-pipelines", "last_updated.txt")
+    if (file.exists(template_timstamp_path)) {
+      try(
+        silent = TRUE,
+        {
+          str <- readLines(template_timstamp_path, n = 1, warn = FALSE)
+          template_timstamp <- strftime(str, "%Y-%m-%d %H:%M:%S")
+        }
+      )
+    }
+
     # find existing session (most recent)
     all_sessions <- list_session(order = "descend", path = app_root)
     if (!length(all_sessions)) {
@@ -930,23 +944,13 @@ start_session <- function(
       if (is.na(new)) {
         # try to guess
         tryCatch({
-          last_updated <- file.path(
-            R_user_dir(package = "ravemanager", which = "config"),
-            "last_updates",
-            "rave-family"
+          session_created <- strptime(
+            substr(session$session_id, start = 9, 21),
+            "%y%m%d-%H%M%S"
           )
-          if (file.exists(last_updated)) {
-            last_updated <- readLines(last_updated, n = 1L)
-            last_updated <- as.POSIXlt(last_updated)
-            session_created <- strptime(
-              substr(session$session_id, start = 9, 21),
-              "%y%m%d-%H%M%S"
-            )
-            if ( last_updated > session_created ) {
-              # RAVE dash just got updated
-              # start a new session
-              session <- new_session(app_root = app_root)
-            }
+          if (session_created < template_timstamp) {
+            # the session was created prior to update, force new session
+            session <- new_session(app_root = app_root)
           }
         }, error = function(e) { NULL })
       }
