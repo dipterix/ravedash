@@ -71,7 +71,7 @@ to remove package-based cache.
 
 ``` r
 temp_dir()
-#> [1] "/var/folders/tb/y368xp_x10s3ty1b_mtl5mxr0000gn/T//RtmpGr32Lm"
+#> [1] "/var/folders/tb/y368xp_x10s3ty1b_mtl5mxr0000gn/T//RtmpYeDJOK"
 temp_dir(persist = "package-cache")
 #> [1] "/Users/runner/rave_data/cache_dir//package-cache"
 ```
