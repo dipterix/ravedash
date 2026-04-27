@@ -52,7 +52,7 @@ presets_baseline_choices(
   label = "Baseline Settings",
   pipeline_repository = "repository",
   baseline_choices = c("Decibel", "\% Change Power", "\% Change Amplitude",
-    "z-score Power", "z-score Amplitude"),
+    "z-score Decibel", "z-score Power", "z-score Amplitude"),
   baseline_along_choices = c("Per frequency, trial, and electrode", "Across electrode",
     "Across trial", "Across trial and electrode")
 )

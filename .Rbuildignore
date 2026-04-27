@@ -12,3 +12,5 @@
 ^CRAN-SUBMISSION$
 ^\.lintr$
 ^TODO.*\.md$
+^\.positai$
+^\.claude$
