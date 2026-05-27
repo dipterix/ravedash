@@ -113,6 +113,7 @@ output_cardset(
 
 ``` r
 
+
 input_card(title = "Condition selector",
            "Please select experimental conditions:",
            shiny::selectInput(

@@ -53,6 +53,7 @@ A promise object
 ## Examples
 
 ``` r
+
 # Shiny server function
 server <- function(input, output, session) {
   shiny::bindEvent(

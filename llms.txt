@@ -6,6 +6,7 @@
 To install `ravedash` alone, simply type R command:
 
 ``` r
+
 options(repos = c(ropensci = 'https://rave-ieeg.r-universe.dev', 
         CRAN = 'https://cloud.r-project.org'))
 install.packages("ravedash")

@@ -49,6 +49,7 @@ A list of server utility functions; see 'Examples' below.
 ## Examples
 
 ``` r
+
 # 'RAVE' module server function
 server <- function(input, output, session, ...) {
   shidashi::init_app()

@@ -196,6 +196,7 @@ session_log(x, max_lines = 200, modules = NULL)
 ## Examples
 
 ``` r
+
 if (interactive()) {
 
   sess <- new_session()

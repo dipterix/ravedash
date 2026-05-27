@@ -51,6 +51,7 @@ simple_layout(
 ## Examples
 
 ``` r
+
 library(shiny)
 library(ravedash)
 

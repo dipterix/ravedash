@@ -62,6 +62,7 @@ A shiny observe instance
 ## Examples
 
 ``` r
+
 if(interactive()) {
 
 library(ravedash)

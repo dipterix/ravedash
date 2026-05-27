@@ -23,6 +23,7 @@ there.
 To download the template, simply run the following one-time command:
 
 ``` r
+
 ravepipeline::pipeline_install_github("rave-ieeg/rave-pipelines")
 ```
 
@@ -31,6 +32,7 @@ ravepipeline::pipeline_install_github("rave-ieeg/rave-pipelines")
 To start a `ravedash` application, you need to create a session first.
 
 ``` r
+
 sess <- ravedash::new_session()
 sess
 ```
@@ -38,6 +40,7 @@ sess
 To launch the session
 
 ``` r
+
 sess$launch_session()
 ```
 
@@ -55,6 +58,7 @@ To resume the session, you can use `use_session` with the session ID, or
 simply list all the sessions using `list_session`.
 
 ``` r
+
 ravedash::list_session()
 #> [[1]]
 #> RAVE session <session-220619-155630-EDT-PB0P>

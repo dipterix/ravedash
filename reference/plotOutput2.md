@@ -37,6 +37,7 @@ A plot output element that can be included in a panel.
 ## Examples
 
 ``` r
+
 plotOutput2("plot", class = "rounded overflow-hidden",
             min_height = 300)
 #> <div class="shiny-plot-output rounded overflow-hidden html-fill-item" id="plot" style="width:100%;height:100%;;min-height:300px"></div>

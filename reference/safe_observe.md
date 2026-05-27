@@ -45,6 +45,7 @@ safe_observe(
 ## Examples
 
 ``` r
+
 values <- shiny::reactiveValues(A=1)
 
 obsB <- safe_observe({

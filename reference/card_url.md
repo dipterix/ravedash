@@ -42,6 +42,7 @@ The hyper reference of suggested card 'URL'
 ## Examples
 
 ``` r
+
 set_card_url_scheme(
   module_id = "power_explorer",
   root = "https://openwetware.org/wiki/RAVE:ravebuiltins",

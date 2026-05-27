@@ -24,6 +24,7 @@ finished_text(candidates)
 ## Examples
 
 ``` r
+
 be_patient_text()
 #> [1] "Please be patient, running in progress..."
 

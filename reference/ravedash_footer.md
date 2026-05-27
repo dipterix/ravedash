@@ -49,6 +49,7 @@ ravedash_footer(
 ## Examples
 
 ``` r
+
 library(shiny)
 # dummy variables for the example
 data_loaded <- TRUE

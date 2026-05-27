@@ -40,6 +40,7 @@ A `'RAVEShinyComponentContainer'` instance
 
 ``` r
 
+
 f <- tempfile()
 dir.create(f, showWarnings = FALSE, recursive = TRUE)
 file.create(file.path(f, "settings.yaml"))
