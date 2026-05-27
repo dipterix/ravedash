@@ -26,10 +26,10 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dipsaus}{\code{\link[dipsaus:grapes-OF-grapes]{\%OF\%}}, \code{\link[dipsaus:shiny_alert2]{close_alert2}}, \code{\link[dipsaus]{shiny_alert2}}}
+  \item{dipsaus}{\code{\link[dipsaus:\%OF\%]{\%OF\%}}, \code{\link[dipsaus:close_alert2]{close_alert2()}}, \code{\link[dipsaus:shiny_alert2]{shiny_alert2()}}}
 
-  \item{ravepipeline}{\code{\link[ravepipeline]{logger}}, \code{\link[ravepipeline:logger]{logger_error_condition}}, \code{\link[ravepipeline:logger]{logger_threshold}}, \code{\link[ravepipeline:logger]{set_logger_path}}}
+  \item{ravepipeline}{\code{\link[ravepipeline:logger]{logger()}}, \code{\link[ravepipeline:logger_error_condition]{logger_error_condition()}}, \code{\link[ravepipeline:logger_threshold]{logger_threshold()}}, \code{\link[ravepipeline:set_logger_path]{set_logger_path()}}}
 
-  \item{shidashi}{\code{\link[shidashi]{card_badge}}, \code{\link[shidashi:card_badge]{card_recalculate_badge}}, \code{\link[shidashi:notification]{clear_notifications}}, \code{\link[shidashi:card_badge]{disable_recalculate_badge}}, \code{\link[shidashi:card_badge]{enable_recalculate_badge}}, \code{\link[shidashi:register_io]{register_output}}, \code{\link[shidashi:card_badge]{set_card_badge}}, \code{\link[shidashi:notification]{show_notification}}, \code{\link[shidashi:module_info]{switch_module}}}
+  \item{shidashi}{\code{\link[shidashi:card_badge]{card_badge()}}, \code{\link[shidashi:card_recalculate_badge]{card_recalculate_badge()}}, \code{\link[shidashi:clear_notifications]{clear_notifications()}}, \code{\link[shidashi:disable_recalculate_badge]{disable_recalculate_badge()}}, \code{\link[shidashi:enable_recalculate_badge]{enable_recalculate_badge()}}, \code{\link[shidashi:register_output]{register_output()}}, \code{\link[shidashi:set_card_badge]{set_card_badge()}}, \code{\link[shidashi:show_notification]{show_notification()}}, \code{\link[shidashi:switch_module]{switch_module()}}}
 }}
 

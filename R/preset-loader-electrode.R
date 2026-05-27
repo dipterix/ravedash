@@ -39,14 +39,24 @@ presets_loader_electrodes <- function(
 
         # electrodes
         # check if subject is last input
-        electrode_text <- deparse_svec(subject$electrodes)
+        all_electrodes <- subject$electrodes
+        lfp_all_electrodes <- all_electrodes[subject$electrode_types == "LFP"]
+        lfp_electrode_text <- deparse_svec(lfp_all_electrodes)
         if (isTRUE(loader_subject$get_settings_value(use_cache = TRUE) == subject$subject_code)) {
           electrode_text <- comp$get_settings_value(default = electrode_text, use_cache = TRUE)
+        } else {
+          electrode_text <- lfp_electrode_text
+        }
+        if (nzchar(lfp_electrode_text)) {
+          electrode_text_label <- sprintf("Electrodes (%s)", lfp_electrode_text)
+        } else {
+          electrode_text_label <- "Electrodes"
         }
         shiny::updateTextInput(
           session = session,
           inputId = id,
-          value = electrode_text
+          value = electrode_text,
+          label = electrode_text_label
         )
 
       }),
