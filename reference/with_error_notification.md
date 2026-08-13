@@ -86,4 +86,4 @@ with_error_alert(expr, envir = parent.frame(), quoted = FALSE, ...)
 
 ## Value
 
-The condition `cond` if errored out, or the evaluated results
+The condition `cond` if errors out, or the evaluated results

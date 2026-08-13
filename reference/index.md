@@ -20,6 +20,9 @@
   [`flex_group_box()`](https://dipterix.org/ravedash/reference/group_box.md)
   : Group input elements into a box with title
 
+- [`is_new_repository_loaded()`](https://dipterix.org/ravedash/reference/is_new_repository_loaded.md)
+  : Check whether repository read from pipeline has been updated
+
 - [`module_server_common()`](https://dipterix.org/ravedash/reference/module_server_common.md)
   : Default module server function
 
