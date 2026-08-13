@@ -16,7 +16,7 @@
 #' \code{\link[dipsaus]{shiny_alert2}} or
 #' \code{\link[shidashi]{show_notification}}
 #' @param prefix additional messages to display in the notification or alert
-#' @return The condition \code{cond} if errored out, or the evaluated results
+#' @return The condition \code{cond} if errors out, or the evaluated results
 #'
 NULL
 

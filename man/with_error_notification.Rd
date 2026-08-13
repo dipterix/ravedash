@@ -63,7 +63,7 @@ console and \code{'debug'} on file.}
 \item{...}{passed to other methods}
 }
 \value{
-The condition \code{cond} if errored out, or the evaluated results
+The condition \code{cond} if errors out, or the evaluated results
 }
 \description{
 Keep track of messages printed by modules

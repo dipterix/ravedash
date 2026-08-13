@@ -3,7 +3,7 @@
 #' data loader panel.
 #' @param module_id 'RAVE' module ID
 #' @param session shiny session; \code{\link[shidashi]{init_app}} must be
-#' called before this function so that the shidashi session registry is
+#' called before this function so that the \pkg{shidashi} session registry is
 #' initialized.
 #' @param check_data_loaded a function that takes zero to one argument and
 #' must return either \code{TRUE} if data has been loaded or \code{FALSE}

@@ -362,13 +362,13 @@ shiny_is_running <- function() {
 
 
 
-`%?<-%` <- function(lhs, value){
+`%?<-%` <- function(lhs, value) {
   env <- parent.frame()
   lhs <- substitute(lhs)
 
   isnull <- tryCatch({
     is.null(eval(lhs, envir = env))
-  }, error = function(e){
+  }, error = function(e) {
     return(TRUE)
   })
 
@@ -463,7 +463,7 @@ deparse_svec <- function(
 
 package_installed <- function(pkgs, all = FALSE) {
   re <- vapply(pkgs, function(p) {
-    system.file('', package = p) != ''
+    system.file("", package = p) != ""
   }, FALSE)
   if (all) {
     re <- all(re)
