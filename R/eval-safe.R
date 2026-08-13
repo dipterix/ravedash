@@ -45,26 +45,36 @@ safe_wrap_expr <- function(expr, onFailure = NULL, finally = {}, log_error = "er
     options(rlang_trace_top_env = current_env)
   })
 
-  tryCatch({
-    # force(expr)
-    eval(expr_, envir = parent_frame)
-  }, error = function(e) {
-    if (is.function(onFailure)) {
-      try({ onFailure(e) })
-    }
+  tryCatch(
+    {
+      # force(expr)
+      eval(expr_, envir = parent_frame)
+    },
+    error = function(e) {
+      if (is.function(onFailure)) {
+        try({ onFailure(e) })
+      }
 
-    error_notification(
-      cond = e,
-      title = "Coding Error",
-      class = "rave-notifications-coding-error",
-      prefix = "Error found in code. Please inform module writers to fix it (details have been printed in console):"
-    )
-    logger(c("Wrapped expressions:", deparse(expr_)), .sep = "\n", level = log_error)
-
-
-  }, finally = try({
-    finally
-  }))
+      error_notification(
+        cond = e,
+        title = "Coding Error",
+        class = "rave-notifications-coding-error",
+        prefix = "Error found in code. Please inform module writers to fix it (details have been printed in console):"
+      )
+      logger(c("Wrapped expressions:", deparse(expr_)), .sep = "\n", level = log_error)
+    },
+    observer_early_terminate = function(e) {
+      # Do nothing
+      message <- trimws(paste(e$message, collapse = ""))
+      level <- e$level %||% "debug"
+      if (nzchar(message)) {
+        logger(message, level = )
+      }
+    },
+    finally = try({
+      finally
+    })
+  )
 }
 
 observe <- function(x, env = NULL, quoted = FALSE, priority = 0L, domain = NULL, ...,
