@@ -6,6 +6,9 @@
   [`card_href()`](https://dipterix.org/ravedash/reference/card_url.md) :
   Set 'URL' scheme for modules
 
+- [`check_new_repository_loaded()`](https://dipterix.org/ravedash/reference/check_new_repository_loaded.md)
+  : Check whether repository read from pipeline has been updated
+
 - [`create_report_wizard()`](https://dipterix.org/ravedash/reference/create_report_wizard.md)
   : Create report wizard to be used within the interactive modules
 
@@ -19,9 +22,6 @@
 - [`group_box()`](https://dipterix.org/ravedash/reference/group_box.md)
   [`flex_group_box()`](https://dipterix.org/ravedash/reference/group_box.md)
   : Group input elements into a box with title
-
-- [`is_new_repository_loaded()`](https://dipterix.org/ravedash/reference/is_new_repository_loaded.md)
-  : Check whether repository read from pipeline has been updated
 
 - [`module_server_common()`](https://dipterix.org/ravedash/reference/module_server_common.md)
   : Default module server function
