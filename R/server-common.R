@@ -47,6 +47,20 @@
 #'     }, session = session
 #'   )
 #'
+#'   # Register data loader script, triggered by `load_data_button()`
+#'   # in the loader UI, or by `server_tools$trigger_script("load_data")`
+#'   server_tools <- get_default_handlers(session = session)
+#'   server_tools$set_script(
+#'     "load_data",
+#'     {
+#'       ravepipeline::pipeline_run(pipe_dir = pipeline_path,
+#'                                  names = "repository")
+#'     },
+#'     binding_event = "load_data",
+#'     dispatch_event = "data_changed",
+#'     alert_params = list(title = "Loading in progress")
+#'   )
+#'
 #' }
 #'
 #' @export
@@ -130,6 +144,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   local_data$debug_env$input <- input
   local_data$debug_env$output <- output
   local_data$debug_env$session <- session
+  local_data$scripts <- dipsaus::fastmap2()
 
   session$sendCustomMessage("shidashi.set_current_module", list(
     module_id = module_id,
@@ -180,6 +195,18 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     get_rave_event("run_analysis"),
     ignoreNULL = FALSE, ignoreInit = FALSE
   ), millis = 150, priority = 99)
+
+  # Run analysis: runs script "run_analysis" (registered via `set_script`)
+  # behind the gating of `run_analysis_flag()`
+  shiny::bindEvent(
+    safe_observe({
+      if (is.null(local_data$scripts[["run_analysis"]])) { return() }
+      trigger_script("run_analysis")
+    }),
+    run_analysis_flag(),
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE
+  )
 
   # ---- Handlers --------------------------------------------------
 
@@ -533,6 +560,121 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     }
   })
 
+  # ---- Custom scripts ----------
+
+  set_script <- function(name, expr, quoted = FALSE, env = parent.frame(),
+                         binding_event = NULL, dispatch_event = NULL,
+                         alert_params = NULL) {
+    if (!quoted) {
+      expr <- substitute(expr)
+    }
+    if (!is.character(name) || length(name) != 1 || is.na(name) || !nzchar(name)) {
+      stop("`set_script`: `name` must be a non-empty string")
+    }
+
+    # Make sure re-registering a script never runs it twice
+    previous <- local_data$scripts[[name]]
+    if (!is.null(previous$observer)) {
+      previous$observer$destroy()
+    }
+
+    script <- dipsaus::fastmap2()
+    script$expr <- expr
+    script$env <- env
+    script$dispatch_event <- dispatch_event
+    script$alert_params <- alert_params
+    script$running <- FALSE
+
+    if (length(binding_event)) {
+      # errors are already shown via alert when `alert_params` is a list;
+      # the notification wrapper skips those (class `rave_muffled`)
+      script$observer <- shiny::bindEvent(
+        safe_observe({
+          trigger_script(name)
+        }, error_wrapper = "notification", domain = session),
+        get_rave_event(binding_event, session = session),
+        ignoreNULL = TRUE,
+        ignoreInit = TRUE
+      )
+    }
+
+    local_data$scripts[[name]] <- script
+    invisible()
+  }
+
+  # Can be called outside of reactive context (e.g. from MCP tools)
+  trigger_script <- function(name, dispatch_event, with_alert = TRUE) {
+    script <- local_data$scripts[[name]]
+
+    if (is.null(script) || is.null(script$expr) || !is.environment(script$env)) {
+      stop("No such script in registry: ", name)
+    }
+
+    if (missing(dispatch_event)) {
+      dispatch_event <- script$dispatch_event
+    }
+
+    if (isTRUE(script$running)) {
+      stop(sprintf("Script [%s] is already running. Please wait for it to finish", name))
+    }
+
+    script$running <- TRUE
+    on.exit({
+      script$running <- FALSE
+    }, add = TRUE)
+
+    show_alert <- isTRUE(with_alert) && is.list(script$alert_params)
+    if (show_alert) {
+      alert_params <- utils::modifyList(
+        list(
+          title = "Running in progress",
+          text = sprintf("Running script [%s] in progress. %s", name, be_patient_text()),
+          icon = "info",
+          auto_close = FALSE,
+          buttons = FALSE
+        ),
+        script$alert_params
+      )
+      alert_params$session <- session
+      do.call(shiny_alert2, alert_params)
+    }
+
+    re <- tryCatch(
+      {
+        re <- shiny::withReactiveDomain(session, {
+          shiny::isolate({
+            eval(script$expr, envir = new.env(parent = script$env))
+          })
+        })
+        if (show_alert) {
+          Sys.sleep(0.5)
+          close_alert2(session = session)
+        }
+        re
+      },
+      error = function(e) {
+        if (show_alert) {
+          Sys.sleep(0.5)
+          shiny::withReactiveDomain(session, {
+            error_alert(
+              cond = e,
+              prefix = sprintf("Found an error while running script '%s':", name),
+              session = session
+            )
+          })
+          class(e) <- unique(c("rave_muffled", class(e)))
+        }
+        stop(e)
+      }
+    )
+
+    if (length(dispatch_event)) {
+      fire_rave_event(dispatch_event, Sys.time(), session = session)
+    }
+
+    invisible(re)
+  }
+
   # ---- Auto-recalculation logic... Need to rethink ----------
   run_analysis <- function() {
     module_id <- session$ns(NULL)
@@ -880,6 +1022,58 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       ")"
     )
   )
+
+  reactive_handlers$set_script <- structure(
+    set_script, class = c("ravedash_printable", class(set_script)),
+    docs = paste(
+      sep = "\n",
+      "Function to register a named script. Usage:\n",
+      "set_script(name, expr, quoted = FALSE, env = parent.frame(),",
+      "           binding_event = NULL, dispatch_event = NULL,",
+      "           alert_params = NULL)\n",
+      "  binding_event : RAVE event key; if set, the script runs when",
+      "                  the event fires",
+      "  dispatch_event: RAVE event key to fire after the script finishes",
+      "  alert_params  : list of `shiny_alert2` arguments to show an alert",
+      "                  while the script runs; NULL for no alert\n",
+      "# Obtain the server utility functions",
+      "server_tools <- get_default_handlers()\n",
+      "# Data loader: runs when `ravedash::load_data_button()` is clicked",
+      "server_tools$set_script(",
+      "  'load_data',",
+      "  { <expression to load data> },",
+      "  binding_event = 'load_data',",
+      "  dispatch_event = 'data_changed',",
+      "  alert_params = list(title = 'Loading in progress')",
+      ")\n",
+      "# Analysis: script name 'run_analysis' is reserved and runs when",
+      "# `ravedash::run_analysis_button()` is clicked (or auto-recalculation",
+      "# is triggered); do not set `binding_event` for this script",
+      "server_tools$set_script('run_analysis', { <expression to run analysis> })"
+    )
+  )
+
+  reactive_handlers$trigger_script <- structure(
+    trigger_script, class = c("ravedash_printable", class(trigger_script)),
+    docs = paste(
+      sep = "\n",
+      "Function to run a registered script immediately (raises errors if",
+      "the script is missing, is running, or fails). Usage:\n",
+      "trigger_script(name, dispatch_event, with_alert = TRUE)\n",
+      "  dispatch_event: event to fire after the script finishes; default",
+      "                  is the one registered via `set_script`, use NULL",
+      "                  to fire nothing",
+      "  with_alert    : whether to show the registered alert\n",
+      "# Obtain the server utility functions",
+      "server_tools <- get_default_handlers()\n",
+      "# Run with registered alert and dispatch event",
+      "server_tools$trigger_script('load_data')\n",
+      "# Run without alert nor dispatching any event",
+      "server_tools$trigger_script('load_data', dispatch_event = NULL,",
+      "                            with_alert = FALSE)"
+    )
+  )
+
   # reactive_handlers$run_analysis <- run_analysis
   reactive_handlers$run_analysis_onchange <- structure(
     run_analysis_onchange, class = c("ravedash_printable", class(run_analysis_onchange)),

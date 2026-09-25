@@ -43,7 +43,7 @@ presets_loader_electrodes <- function(
         lfp_all_electrodes <- all_electrodes[subject$electrode_types == "LFP"]
         lfp_electrode_text <- deparse_svec(lfp_all_electrodes)
         if (isTRUE(loader_subject$get_settings_value(use_cache = TRUE) == subject$subject_code)) {
-          electrode_text <- comp$get_settings_value(default = electrode_text, use_cache = TRUE)
+          electrode_text <- comp$get_settings_value(default = lfp_electrode_text, use_cache = TRUE)
         } else {
           electrode_text <- lfp_electrode_text
         }

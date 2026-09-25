@@ -103,6 +103,9 @@ The following event keys are built-in. Please do not fire them using
 \item{\code{'simplify_toggle'}}{toggle visibility of 'HTML' elements with
 class \code{'rave-option'}}
 \item{\code{'run_analysis'}}{notifies the module to run pipeline}
+\item{\code{'load_data'}}{notifies the module to run scripts registered
+with \code{binding_event = "load_data"}; see
+\code{\link{load_data_button}}}
 \item{\code{'save_pipeline'}, \code{'load_pipeline'}}{notifies the module to
 save or load pipeline}
 \item{\code{'data_loaded'}}{notifies the module that new data has been

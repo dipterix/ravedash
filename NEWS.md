@@ -1,5 +1,6 @@
 # ravedash 0.1.3
 
+* Added `load_data_button()`; module servers can register named scripts via `set_script()` (optionally bound to a 'RAVE' event, with an alert and a follow-up event) and run them programmatically via `trigger_script()` (see `get_default_handlers()`), for example, from `MCP` tools
 * Allow preset-components to access to pipeline instance
 * Added `strip_style` to remove `ansi` styles
 * Changed `logger_error_condition` to `S3` generics

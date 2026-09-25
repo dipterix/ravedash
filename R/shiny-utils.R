@@ -45,6 +45,9 @@
 #' \item{\code{'simplify_toggle'}}{toggle visibility of 'HTML' elements with
 #' class \code{'rave-option'}}
 #' \item{\code{'run_analysis'}}{notifies the module to run pipeline}
+#' \item{\code{'load_data'}}{notifies the module to run scripts registered
+#' with \code{binding_event = "load_data"}; see
+#' \code{\link{load_data_button}}}
 #' \item{\code{'save_pipeline'}, \code{'load_pipeline'}}{notifies the module to
 #' save or load pipeline}
 #' \item{\code{'data_loaded'}}{notifies the module that new data has been
@@ -443,15 +446,25 @@ ravedash_footer <- function(
             title = "Show more/fewer options"
           )
         ),
-        local({
-          if (
-            ravepipeline::raveio_getopt(
-              "interactive_debugging",
-              default = FALSE
-            )
-          ) {
-            shiny::div(
-              class = "px-3 py-1",
+        shiny::div(
+          class = "px-3 py-1",
+          shiny::a(
+            class = "btn btn-default btn-ai-pin",
+            href = "#",
+            hidden = NA,
+            role = "button",
+            'aria-pressed' = "false",
+            'data-toggle' = "tooltip",
+            title = "Pin this tab: AI agent tool calls will run here.",
+            shiny_icons$thumbtack
+          ),
+          local({
+            if (
+              ravepipeline::raveio_getopt(
+                "interactive_debugging",
+                default = FALSE
+              )
+            ) {
               shiny::a(
                 class = "btn btn-default rave-button",
                 href = "#",
@@ -460,11 +473,11 @@ ravedash_footer <- function(
                 `data-toggle` = "tooltip",
                 title = "Interactive debugging"
               )
-            )
-          } else {
-            NULL
-          }
-        }),
+            } else {
+              NULL
+            }
+          })
+        ),
         # shiny::a(
         #   class = "dropdown-item shidashi-button",
         #   href = "#",
@@ -560,6 +573,60 @@ run_analysis_button <- function(
     label = "Run analysis (Ctrl+Enter)",
     icon = NULL, width = NULL, type = "primary",
     btn_type = c("button", "link"), class = "", style = "", ...) {
+  rave_action_button(
+    action_type = "run_analysis", label = label, icon = icon, width = width,
+    type = type, btn_type = btn_type, class = class, style = style, ...
+  )
+}
+
+#' Button to trigger data loader
+#' @description A button that triggers \code{'load_data'} event, which runs
+#' scripts registered via \code{set_script} with
+#' \code{binding_event = "load_data"} (see \code{\link{module_server_common}});
+#' the same script can be triggered programmatically via
+#' \code{trigger_script}.
+#' @param label label to display
+#' @param icon icon before the label
+#' @param type used to calculate \code{class}
+#' @param btn_type button style, choices are \code{'button'} or \code{'link'}
+#' @param width,class,style,... passed to 'HTML' tag
+#' @return A 'HTML' button tag
+#' @seealso \code{\link{run_analysis_button}}, \code{\link{get_rave_event}}
+#' @examples
+#'
+#' # In loader UI
+#' load_data_button("Load subject", width = "100%")
+#'
+#' # In loader server function
+#' \dontrun{
+#' server_tools <- get_default_handlers(session = session)
+#' server_tools$set_script(
+#'   "load_data",
+#'   {
+#'     # load data ...
+#'   },
+#'   binding_event = "load_data",
+#'   dispatch_event = "data_changed",
+#'   alert_params = list(title = "Loading in progress")
+#' )
+#' }
+#'
+#' @export
+load_data_button <- function(
+    label = "Load data",
+    icon = NULL, width = NULL, type = "primary",
+    btn_type = c("button", "link"), class = "", style = "", ...) {
+  rave_action_button(
+    action_type = "load_data", label = label, icon = icon, width = width,
+    type = type, btn_type = btn_type, class = class, style = style, ...
+  )
+}
+
+rave_action_button <- function(
+    action_type, label, icon = NULL, width = NULL, type = "primary",
+    btn_type = c("button", "link"), class = "", style = "", ...) {
+  rave_action <- sprintf('{"type": "%s"}', action_type)
+
   if (length(type) > 1) {
     type <- type[[1]]
   }
@@ -585,7 +652,7 @@ run_analysis_button <- function(
       class = class,
       style = style,
       type = "button",
-      "rave-action" = '{"type": "run_analysis"}',
+      "rave-action" = rave_action,
       list(shidashi::as_icon(icon), label),
       ...
     )
@@ -596,7 +663,7 @@ run_analysis_button <- function(
       href = "#",
       class = class,
       style = style,
-      "rave-action" = '{"type": "run_analysis"}',
+      "rave-action" = rave_action,
       ...,
       list(label, shidashi::as_icon(icon))
     )

@@ -561,7 +561,7 @@ launch_session <- function(
   file.path(x$app_path, "ui.R"))
 
   if ( !dry_run ) {
-    shidashi::render(
+    shidashi_args <- list(
       root_path = x$app_path,
       port = port,
       host = host,
@@ -588,6 +588,10 @@ launch_session <- function(
       #   })
       # })
     )
+    if ("server_name" %in% names(formals(shidashi::render))) {
+      shidashi_args$server_name <- strftime(Sys.time(), "RAVE-server-%y%m%dT%H%M%S")
+    }
+    do.call(shidashi::render, shidashi_args)
   }
 
 }
