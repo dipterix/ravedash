@@ -84,5 +84,19 @@ server <- function(input, output, session, ...) {
     }, session = session
   )
 
+  # Register data loader script, triggered by `load_data_button()`
+  # in the loader UI, or by `server_tools$trigger_script("load_data")`
+  server_tools <- get_default_handlers(session = session)
+  server_tools$set_script(
+    "load_data",
+    {
+      ravepipeline::pipeline_run(pipe_dir = pipeline_path,
+                                 names = "repository")
+    },
+    binding_event = "load_data",
+    dispatch_event = "data_changed",
+    alert_params = list(title = "Loading in progress")
+  )
+
 }
 ```

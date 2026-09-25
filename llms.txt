@@ -44,6 +44,9 @@ Please cite the following paper for publication use:
   [`flex_group_box()`](https://dipterix.org/ravedash/reference/group_box.md)
   : Group input elements into a box with title
 
+- [`load_data_button()`](https://dipterix.org/ravedash/reference/load_data_button.md)
+  : Button to trigger data loader
+
 - [`module_server_common()`](https://dipterix.org/ravedash/reference/module_server_common.md)
   : Default module server function
 

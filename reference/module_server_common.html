@@ -9,7 +9,7 @@ data loader panel."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.50</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.51</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,6 +123,20 @@ initialized.</p></dd>
 <span class="r-in"><span>        <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span>      <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">}</span>, session <span class="op">=</span> <span class="va">session</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Register data loader script, triggered by `load_data_button()`</span></span></span>
+<span class="r-in"><span>  <span class="co"># in the loader UI, or by `server_tools$trigger_script("load_data")`</span></span></span>
+<span class="r-in"><span>  <span class="va">server_tools</span> <span class="op">&lt;-</span> <span class="fu"><a href="rave-runtime-events.html">get_default_handlers</a></span><span class="op">(</span>session <span class="op">=</span> <span class="va">session</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">server_tools</span><span class="op">$</span><span class="fu">set_script</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"load_data"</span>,</span></span>
+<span class="r-in"><span>    <span class="op">{</span></span></span>
+<span class="r-in"><span>      <span class="fu">ravepipeline</span><span class="fu">::</span><span class="fu"><a href="http://dipterix.org/ravepipeline/reference/rave-pipeline.html" class="external-link">pipeline_run</a></span><span class="op">(</span>pipe_dir <span class="op">=</span> <span class="va">pipeline_path</span>,</span></span>
+<span class="r-in"><span>                                 names <span class="op">=</span> <span class="st">"repository"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span>,</span></span>
+<span class="r-in"><span>    binding_event <span class="op">=</span> <span class="st">"load_data"</span>,</span></span>
+<span class="r-in"><span>    dispatch_event <span class="op">=</span> <span class="st">"data_changed"</span>,</span></span>
+<span class="r-in"><span>    alert_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Loading in progress"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.50</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.51</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="ravedash-013">ravedash 0.1.3<a class="anchor" aria-label="anchor" href="#ravedash-013"></a></h2>
-<ul><li>Allow preset-components to access to pipeline instance</li>
+<ul><li>Added <code><a href="../reference/load_data_button.html">load_data_button()</a></code>; module servers can register named scripts via <code>set_script()</code> (optionally bound to a ‘RAVE’ event, with an alert and a follow-up event) and run them programmatically via <code>trigger_script()</code> (see <code><a href="../reference/rave-runtime-events.html">get_default_handlers()</a></code>), for example, from <code>MCP</code> tools</li>
+<li>Allow preset-components to access to pipeline instance</li>
 <li>Added <code>strip_style</code> to remove <code>ansi</code> styles</li>
 <li>Changed <code>logger_error_condition</code> to <code>S3</code> generics</li>
 <li>Added <code>error_alert</code> similar to <code>error_notification</code>, but using <code><a href="https://dipterix.org/dipsaus/reference/shiny_alert2.html" class="external-link">dipsaus::shiny_alert2</a></code>

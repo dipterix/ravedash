@@ -136,6 +136,12 @@ The following event keys are built-in. Please do not fire them using
 
   notifies the module to run pipeline
 
+- `'load_data'`:
+
+  notifies the module to run scripts registered with
+  `binding_event = "load_data"`; see
+  [`load_data_button`](https://dipterix.org/ravedash/reference/load_data_button.md)
+
 - `'save_pipeline'`, `'load_pipeline'`:
 
   notifies the module to save or load pipeline

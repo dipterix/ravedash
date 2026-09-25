@@ -80,6 +80,11 @@ ravedash_footer("my_module")
 #>           <i class="fab fa-simplybuilt " role="presentation" aria-label="simplybuilt icon" verify_fa="FALSE"></i>
 #>         </a>
 #>       </div>
+#>       <div class="px-3 py-1">
+#>         <a class="btn btn-default btn-ai-pin" href="#" hidden role="button" aria-pressed="false" data-toggle="tooltip" title="Pin this tab: AI agent tool calls will run here.">
+#>           <i class="fas fa-thumbtack" role="presentation" aria-label="thumbtack icon" verify_fa="FALSE"></i>
+#>         </a>
+#>       </div>
 #>       <div class="dropdown-divider"></div>
 #>       <h6 class="dropdown-header">Quick Access</h6>
 #>     </div>
