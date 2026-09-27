@@ -1075,7 +1075,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
 
   reactive_handlers$remove_script <- structure(
-    set_script, class = c("ravedash_printable", class(remove_script)),
+    remove_script, class = c("ravedash_printable", class(remove_script)),
     docs = paste(
       sep = "\n",
       "Function to remove a registered script. Usage:\n",
@@ -1088,7 +1088,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
 
   reactive_handlers$get_script <- structure(
-    set_script, class = c("ravedash_printable", class(get_script)),
+    get_script, class = c("ravedash_printable", class(get_script)),
     docs = paste(
       sep = "\n",
       "Function to get a registered script, error on missing. Usage:\n",
@@ -1101,7 +1101,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
   )
 
   reactive_handlers$list_scripts <- structure(
-    set_script, class = c("ravedash_printable", class(list_scripts)),
+    list_scripts, class = c("ravedash_printable", class(list_scripts)),
     docs = paste(
       sep = "\n",
       "Function to get the names of all registered scripts. Usage:\n",
