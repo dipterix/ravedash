@@ -562,9 +562,11 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   # ---- Custom scripts ----------
 
-  set_script <- function(name, expr, quoted = FALSE, env = parent.frame(),
+  set_script <- function(
+    name, expr, quoted = FALSE, env = parent.frame(),
                          binding_event = NULL, dispatch_event = NULL,
-                         alert_params = NULL) {
+                         alert_params = NULL, description = name
+  ) {
     if (!quoted) {
       expr <- substitute(expr)
     }
@@ -579,6 +581,7 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
     }
 
     script <- dipsaus::fastmap2()
+    script$description <- paste(description, collapse = " ")
     script$expr <- expr
     script$env <- env
     script$dispatch_event <- dispatch_event
@@ -600,6 +603,24 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
     local_data$scripts[[name]] <- script
     invisible()
+  }
+
+  remove_script <- function(name) {
+    local_data$scripts$`@remove`(name)
+  }
+
+  get_script <- function(name) {
+    script <- local_data$scripts[[name]]
+
+    if (is.null(script) || is.null(script$expr) || !is.environment(script$env)) {
+      stop("No such script in registry: ", name)
+    }
+
+    as.list(script)
+  }
+
+  list_scripts <- function() {
+    names(local_data$scripts)
   }
 
   # Can be called outside of reactive context (e.g. from MCP tools)
@@ -1050,6 +1071,45 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
       "# `ravedash::run_analysis_button()` is clicked (or auto-recalculation",
       "# is triggered); do not set `binding_event` for this script",
       "server_tools$set_script('run_analysis', { <expression to run analysis> })"
+    )
+  )
+
+  reactive_handlers$remove_script <- structure(
+    set_script, class = c("ravedash_printable", class(remove_script)),
+    docs = paste(
+      sep = "\n",
+      "Function to remove a registered script. Usage:\n",
+
+      "# Obtain the server utility functions",
+      "server_tools <- get_default_handlers()\n",
+
+      "server_tools$remove_script('run_analysis')"
+    )
+  )
+
+  reactive_handlers$get_script <- structure(
+    set_script, class = c("ravedash_printable", class(get_script)),
+    docs = paste(
+      sep = "\n",
+      "Function to get a registered script, error on missing. Usage:\n",
+
+      "# Obtain the server utility functions",
+      "server_tools <- get_default_handlers()\n",
+
+      "server_tools$get_script('run_analysis')"
+    )
+  )
+
+  reactive_handlers$list_scripts <- structure(
+    set_script, class = c("ravedash_printable", class(list_scripts)),
+    docs = paste(
+      sep = "\n",
+      "Function to get the names of all registered scripts. Usage:\n",
+
+      "# Obtain the server utility functions",
+      "server_tools <- get_default_handlers()\n",
+
+      "server_tools$list_scripts()"
     )
   )
 
