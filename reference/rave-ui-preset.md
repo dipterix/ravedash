@@ -14,7 +14,8 @@ presets_analysis_electrode_selector2(
   loader_subject_id = "loader_subject_code",
   pipeline_repository = "repository",
   start_simple = FALSE,
-  multiple = TRUE
+  multiple = TRUE,
+  env = parent.frame()
 )
 
 presets_analysis_ranges(
@@ -22,7 +23,8 @@ presets_analysis_ranges(
   varname = "analysis_ranges",
   label = "Configure Analysis",
   pipeline_repository = "repository",
-  max_components = 2
+  max_components = 2,
+  env = parent.frame()
 )
 
 presets_baseline_choices(
@@ -33,14 +35,16 @@ presets_baseline_choices(
   baseline_choices = c("Decibel", "% Change Power", "% Change Amplitude",
     "z-score Decibel", "z-score Power", "z-score Amplitude"),
   baseline_along_choices = c("Per frequency, trial, and electrode", "Across electrode",
-    "Across trial", "Across trial and electrode")
+    "Across trial", "Across trial and electrode"),
+  env = parent.frame()
 )
 
 presets_condition_groups(
   id = "condition_groups",
   varname = "condition_groups",
   label = "Create Condition Contrast",
-  pipeline_repository = "repository"
+  pipeline_repository = "repository",
+  env = parent.frame()
 )
 
 presets_import_export_subject_pipeline(
@@ -57,12 +61,14 @@ presets_import_setup_blocks(
   id = "import_blocks",
   label = "Format & session blocks",
   import_setup_id = "import_setup",
-  max_components = 5
+  max_components = 5,
+  env = parent.frame()
 )
 
 presets_import_setup_native(
   id = "import_setup",
-  label = "Select project & subject"
+  label = "Select project & subject",
+  env = parent.frame()
 )
 
 presets_loader_3dviewer(
@@ -89,7 +95,8 @@ presets_loader_electrodes(
   varname = "loaded_electrodes",
   label = "Electrodes",
   loader_project_id = "loader_project_name",
-  loader_subject_id = "loader_subject_code"
+  loader_subject_id = "loader_subject_code",
+  env = parent.frame()
 )
 
 presets_loader_epoch(
@@ -98,13 +105,15 @@ presets_loader_epoch(
   label = "Epoch and Trial Duration",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
-  allow_stitch = FALSE
+  allow_stitch = FALSE,
+  env = parent.frame()
 )
 
 presets_loader_project(
   id = "loader_project_name",
   varname = "project_name",
-  label = "Project"
+  label = "Project",
+  env = parent.frame()
 )
 
 presets_loader_reference(
@@ -113,7 +122,8 @@ presets_loader_reference(
   label = "Reference name",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
-  mode = c("default", "create")
+  mode = c("default", "create"),
+  env = parent.frame()
 )
 
 presets_loader_subject(
@@ -122,14 +132,16 @@ presets_loader_subject(
   label = "Subject",
   loader_project_id = "loader_project_name",
   checks = c("notch", "wavelet"),
-  allow_new = FALSE
+  allow_new = FALSE,
+  env = parent.frame()
 )
 
 presets_loader_subject_only(
   id = "loader_subject_code",
   varname = "subject_code",
   label = "Subject",
-  multiple = FALSE
+  multiple = FALSE,
+  env = parent.frame()
 )
 
 presets_loader_sync_project_subject(
@@ -183,6 +195,13 @@ presets_loader_sync_project_subject(
 - multiple:
 
   whether to allow multiple inputs
+
+- env:
+
+  environment in which the preset is created; default is the calling
+  frame, typically the module environment where the module scripts are
+  sourced. shidashi looks up the module's input registry from this
+  environment, so that agents can query and update the preset inputs
 
 - max_components:
 

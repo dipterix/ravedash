@@ -5,7 +5,11 @@ Create report wizard to be used within the interactive modules
 ## Usage
 
 ``` r
-create_report_wizard(pipeline, session = shiny::getDefaultReactiveDomain())
+create_report_wizard(
+  pipeline,
+  session = shiny::getDefaultReactiveDomain(),
+  env = parent.frame()
+)
 ```
 
 ## Arguments
@@ -17,6 +21,12 @@ create_report_wizard(pipeline, session = shiny::getDefaultReactiveDomain())
 - session:
 
   shiny session
+
+- env:
+
+  environment used to register the wizard inputs with shidashi, so that
+  agents can choose and generate reports; default is the calling frame,
+  typically the module server
 
 ## Value
 

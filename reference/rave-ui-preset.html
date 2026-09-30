@@ -9,7 +9,7 @@ new_rave_shiny_component_container."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.53</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.54</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,8 @@ new_rave_shiny_component_container."></head><body>
 <span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
 <span>  pipeline_repository <span class="op">=</span> <span class="st">"repository"</span>,</span>
 <span>  start_simple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  multiple <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_analysis_ranges</span><span class="op">(</span></span>
@@ -62,7 +63,8 @@ new_rave_shiny_component_container."></head><body>
 <span>  varname <span class="op">=</span> <span class="st">"analysis_ranges"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Configure Analysis"</span>,</span>
 <span>  pipeline_repository <span class="op">=</span> <span class="st">"repository"</span>,</span>
-<span>  max_components <span class="op">=</span> <span class="fl">2</span></span>
+<span>  max_components <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_baseline_choices</span><span class="op">(</span></span>
@@ -73,14 +75,16 @@ new_rave_shiny_component_container."></head><body>
 <span>  baseline_choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Decibel"</span>, <span class="st">"% Change Power"</span>, <span class="st">"% Change Amplitude"</span>,</span>
 <span>    <span class="st">"z-score Decibel"</span>, <span class="st">"z-score Power"</span>, <span class="st">"z-score Amplitude"</span><span class="op">)</span>,</span>
 <span>  baseline_along_choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Per frequency, trial, and electrode"</span>, <span class="st">"Across electrode"</span>,</span>
-<span>    <span class="st">"Across trial"</span>, <span class="st">"Across trial and electrode"</span><span class="op">)</span></span>
+<span>    <span class="st">"Across trial"</span>, <span class="st">"Across trial and electrode"</span><span class="op">)</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_condition_groups</span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="st">"condition_groups"</span>,</span>
 <span>  varname <span class="op">=</span> <span class="st">"condition_groups"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Create Condition Contrast"</span>,</span>
-<span>  pipeline_repository <span class="op">=</span> <span class="st">"repository"</span></span>
+<span>  pipeline_repository <span class="op">=</span> <span class="st">"repository"</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_import_export_subject_pipeline</span><span class="op">(</span></span>
@@ -97,12 +101,14 @@ new_rave_shiny_component_container."></head><body>
 <span>  id <span class="op">=</span> <span class="st">"import_blocks"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Format &amp; session blocks"</span>,</span>
 <span>  import_setup_id <span class="op">=</span> <span class="st">"import_setup"</span>,</span>
-<span>  max_components <span class="op">=</span> <span class="fl">5</span></span>
+<span>  max_components <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_import_setup_native</span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="st">"import_setup"</span>,</span>
-<span>  label <span class="op">=</span> <span class="st">"Select project &amp; subject"</span></span>
+<span>  label <span class="op">=</span> <span class="st">"Select project &amp; subject"</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_3dviewer</span><span class="op">(</span></span>
@@ -129,7 +135,8 @@ new_rave_shiny_component_container."></head><body>
 <span>  varname <span class="op">=</span> <span class="st">"loaded_electrodes"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Electrodes"</span>,</span>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
-<span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span></span>
+<span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_epoch</span><span class="op">(</span></span>
@@ -138,13 +145,15 @@ new_rave_shiny_component_container."></head><body>
 <span>  label <span class="op">=</span> <span class="st">"Epoch and Trial Duration"</span>,</span>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
-<span>  allow_stitch <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  allow_stitch <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_project</span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  varname <span class="op">=</span> <span class="st">"project_name"</span>,</span>
-<span>  label <span class="op">=</span> <span class="st">"Project"</span></span>
+<span>  label <span class="op">=</span> <span class="st">"Project"</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_reference</span><span class="op">(</span></span>
@@ -153,7 +162,8 @@ new_rave_shiny_component_container."></head><body>
 <span>  label <span class="op">=</span> <span class="st">"Reference name"</span>,</span>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
-<span>  mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"create"</span><span class="op">)</span></span>
+<span>  mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"create"</span><span class="op">)</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_subject</span><span class="op">(</span></span>
@@ -162,14 +172,16 @@ new_rave_shiny_component_container."></head><body>
 <span>  label <span class="op">=</span> <span class="st">"Subject"</span>,</span>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  checks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"notch"</span>, <span class="st">"wavelet"</span><span class="op">)</span>,</span>
-<span>  allow_new <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  allow_new <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_subject_only</span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
 <span>  varname <span class="op">=</span> <span class="st">"subject_code"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Subject"</span>,</span>
-<span>  multiple <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">presets_loader_sync_project_subject</span><span class="op">(</span></span>
@@ -225,6 +237,13 @@ repository from functions such as
 
 <dt id="arg-multiple">multiple<a class="anchor" aria-label="anchor" href="#arg-multiple"></a></dt>
 <dd><p>whether to allow multiple inputs</p></dd>
+
+
+<dt id="arg-env">env<a class="anchor" aria-label="anchor" href="#arg-env"></a></dt>
+<dd><p>environment in which the preset is created; default is the
+calling frame, typically the module environment where the module scripts
+are sourced. <span class="pkg">shidashi</span> looks up the module's input registry from this
+environment, so that agents can query and update the preset inputs</p></dd>
 
 
 <dt id="arg-max-components">max_components<a class="anchor" aria-label="anchor" href="#arg-max-components"></a></dt>

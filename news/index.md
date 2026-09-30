@@ -2,6 +2,14 @@
 
 ## ravedash 0.1.3
 
+- Preset inputs, the import-block status and preview outputs, and the
+  report wizard are registered with `shidashi` so that `MCP` agents can
+  query and update them; presets and
+  [`create_report_wizard()`](https://dipterix.org/ravedash/reference/create_report_wizard.md)
+  gain an `env` argument (the module environment,
+  [`parent.frame()`](https://rdrr.io/r/base/sys.parent.html) by default)
+  to find the module’s registry. Inputs that create subjects or projects
+  are registered as read-only; requires `shidashi` 0.2.0
 - Added
   [`load_data_button()`](https://dipterix.org/ravedash/reference/load_data_button.md);
   module servers can register named scripts via `set_script()`
