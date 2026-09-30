@@ -2,9 +2,11 @@
 #' @export
 presets_import_setup_native <- function(
   id = "import_setup",
-  label = "Select project & subject"
+  label = "Select project & subject",
+  env = parent.frame()
 ) {
 
+  parse_env <- env
   comp <- RAVEShinyComponent$new(id = id)
   comp$no_save <- c("", "format_details", "actions", "new_project_name",
                     "new_project_name_dismiss", "new_project_name_confirm")
@@ -32,29 +34,37 @@ presets_import_setup_native <- function(
         shiny::column(
           width = 6L,
           shidashi::register_input(
-            shiny::selectInput(
-              inputId = comp$get_sub_element_id("project_name", with_namespace = TRUE),
-              label = "Project name",
-              choices = all_projects,
-              selected = comp$get_default("project_name")
+            bquote(
+              shiny::selectInput(
+                inputId = .(comp$get_sub_element_id("project_name", with_namespace = TRUE)),
+                label = "Project name",
+                choices = .(all_projects),
+                selected = .(comp$get_default("project_name"))
+              )
             ),
             inputId = comp$get_sub_element_id("project_name", with_namespace = FALSE),
             update = "shiny::updateSelectInput(value=selected)",
-            description = "Target project for data import."
+            description = "Target project for data import.",
+            quoted = TRUE,
+            env = parse_env
           )
         ),
         shiny::column(
           width = 6L,
           shidashi::register_input(
-            shiny::selectInput(
-              inputId = comp$get_sub_element_id("subject_code", with_namespace = TRUE),
-              label = "Subject code",
-              choices = all_subjects,
-              selected = comp$get_default("subject_code", missing = character())
+            bquote(
+              shiny::selectInput(
+                inputId = .(comp$get_sub_element_id("subject_code", with_namespace = TRUE)),
+                label = "Subject code",
+                choices = .(all_subjects),
+                selected = .(comp$get_default("subject_code", missing = character()))
+              )
             ),
             inputId = comp$get_sub_element_id("subject_code", with_namespace = FALSE),
             update = "shiny::updateSelectInput(value=selected)",
-            description = "Subject code from raw data directory to import."
+            description = "Subject code from raw data directory to import.",
+            quoted = TRUE,
+            env = parse_env
           )
           # shiny::textInput(
           #   inputId = comp$get_sub_element_id("subject_code", with_namespace = TRUE),
@@ -115,20 +125,49 @@ presets_import_setup_native <- function(
             easyClose = FALSE,
             shiny::div(
               class = "fill-width",
-              shiny::textInput(
-                inputId = comp$get_sub_element_id("new_project_name", with_namespace = TRUE),
-                label = "Enter a valid project name:",
-                placeholder = "Letters, digits, `-`, and `_`"
+              shidashi::register_input(
+                bquote(
+                  shiny::textInput(
+                    inputId = .(comp$get_sub_element_id("new_project_name", with_namespace = TRUE)),
+                    label = "Enter a valid project name:",
+                    placeholder = "Letters, digits, `-`, and `_`"
+                  )
+                ),
+                inputId = comp$get_sub_element_id("new_project_name", with_namespace = FALSE),
+                update = "shiny::updateTextInput",
+                description = "Project name entered in the 'Create new project' dialog; only the user may enter it.",
+                writable = FALSE,
+                quoted = TRUE,
+                env = parse_env
               )
             ),
             footer = shiny::tagList(
-              shiny::actionButton(
-                inputId = comp$get_sub_element_id("new_project_name_dismiss", TRUE),
-                label = "Dismiss"
+              shidashi::register_input(
+                bquote(
+                  shiny::actionButton(
+                    inputId = .(comp$get_sub_element_id("new_project_name_dismiss", TRUE)),
+                    label = "Dismiss"
+                  )
+                ),
+                inputId = comp$get_sub_element_id("new_project_name_dismiss", FALSE),
+                update = "shiny::updateActionButton",
+                description = "Dismiss button of the 'Create new project' dialog: closes the dialog and restores the previously selected project.",
+                quoted = TRUE,
+                env = parse_env
               ),
-              dipsaus::actionButtonStyled(
-                inputId = comp$get_sub_element_id("new_project_name_confirm", TRUE),
-                label = "Create"
+              shidashi::register_input(
+                bquote(
+                  dipsaus::actionButtonStyled(
+                    inputId = .(comp$get_sub_element_id("new_project_name_confirm", TRUE)),
+                    label = "Create"
+                  )
+                ),
+                inputId = comp$get_sub_element_id("new_project_name_confirm", FALSE),
+                update = "dipsaus::updateActionButtonStyled",
+                description = "Create button of the 'Create new project' dialog; only the user may create projects.",
+                writable = FALSE,
+                quoted = TRUE,
+                env = parse_env
               )
             )
           ))

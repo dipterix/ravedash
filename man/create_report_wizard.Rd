@@ -4,12 +4,20 @@
 \alias{create_report_wizard}
 \title{Create report wizard to be used within the interactive modules}
 \usage{
-create_report_wizard(pipeline, session = shiny::getDefaultReactiveDomain())
+create_report_wizard(
+  pipeline,
+  session = shiny::getDefaultReactiveDomain(),
+  env = parent.frame()
+)
 }
 \arguments{
 \item{pipeline}{\code{ravepipeline} pipeline}
 
 \item{session}{shiny session}
+
+\item{env}{environment used to register the wizard inputs with
+\pkg{shidashi}, so that agents can choose and generate reports; default is
+the calling frame, typically the module server}
 }
 \value{
 A list of functions: \code{launch} with argument \code{subject} to

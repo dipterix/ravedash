@@ -109,7 +109,7 @@ presets_analysis_electrode_selector2 <- function(
                                             with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
           description = "Electrode metadata column to use for categorization.",
-          quoted = TRUE, 
+          quoted = TRUE,
           env = parse_env
         ),
         shidashi::register_input(
@@ -125,7 +125,7 @@ presets_analysis_electrode_selector2 <- function(
           inputId = comp$get_sub_element_id(category_choices_str,
                                             with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
-          description = "Filter electrodes by category values (multi-select available).",
+          description = sprintf("Filter electrodes by category values (%s-select).", ifelse(multiple, "multi", "single")),
           quoted = TRUE,
           env = parse_env
         ),

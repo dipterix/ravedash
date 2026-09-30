@@ -7,22 +7,28 @@ presets_loader_electrodes <- function(
   varname = "loaded_electrodes",
   label = "Electrodes",
   loader_project_id = "loader_project_name",
-  loader_subject_id = "loader_subject_code"
+  loader_subject_id = "loader_subject_code",
+  env = parent.frame()
 ) {
+  parse_env <- env
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
 
   comp$ui_func <- function(id, value, depends) {
     shidashi::register_input(
-      shiny::textInput(
-        inputId = id,
-        label = label,
-        placeholder = "E.g. 1-84,90-100",
-        value = ""
+      bquote(
+        shiny::textInput(
+          inputId = .(id),
+          label = .(label),
+          placeholder = "E.g. 1-84,90-100",
+          value = ""
+        )
       ),
       inputId = comp$get_sub_element_id(with_namespace = FALSE),
       update = "shiny::updateTextInput",
-      description = "Electrodes to load. Format: comma-separated ranges, e.g. '1-84,90-100'."
+      description = "Electrodes to load. Format: comma-separated ranges, e.g. '1-84,90-100'.",
+      quoted = TRUE,
+      env = parse_env
     )
   }
   comp$server_func <- function(input, output, session) {

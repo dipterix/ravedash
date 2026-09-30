@@ -43,6 +43,10 @@
 #' @param allow_new whether to allow new subject to be created; ignored when
 #' checks exist
 #' @param allow_stitch whether to allow stitching the events
+#' @param env environment in which the preset is created; default is the
+#' calling frame, typically the module environment where the module scripts
+#' are sourced. \pkg{shidashi} looks up the module's input registry from this
+#' environment, so that agents can query and update the preset inputs
 #' @param ... ignored, typically reserved for obsolete arguments
 #' @returns A \code{'RAVEShinyComponent'} instance.
 #' @seealso \code{\link{new_rave_shiny_component_container}}

@@ -8,8 +8,10 @@ presets_loader_epoch <- function(
   label = "Epoch and Trial Duration",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
-  allow_stitch = FALSE
+  allow_stitch = FALSE,
+  env = parent.frame()
 ) {
+  parse_env <- env
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
   comp$no_save <- "default"
@@ -37,29 +39,37 @@ presets_loader_epoch <- function(
       shidashi::flex_item(
         size = 2,
         shidashi::register_input(
-          shiny::selectInput(
-            inputId = id,
-            label = "Epoch name",
-            choices = c(value, ""),
-            selected = value,
-            multiple = FALSE
+          bquote(
+            shiny::selectInput(
+              inputId = .(id),
+              label = "Epoch name",
+              choices = .(c(value, "")),
+              selected = .(value),
+              multiple = FALSE
+            )
           ),
           inputId = comp$get_sub_element_id(with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
-          description = "Epoch definition name containing trial onset times."
+          description = "Epoch definition name containing trial onset times.",
+          quoted = TRUE,
+          env = parse_env
         )
       ),
       shidashi::flex_item(
         shidashi::register_input(
-          shiny::numericInput(
-            inputId = comp$get_sub_element_id("trial_starts", with_namespace = TRUE),
-            label = "Pre",
-            min = 0,
-            value = pre
+          bquote(
+            shiny::numericInput(
+              inputId = .(comp$get_sub_element_id("trial_starts", with_namespace = TRUE)),
+              label = "Pre",
+              min = 0,
+              value = .(pre)
+            )
           ),
           inputId = comp$get_sub_element_id("trial_starts", with_namespace = FALSE),
           update = "shiny::updateNumericInput",
-          description = "Pre-stimulus time in seconds (negative or zero)."
+          description = "Pre-stimulus time in seconds (negative or zero).",
+          quoted = TRUE,
+          env = parse_env
         )
       ),
       local({
@@ -67,15 +77,19 @@ presets_loader_epoch <- function(
           shiny::tagList(
             shidashi::flex_item(
               shidashi::register_input(
-                shiny::selectInput(
-                  inputId = comp$get_sub_element_id("trial_starts_rel_to_event", with_namespace = TRUE),
-                  label = "anchor to event",
-                  choices = unique(c("Trial Onset", pre_event)),
-                  selected = pre_event
+                bquote(
+                  shiny::selectInput(
+                    inputId = .(comp$get_sub_element_id("trial_starts_rel_to_event", with_namespace = TRUE)),
+                    label = "anchor to event",
+                    choices = .(unique(c("Trial Onset", pre_event))),
+                    selected = .(pre_event)
+                  )
                 ),
                 inputId = comp$get_sub_element_id("trial_starts_rel_to_event", with_namespace = FALSE),
                 update = "shiny::updateSelectInput(value=selected)",
-                description = "Event marker for pre-stimulus anchor point."
+                description = "Event marker for pre-stimulus anchor point.",
+                quoted = TRUE,
+                env = parse_env
               )
             ),
             shidashi::flex_break()
@@ -86,30 +100,38 @@ presets_loader_epoch <- function(
       }),
       shidashi::flex_item(
         shidashi::register_input(
-          shiny::numericInput(
-            inputId = comp$get_sub_element_id("trial_ends", with_namespace = TRUE),
-            label = "Post",
-            min = 0,
-            value = post
+          bquote(
+            shiny::numericInput(
+              inputId = .(comp$get_sub_element_id("trial_ends", with_namespace = TRUE)),
+              label = "Post",
+              min = 0,
+              value = .(post)
+            )
           ),
           inputId = comp$get_sub_element_id("trial_ends", with_namespace = FALSE),
           update = "shiny::updateNumericInput",
-          description = "Post-stimulus time in seconds (positive)."
+          description = "Post-stimulus time in seconds (positive).",
+          quoted = TRUE,
+          env = parse_env
         )
       ),
       local({
         if (allow_stitch) {
           shidashi::flex_item(
             shidashi::register_input(
-              shiny::selectInput(
-                inputId = comp$get_sub_element_id("trial_ends_rel_to_event", with_namespace = TRUE),
-                label = "anchor to event",
-                choices = unique(c("Trial Onset", post_event)),
-                selected = post_event
+              bquote(
+                shiny::selectInput(
+                  inputId = .(comp$get_sub_element_id("trial_ends_rel_to_event", with_namespace = TRUE)),
+                  label = "anchor to event",
+                  choices = .(unique(c("Trial Onset", post_event))),
+                  selected = .(post_event)
+                )
               ),
               inputId = comp$get_sub_element_id("trial_ends_rel_to_event", with_namespace = FALSE),
               update = "shiny::updateSelectInput(value=selected)",
-              description = "Event marker for post-stimulus anchor point."
+              description = "Event marker for post-stimulus anchor point.",
+              quoted = TRUE,
+              env = parse_env
             )
           )
         } else {

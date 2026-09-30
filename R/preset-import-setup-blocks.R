@@ -4,9 +4,11 @@ presets_import_setup_blocks <- function(
   id = "import_blocks",
   label = "Format & session blocks",
   import_setup_id = "import_setup",
-  max_components = 5
+  max_components = 5,
+  env = parent.frame()
 ) {
 
+  parse_env <- env
   comp <- RAVEShinyComponent$new(id = id)
   comp$depends <- import_setup_id
   comp$no_save <- c("", "msg", "actions", "format_details", "action_dbl_confirm",
@@ -36,28 +38,36 @@ presets_import_setup_blocks <- function(
           shiny::column(
             width = 6L,
             shidashi::register_input(
-              shiny::selectInput(
-                inputId = comp$get_sub_element_id("session_block", TRUE),
-                label = "Sessions/Blocks",
-                choices = character(0L),
-                selected = character(0L),
-                multiple = TRUE
+              bquote(
+                shiny::selectInput(
+                  inputId = .(comp$get_sub_element_id("session_block", TRUE)),
+                  label = "Sessions/Blocks",
+                  choices = character(0L),
+                  selected = character(0L),
+                  multiple = TRUE
+                )
               ),
               inputId = comp$get_sub_element_id("session_block", FALSE),
               update = "shiny::updateSelectInput(value=selected)",
-              description = "Session/block folders to import (multi-select)."
+              description = "Session/block folders to import (multi-select).",
+              quoted = TRUE,
+              env = parse_env
             ),
             shidashi::register_input(
-              shiny::selectInput(
-                inputId = comp$get_sub_element_id("format", TRUE),
-                label = "Formats",
-                choices = names(all_formats),
-                selected = character(0L),
-                multiple = FALSE
+              bquote(
+                shiny::selectInput(
+                  inputId = .(comp$get_sub_element_id("format", TRUE)),
+                  label = "Formats",
+                  choices = .(names(all_formats)),
+                  selected = character(0L),
+                  multiple = FALSE
+                )
               ),
               inputId = comp$get_sub_element_id("format", FALSE),
               update = "shiny::updateSelectInput(value=selected)",
-              description = "Data file format (e.g. BlackRock, BrainVision, EDF)."
+              description = "Data file format (e.g. BlackRock, BrainVision, EDF).",
+              quoted = TRUE,
+              env = parse_env
             ),
             shiny::tags$small(
               shiny::p(shiny::textOutput(
@@ -110,13 +120,23 @@ presets_import_setup_blocks <- function(
       refresh = NULL
     )
 
-    output[[comp$get_sub_element_id("msg", FALSE)]] <- shiny::renderText({
-      if (isTRUE(local_reactives$valid_setup)) {
-        "Subject folder has been created. Please choose session blocks."
-      } else {
-        local_reactives$validation_message
-      }
-    })
+    shidashi::register_output(
+      bquote(
+        shiny::renderText({
+          if (isTRUE(.(local_reactives)$valid_setup)) {
+            "Subject folder has been created. Please choose session blocks."
+          } else {
+            .(local_reactives)$validation_message
+          }
+        })
+      ),
+      outputId = comp$get_sub_element_id("msg", FALSE),
+      description = "Status of the session/block step: why it is waiting, or that it is ready.",
+      download_type = "no-download",
+      quoted = TRUE,
+      env = parse_env,
+      session = session
+    )
 
     disable_ui <- function() {
       dipsaus::updateActionButtonStyled(
@@ -317,112 +337,132 @@ presets_import_setup_blocks <- function(
 
 
 
-    output[[comp$get_sub_element_id("format_details", FALSE)]] <- shiny::renderText({
+    shidashi::register_output(
+      bquote(
+        shiny::renderText({
 
-      info <- block_setups()
-      if (!is.list(info) || !isTRUE(info$valid)) { return() }
-      fmt_idx <- info$format
-      if (length(fmt_idx) != 1 || !fmt_idx %in% seq_along(all_formats)) { return() }
+          info <- .(block_setups)()
+          if (!is.list(info) || !isTRUE(info$valid)) { return() }
+          fmt_idx <- info$format
+          if (length(fmt_idx) != 1 || !fmt_idx %in% seq_along(.(all_formats))) { return() }
 
-      switch(
-        as.character(fmt_idx),
-        "1" = {
-          paste0("In each block folder, one Matlab/HDF5 file stands for one electrode. ",
-                 "File name should match with format XXX1.h5 or xxx2.mat. ",
-                 "Each file only contains a one-dimensional vector. ",
-                 "The vector lengths stand for total time points and they must be the same across all electrode files. ")
-          # shiny::div(
-          #   shiny::p(),
-          #   shiny::tags$pre(
-          #     dipsaus::print_directory_tree(
-          #       c('block1', 'block2'),
-          #       root = '<subject folder>',
-          #       child = c(
-          #         'datafile_e1.mat <vector of time>',
-          #         'datafile_e2.mat <same length>',
-          #         'datafile_e3.mat',
-          #         '...'
-          #       ),
-          #       collapse = '\n'
-          #     )
-          #   )
-          # )
-        },
-        "2" = {
-          paste0("A single Matlab/HDF5 file containing all electrode information. ",
-                 "Data must be a matrix. One of the dimension must be electrodes, ",
-                 "the other dimension must be time points. ",
-                 "ALL blocks must share the same file & data name.")
-          # shiny::div(
-          #   shiny::p("A single Matlab/HDF5 file containing all electrode information. ",
-          #            "Data must be a matrix. One of the dimension must be electrodes, ",
-          #            "the other dimension must be time points. ",
-          #            "ALL blocks must share the same file & data name; for example:"),
-          #   shiny::tags$pre(
-          #     dipsaus::print_directory_tree(
-          #       c('block1', 'block2'),
-          #       root = '<subject folder>',
-          #       child = c(
-          #         'datafile.mat <one big matrix>'
-          #       ),
-          #       collapse = '\n'
-          #     )
-          #   ))
-        },
-        "5" = {
-          paste0("In each block folder, one Neuro-Event file [.nev] and corresponding NSX files [.ns1, .ns2, ..., .ns6] containing electrode data.")
-        },
-        {
-          paste0("In each block folder, one EDF(+)/EEG file containing all electrode data.")
-          # shiny::div(
-          #   shiny::p("In each block folder, one EDF(+) file containing all electrode data; for example:"),
-          #   shiny::tags$pre(
-          #     dipsaus::print_directory_tree(
-          #       c('block1', 'block2'),
-          #       root = '<subject folder>',
-          #       child = c(
-          #         'datafile.edf <ONLY one EDF file per block>'
-          #       ),
-          #       collapse = '\n'
-          #     )
-          #   ))
-        }
-      )
-    })
+          switch(
+            as.character(fmt_idx),
+            "1" = {
+              paste0("In each block folder, one Matlab/HDF5 file stands for one electrode. ",
+                     "File name should match with format XXX1.h5 or xxx2.mat. ",
+                     "Each file only contains a one-dimensional vector. ",
+                     "The vector lengths stand for total time points and they must be the same across all electrode files. ")
+              # shiny::div(
+              #   shiny::p(),
+              #   shiny::tags$pre(
+              #     dipsaus::print_directory_tree(
+              #       c('block1', 'block2'),
+              #       root = '<subject folder>',
+              #       child = c(
+              #         'datafile_e1.mat <vector of time>',
+              #         'datafile_e2.mat <same length>',
+              #         'datafile_e3.mat',
+              #         '...'
+              #       ),
+              #       collapse = '\n'
+              #     )
+              #   )
+              # )
+            },
+            "2" = {
+              paste0("A single Matlab/HDF5 file containing all electrode information. ",
+                     "Data must be a matrix. One of the dimension must be electrodes, ",
+                     "the other dimension must be time points. ",
+                     "ALL blocks must share the same file & data name.")
+              # shiny::div(
+              #   shiny::p("A single Matlab/HDF5 file containing all electrode information. ",
+              #            "Data must be a matrix. One of the dimension must be electrodes, ",
+              #            "the other dimension must be time points. ",
+              #            "ALL blocks must share the same file & data name; for example:"),
+              #   shiny::tags$pre(
+              #     dipsaus::print_directory_tree(
+              #       c('block1', 'block2'),
+              #       root = '<subject folder>',
+              #       child = c(
+              #         'datafile.mat <one big matrix>'
+              #       ),
+              #       collapse = '\n'
+              #     )
+              #   ))
+            },
+            "5" = {
+              paste0("In each block folder, one Neuro-Event file [.nev] and corresponding NSX files [.ns1, .ns2, ..., .ns6] containing electrode data.")
+            },
+            {
+              paste0("In each block folder, one EDF(+)/EEG file containing all electrode data.")
+              # shiny::div(
+              #   shiny::p("In each block folder, one EDF(+) file containing all electrode data; for example:"),
+              #   shiny::tags$pre(
+              #     dipsaus::print_directory_tree(
+              #       c('block1', 'block2'),
+              #       root = '<subject folder>',
+              #       child = c(
+              #         'datafile.edf <ONLY one EDF file per block>'
+              #       ),
+              #       collapse = '\n'
+              #     )
+              #   ))
+            }
+          )
+        })
+      ),
+      outputId = comp$get_sub_element_id("format_details", FALSE),
+      description = "Explanation of the file layout expected by the selected data format.",
+      download_type = "no-download",
+      quoted = TRUE,
+      env = parse_env,
+      session = session
+    )
 
-    output[[comp$get_sub_element_id("block_preview", FALSE)]] <- shiny::renderPrint({
-      info <- block_setups()
-      if (!is.list(info) || !isTRUE(info$valid)) {
-        return("Please choose valid blocks and format")
-      }
-      fmt_idx <- info$format
-      blocks <- info$blocks
+    shidashi::register_output(
+      bquote(
+        shiny::renderPrint({
+          info <- .(block_setups)()
+          if (!is.list(info) || !isTRUE(info$valid)) {
+            return("Please choose valid blocks and format")
+          }
+          fmt_idx <- info$format
+          blocks <- info$blocks
 
-      project_name <- info$project_name
-      subject_code <- info$subject_code
-      subject <- ravecore::RAVESubject$new(project_name = project_name,
-                                subject_code = subject_code,
-                                strict = FALSE)
-      preproc <- subject$preprocess_settings
+          project_name <- info$project_name
+          subject_code <- info$subject_code
+          subject <- ravecore::RAVESubject$new(project_name = project_name,
+                                    subject_code = subject_code,
+                                    strict = FALSE)
+          preproc <- subject$preprocess_settings
 
-      if (!dir.exists(preproc$raw_path)) {
-        return("Cannot find raw data path")
-      }
+          if (!dir.exists(preproc$raw_path)) {
+            return("Cannot find raw data path")
+          }
 
-      root_str <- sprintf("%s (subject folder)", subject_code)
+          root_str <- sprintf("%s (subject folder)", subject_code)
 
-      regexp <- regexps[[fmt_idx]]
+          regexp <- .(regexps)[[fmt_idx]]
 
-      for (block in blocks) {
-        fs <- list.files(file.path(preproc$raw_path, block), pattern = regexp, recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
-        if (length(fs) > max_components) {
-          fs <- c(fs[seq_len(max_components - 1)], "...")
-        }
-        print(dipsaus::print_directory_tree(sprintf("%s (session folder)", block),
-                                            root = root_str, dir_only = TRUE, child = fs))
-        root_str <- " "
-      }
-    })
+          for (block in blocks) {
+            fs <- list.files(file.path(preproc$raw_path, block), pattern = regexp, recursive = FALSE, all.files = FALSE, full.names = FALSE, ignore.case = TRUE)
+            if (length(fs) > .(max_components)) {
+              fs <- c(fs[seq_len(.(max_components) - 1)], "...")
+            }
+            print(dipsaus::print_directory_tree(sprintf("%s (session folder)", block),
+                                                root = root_str, dir_only = TRUE, child = fs))
+            root_str <- " "
+          }
+        })
+      ),
+      outputId = comp$get_sub_element_id("block_preview", FALSE),
+      description = "Directory-tree preview of the raw data files found in each selected session block.",
+      download_type = "no-download",
+      quoted = TRUE,
+      env = parse_env,
+      session = session
+    )
 
     # blocks, format, any_imported
     set_data <- function(preproc, info) {

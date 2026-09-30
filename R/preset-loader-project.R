@@ -26,7 +26,7 @@ presets_loader_project <- function(
       inputId = comp$get_sub_element_id(with_namespace = FALSE),
       update = "shiny::updateSelectInput(value=selected)",
       description = "RAVE project name to load data from.",
-      env = parse_env, 
+      env = parse_env,
       quoted = TRUE
     )
   }

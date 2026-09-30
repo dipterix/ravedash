@@ -3,8 +3,10 @@
 presets_condition_groups <- function(
   id = "condition_groups", varname = "condition_groups",
   label = "Create Condition Contrast",
-  pipeline_repository = "repository"
+  pipeline_repository = "repository",
+  env = parent.frame()
 ) {
+  parse_env <- env
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$repository_name <- pipeline_repository
 
@@ -65,30 +67,34 @@ presets_condition_groups <- function(
       title = label,
       href = card_href(label, module_id = comp$container$module_id),
       shidashi::register_input(
-        dipsaus::compoundInput2(
-          inputId = comp$get_sub_element_id(with_namespace = TRUE),
-          label = "Group",
-          initial_ncomp = 1L,
-          min_ncomp = 1L,
-          max_ncomp = 40L,
-          label_color = gray_label_color,
-          components = shiny::div(
-            shiny::textInput(inputId = "group_name", label = "Name"),
-            # shiny::selectInput(inputId = "group_conditions", label = NULL, choices = "", multiple = TRUE)
-            shiny::selectInput(
-              inputId = "group_conditions", label = NULL,
-              choices = "", multiple = TRUE
-              # options = list(
-              #   "live-search" = TRUE,
-              #   "actions-box" = TRUE,
-              #   "size" = 4
-              # )
+        bquote(
+          dipsaus::compoundInput2(
+            inputId = .(comp$get_sub_element_id(with_namespace = TRUE)),
+            label = "Group",
+            initial_ncomp = 1L,
+            min_ncomp = 1L,
+            max_ncomp = 40L,
+            label_color = .(gray_label_color),
+            components = shiny::div(
+              shiny::textInput(inputId = "group_name", label = "Name"),
+              # shiny::selectInput(inputId = "group_conditions", label = NULL, choices = "", multiple = TRUE)
+              shiny::selectInput(
+                inputId = "group_conditions", label = NULL,
+                choices = "", multiple = TRUE
+                # options = list(
+                #   "live-search" = TRUE,
+                #   "actions-box" = TRUE,
+                #   "size" = 4
+                # )
+              )
             )
           )
         ),
         inputId = comp$get_sub_element_id(with_namespace = FALSE),
         update = "dipsaus::updateCompoundInput2",
-        description = "Condition contrast groups. Value: list of lists, e.g. list(list(group_name='Group1', group_conditions=c('cond1','cond2'))). Each group has 'group_name' (string) and 'group_conditions' (character vector of epoch conditions)."
+        description = "Condition contrast groups. Value: list of lists, e.g. list(list(group_name='Group1', group_conditions=c('cond1','cond2'))). Each group has 'group_name' (string) and 'group_conditions' (character vector of epoch conditions).",
+        quoted = TRUE,
+        env = parse_env
       )
     )
   }

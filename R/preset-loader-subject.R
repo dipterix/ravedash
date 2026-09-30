@@ -122,22 +122,51 @@ presets_loader_subject <- function(
             title = "Create new subject",
             easyClose = FALSE,
             footer = shiny::tagList(
-              shiny::actionButton(
-                inputId = comp$get_sub_element_id("cancel_new", with_namespace = TRUE),
-                label = "Cancel"
+              shidashi::register_input(
+                bquote(
+                  shiny::actionButton(
+                    inputId = .(comp$get_sub_element_id("cancel_new", with_namespace = TRUE)),
+                    label = "Cancel"
+                  )
+                ),
+                inputId = comp$get_sub_element_id("cancel_new", with_namespace = FALSE),
+                update = "shiny::updateActionButton",
+                description = "Cancel button of the 'Create new subject' dialog: closes the dialog without creating a subject and clears the subject selection.",
+                quoted = TRUE,
+                env = parse_env
               ),
-              dipsaus::actionButtonStyled(
-                inputId = comp$get_sub_element_id("create_new", with_namespace = TRUE),
-                label = "Create", disabled = "true"
+              shidashi::register_input(
+                bquote(
+                  dipsaus::actionButtonStyled(
+                    inputId = .(comp$get_sub_element_id("create_new", with_namespace = TRUE)),
+                    label = "Create", disabled = "true"
+                  )
+                ),
+                inputId = comp$get_sub_element_id("create_new", with_namespace = FALSE),
+                update = "dipsaus::updateActionButtonStyled",
+                description = "Create button of the 'Create new subject' dialog; only the user may create subjects.",
+                writable = FALSE,
+                quoted = TRUE,
+                env = parse_env
               )
             ),
 
             shiny::fluidRow(
               shiny::column(
                 width = 12L,
-                shiny::textInput(
-                  inputId = comp$get_sub_element_id("new_subject_code", with_namespace = TRUE),
-                  label = "Enter a valid subject code"
+                shidashi::register_input(
+                  bquote(
+                    shiny::textInput(
+                      inputId = .(comp$get_sub_element_id("new_subject_code", with_namespace = TRUE)),
+                      label = "Enter a valid subject code"
+                    )
+                  ),
+                  inputId = comp$get_sub_element_id("new_subject_code", with_namespace = FALSE),
+                  update = "shiny::updateTextInput",
+                  description = "Subject code entered in the 'Create new subject' dialog; only the user may enter it.",
+                  writable = FALSE,
+                  quoted = TRUE,
+                  env = parse_env
                 )
               )
             )

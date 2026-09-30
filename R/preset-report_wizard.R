@@ -1,12 +1,17 @@
 #' Create report wizard to be used within the interactive modules
 #' @param pipeline \code{ravepipeline} pipeline
 #' @param session shiny session
+#' @param env environment used to register the wizard inputs with
+#' \pkg{shidashi}, so that agents can choose and generate reports; default is
+#' the calling frame, typically the module server
 #' @returns A list of functions: \code{launch} with argument \code{subject} to
 #' be called when users want to pop up a wizard allowing users to choose
 #' reports; \code{generate} with arguments \code{subject} and
 #' \code{report_names} to generate reports
 #' @export
-create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDomain()) {
+create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDomain(),
+                                 env = parent.frame()) {
+  parse_env <- env
   stopifnot(!is.null(session))
 
   available_reports <- pipeline$available_reports
@@ -163,12 +168,21 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
         ),
         shiny::column(
           width = 12L,
-          shiny::selectInput(
-            inputId = ns("_report_label"),
-            label = "Choose one or more reports to generate",
-            choices = labels,
-            selected = current_selection,
-            multiple = multiple, width = "100%"
+          shidashi::register_input(
+            bquote(
+              shiny::selectInput(
+                inputId = .(ns("_report_label")),
+                label = "Choose one or more reports to generate",
+                choices = .(labels),
+                selected = .(current_selection),
+                multiple = .(multiple), width = "100%"
+              )
+            ),
+            inputId = "_report_label",
+            update = "shiny::updateSelectInput(value=selected)",
+            description = "Labels of the reports to generate for the current subject.",
+            quoted = TRUE,
+            env = parse_env
           )
         ),
         shiny::column(
@@ -186,7 +200,16 @@ create_report_wizard <- function(pipeline, session = shiny::getDefaultReactiveDo
 
       footer = shiny::tagList(
         shiny::modalButton("Dismiss"),
-        dipsaus::actionButtonStyled(inputId = ns("_report_generate"), label = "Generate reports")
+        shidashi::register_input(
+          bquote(
+            dipsaus::actionButtonStyled(inputId = .(ns("_report_generate")), label = "Generate reports")
+          ),
+          inputId = "_report_generate",
+          update = "dipsaus::updateActionButtonStyled",
+          description = "Generate the selected reports; they are scheduled to run in the background.",
+          quoted = TRUE,
+          env = parse_env
+        )
       )
     ))
 
