@@ -7,8 +7,10 @@ presets_loader_reference <- function(
   label = "Reference name",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
-  mode = c("default", "create")
+  mode = c("default", "create"),
+  env = parent.frame()
 ) {
+  parse_env <- env
   mode <- match.arg(mode)
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
@@ -18,16 +20,20 @@ presets_loader_reference <- function(
     comp$ui_func <- function(id, value, depends) {
       shiny::tagList(shidashi::flex_item(
         shidashi::register_input(
-          shiny::selectInput(
-            inputId = id,
-            label = label,
-            choices = "",
-            selected = NULL,
-            multiple = FALSE
+          bquote(
+            shiny::selectInput(
+              inputId = .(id),
+              label = .(label),
+              choices = character(0),
+              selected = NULL,
+              multiple = FALSE
+            )
           ),
           inputId = comp$get_sub_element_id(with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
-          description = "Reference scheme name for electrode re-referencing."
+          description = "Reference scheme name for electrode re-referencing.",
+          quoted = TRUE,
+          env = parse_env
         ),
         shinyWidgets::prettyCheckbox(
           inputId = comp$get_sub_element_id("default", with_namespace = TRUE),
@@ -42,15 +48,19 @@ presets_loader_reference <- function(
     comp$ui_func <- function(id, value, depends) {
       shiny::tagList(shidashi::flex_item(
         shidashi::register_input(
-          shiny::selectInput(
-            inputId = id,
-            label = label,
-            choices = "[Blank profile]",
-            multiple = FALSE
+          bquote(
+            shiny::selectInput(
+              inputId = .(id),
+              label = .(label),
+              choices = "[Blank profile]",
+              multiple = FALSE
+            )
           ),
           inputId = comp$get_sub_element_id(with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
-          description = "Reference scheme name or '[Blank profile]' for new reference creation."
+          description = "Reference scheme name or '[Blank profile]' for new reference creation.",
+          quoted = TRUE,
+          env = parse_env
         )
       ))
     }

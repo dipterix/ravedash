@@ -7,8 +7,10 @@ presets_loader_subject <- function(
   label = "Subject",
   loader_project_id = "loader_project_name",
   checks = c("notch", "wavelet"),
-  allow_new = FALSE
+  allow_new = FALSE,
+  env = parent.frame()
 ) {
+  parse_env <- env
   force(checks)
   if (length(checks)) {
     allow_new <- FALSE
@@ -19,16 +21,20 @@ presets_loader_subject <- function(
 
   comp$ui_func <- function(id, value, depends) {
     shidashi::register_input(
-      shiny::selectInput(
-        inputId = id,
-        label = label,
-        choices = value,
-        selected = value,
-        multiple = FALSE
+      bquote(
+        shiny::selectInput(
+          inputId = .(id),
+          label = .(label),
+          choices = .(value),
+          selected = .(value),
+          multiple = FALSE
+        )
       ),
       inputId = comp$get_sub_element_id(with_namespace = FALSE),
       update = "shiny::updateSelectInput(value=selected)",
-      description = "Subject code within the selected project."
+      description = "Subject code within the selected project.",
+      quoted = TRUE,
+      env = parse_env
     )
   }
   comp$server_func <- function(input, output, session) {
@@ -276,8 +282,10 @@ presets_loader_subject_only <- function(
     id = "loader_subject_code",
     varname = "subject_code",
     label = "Subject",
-    multiple = FALSE
+    multiple = FALSE,
+    env = parent.frame()
 ) {
+  parse_env <- env
   force(multiple)
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
 
@@ -293,16 +301,20 @@ presets_loader_subject_only <- function(
     }
 
     shidashi::register_input(
-      shiny::selectInput(
-        inputId = id,
-        label = label,
-        choices = choices,
-        selected = value,
-        multiple = multiple
+      bquote(
+        shiny::selectInput(
+          inputId = .(id),
+          label = .(label),
+          choices = .(choices),
+          selected = .(value),
+          multiple = .(multiple)
+        )
       ),
       inputId = comp$get_sub_element_id(with_namespace = FALSE),
       update = "shiny::updateSelectInput(value=selected)",
-      description = "Subject code(s) from raw data directory."
+      description = "Subject code(s) from raw data directory.",
+      quoted = TRUE,
+      env = parse_env
     )
   }
   comp

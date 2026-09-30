@@ -7,8 +7,12 @@ presets_analysis_electrode_selector2 <- function(
   loader_subject_id = "loader_subject_code",
   pipeline_repository = "repository",
   start_simple = FALSE,
-  multiple = TRUE
+  multiple = TRUE,
+  env = parent.frame()
 ) {
+
+  parse_env <- env
+
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
   comp$repository_name <- pipeline_repository
@@ -93,82 +97,122 @@ presets_analysis_electrode_selector2 <- function(
       shiny::div(
         class = css_class_optional,
         shidashi::register_input(
-          shiny::selectInput(
-            inputId = comp$get_sub_element_id(category_str,
-                                              with_namespace = TRUE),
-            label = "Electrode categories",
-            choices = ""
+          bquote(
+            shiny::selectInput(
+              inputId = .(comp$get_sub_element_id(category_str,
+                                                with_namespace = TRUE)),
+              label = "Electrode categories",
+              choices = ""
+            )
           ),
           inputId = comp$get_sub_element_id(category_str,
                                             with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
-          description = "Electrode metadata column to use for categorization."
+          description = "Electrode metadata column to use for categorization.",
+          quoted = TRUE, 
+          env = parse_env
         ),
         shidashi::register_input(
-          shiny::selectInput(
-            inputId = comp$get_sub_element_id(category_choices_str,
-                                              with_namespace = TRUE),
-            label = sprintf("Select electrode by category (%s-select)", ifelse(multiple, "multi", "single")),
-            choices = "",
-            multiple = multiple
+          bquote(
+            shiny::selectInput(
+              inputId = .(comp$get_sub_element_id(category_choices_str,
+                                                with_namespace = TRUE)),
+              label = .(sprintf("Select electrode by category (%s-select)", ifelse(multiple, "multi", "single"))),
+              choices = "",
+              multiple = .(multiple)
+            )
           ),
           inputId = comp$get_sub_element_id(category_choices_str,
                                             with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
-          description = "Filter electrodes by category values (multi-select available)."
+          description = "Filter electrodes by category values (multi-select available).",
+          quoted = TRUE,
+          env = parse_env
         ),
         shidashi::register_input(
-          shiny::checkboxInput(
-            inputId = comp$get_sub_element_id(merge_hemisphere_str,
-                                              with_namespace = TRUE),
-            label = "Merge LH/RH categories"
+          bquote(
+            shiny::checkboxInput(
+              inputId = .(comp$get_sub_element_id(merge_hemisphere_str,
+                                                with_namespace = TRUE)),
+              label = "Merge LH/RH categories"
+            )
           ),
-          inputId = comp$get_sub_element_id(category_choices_str,
+          inputId = comp$get_sub_element_id(merge_hemisphere_str,
                                             with_namespace = FALSE),
           update = "shiny::updateCheckboxInput",
-          description = "Merge left/right hemisphere labels into unified categories."
+          description = "Merge left/right hemisphere labels into unified categories.",
+          quoted = TRUE,
+          env = parse_env
         )
       ),
       local({
         if (multiple) {
           shidashi::register_input(
-            shiny::textInput(
-              inputId = id,
-              label = "Select electrode by number",
-              value = "",
-              placeholder = "E.g. 1-30,55-60,88"
+            bquote(
+              shiny::textInput(
+                inputId = .(id),
+                label = "Select electrode by number",
+                value = "",
+                placeholder = "E.g. 1-30,55-60,88"
+              )
             ),
             inputId = comp$get_sub_element_id(),
             update = "shiny::updateTextInput",
-            description = "Electrodes for analysis. Format: comma-separated ranges, e.g. '1-30,55-60,88'."
+            description = "Electrodes for analysis. Format: comma-separated ranges, e.g. '1-30,55-60,88'.",
+            quoted = TRUE,
+            env = parse_env
           )
         } else {
           shiny::tagList(
             shidashi::register_input(
-              shiny::selectInput(
-                inputId = id,
-                label = "Select electrode by number",
-                choices = character()
+              bquote(
+                shiny::selectInput(
+                  inputId = .(id),
+                  label = "Select electrode by number",
+                  choices = character()
+                )
               ),
               inputId = comp$get_sub_element_id(),
               update = "shiny::updateSelectInput(value=selected)",
-              description = "Single electrode selection for analysis."
+              description = "Single electrode selection for analysis.",
+              quoted = TRUE,
+              env = parse_env
             ),
             shiny::fluidRow(
               shiny::column(
                 width = 6L,
-                shiny::actionButton(
+                shidashi::register_input(
+                  bquote(
+                    shiny::actionButton(
+                      inputId = .(comp$get_sub_element_id(btn_previous_str,
+                                                        with_namespace = TRUE)),
+                      label = .(shiny::tagList(shiny_icons$angle_double_left, " Previous"))
+                    )
+                  ),
                   inputId = comp$get_sub_element_id(btn_previous_str,
-                                                    with_namespace = TRUE),
-                  label = shiny::tagList(shiny_icons$angle_double_left, " Previous")
+                                                    with_namespace = FALSE),
+                  update = "shiny::updateActionButton",
+                  description = "Select previous electrode in the list.",
+                  quoted = TRUE,
+                  env = parse_env
                 )
               ),
               shiny::column(
                 width = 6L,
-                shiny::actionButton(
+                shidashi::register_input(
+                  bquote(
+                    shiny::actionButton(
+                      inputId = .(comp$get_sub_element_id(btn_next_str,
+                                                        with_namespace = TRUE)),
+                      label = .(shiny::tagList("Next ", shiny_icons$angle_double_right))
+                    )
+                  ),
                   inputId = comp$get_sub_element_id(btn_next_str,
-                                                    with_namespace = TRUE),
-                  label = shiny::tagList("Next ", shiny_icons$angle_double_right)
+                                                    with_namespace = FALSE),
+                  update = "shiny::updateActionButton",
+                  description = "Select next electrode in the list.",
+                  quoted = TRUE,
+                  env = parse_env
                 )
               )
             )
