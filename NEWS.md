@@ -1,5 +1,6 @@
 # ravedash 0.1.3
 
+* Added `safe_reactive()`: a reactive expression that logs its errors and keeps returning its last good value, so a failing reactive cannot close the session through an observer or a `bindEvent()` trigger; validation errors (`req()`, `validate()`) still pass through
 * Preset inputs, the import-block status and preview outputs, and the report wizard are registered with `shidashi` so that `MCP` agents can query and update them; presets and `create_report_wizard()` gain an `env` argument (the module environment, `parent.frame()` by default) to find the module's registry. Inputs that create subjects or projects are registered as read-only; requires `shidashi` 0.2.0
 * Added `load_data_button()`; module servers can register named scripts via `set_script()` (optionally bound to a 'RAVE' event, with an alert and a follow-up event) and run them programmatically via `trigger_script()` (see `get_default_handlers()`), for example, from `MCP` tools
 * Allow preset-components to access to pipeline instance
