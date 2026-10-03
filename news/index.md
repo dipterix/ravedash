@@ -2,6 +2,15 @@
 
 ## ravedash 0.1.3
 
+- Added
+  [`safe_reactive()`](https://dipterix.org/ravedash/reference/safe_reactive.md):
+  a reactive expression that logs its errors and keeps returning its
+  last good value, so a failing reactive cannot close the session
+  through an observer or a
+  [`bindEvent()`](https://rdrr.io/pkg/shiny/man/bindEvent.html) trigger;
+  validation errors ([`req()`](https://rdrr.io/pkg/shiny/man/req.html),
+  [`validate()`](https://rdrr.io/pkg/shiny/man/validate.html)) still
+  pass through
 - Preset inputs, the import-block status and preview outputs, and the
   report wizard are registered with `shidashi` so that `MCP` agents can
   query and update them; presets and

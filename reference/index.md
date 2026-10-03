@@ -101,6 +101,12 @@
   Safe-wrapper of 'shiny'
   [`observe`](https://rdrr.io/pkg/shiny/man/observe.html) function
 
+- [`safe_reactive()`](https://dipterix.org/ravedash/reference/safe_reactive.md)
+  :
+
+  Safe-wrapper of 'shiny'
+  [`reactive`](https://rdrr.io/pkg/shiny/man/reactive.html) function
+
 - [`shiny_cache()`](https://dipterix.org/ravedash/reference/shiny_cache.md)
   : Obtain caching object for current run-time shiny session
 
