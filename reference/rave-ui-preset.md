@@ -15,6 +15,7 @@ presets_analysis_electrode_selector2(
   pipeline_repository = "repository",
   start_simple = FALSE,
   multiple = TRUE,
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -24,6 +25,7 @@ presets_analysis_ranges(
   label = "Configure Analysis",
   pipeline_repository = "repository",
   max_components = 2,
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -36,6 +38,7 @@ presets_baseline_choices(
     "z-score Decibel", "z-score Power", "z-score Amplitude"),
   baseline_along_choices = c("Per frequency, trial, and electrode", "Across electrode",
     "Across trial", "Across trial and electrode"),
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -44,6 +47,7 @@ presets_condition_groups(
   varname = "condition_groups",
   label = "Create Condition Contrast",
   pipeline_repository = "repository",
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -96,6 +100,7 @@ presets_loader_electrodes(
   label = "Electrodes",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -106,6 +111,7 @@ presets_loader_epoch(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   allow_stitch = FALSE,
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -113,6 +119,7 @@ presets_loader_project(
   id = "loader_project_name",
   varname = "project_name",
   label = "Project",
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -123,6 +130,7 @@ presets_loader_reference(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   mode = c("default", "create"),
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -133,6 +141,7 @@ presets_loader_subject(
   loader_project_id = "loader_project_name",
   checks = c("notch", "wavelet"),
   allow_new = FALSE,
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -141,6 +150,7 @@ presets_loader_subject_only(
   varname = "subject_code",
   label = "Subject",
   multiple = FALSE,
+  hint = NULL,
   env = parent.frame()
 )
 
@@ -195,6 +205,16 @@ presets_loader_sync_project_subject(
 - multiple:
 
   whether to allow multiple inputs
+
+- hint:
+
+  hints for agents (see `shidashi::input_hint_classes`): whether they
+  ask the user for an input before loading data or running the analysis,
+  keep its default, or leave it alone. Each preset has its own defaults
+  (for example, loader inputs are `"loader_mandatory"`); give one
+  unnamed value for every input of the preset, or values named by input
+  ID to override some of them, for example
+  `c(loader_epoch_name__trial_starts = "loader_optional")`
 
 - env:
 

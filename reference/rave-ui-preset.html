@@ -9,7 +9,7 @@ new_rave_shiny_component_container."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ravedash</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.55</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.56</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  pipeline_repository <span class="op">=</span> <span class="st">"repository"</span>,</span>
 <span>  start_simple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -64,6 +65,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  label <span class="op">=</span> <span class="st">"Configure Analysis"</span>,</span>
 <span>  pipeline_repository <span class="op">=</span> <span class="st">"repository"</span>,</span>
 <span>  max_components <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -76,6 +78,7 @@ new_rave_shiny_component_container."></head><body>
 <span>    <span class="st">"z-score Decibel"</span>, <span class="st">"z-score Power"</span>, <span class="st">"z-score Amplitude"</span><span class="op">)</span>,</span>
 <span>  baseline_along_choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Per frequency, trial, and electrode"</span>, <span class="st">"Across electrode"</span>,</span>
 <span>    <span class="st">"Across trial"</span>, <span class="st">"Across trial and electrode"</span><span class="op">)</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -84,6 +87,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  varname <span class="op">=</span> <span class="st">"condition_groups"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Create Condition Contrast"</span>,</span>
 <span>  pipeline_repository <span class="op">=</span> <span class="st">"repository"</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -136,6 +140,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  label <span class="op">=</span> <span class="st">"Electrodes"</span>,</span>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -146,6 +151,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
 <span>  allow_stitch <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -153,6 +159,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  varname <span class="op">=</span> <span class="st">"project_name"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Project"</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -163,6 +170,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  loader_subject_id <span class="op">=</span> <span class="st">"loader_subject_code"</span>,</span>
 <span>  mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"create"</span><span class="op">)</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -173,6 +181,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  loader_project_id <span class="op">=</span> <span class="st">"loader_project_name"</span>,</span>
 <span>  checks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"notch"</span>, <span class="st">"wavelet"</span><span class="op">)</span>,</span>
 <span>  allow_new <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -181,6 +190,7 @@ new_rave_shiny_component_container."></head><body>
 <span>  varname <span class="op">=</span> <span class="st">"subject_code"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Subject"</span>,</span>
 <span>  multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  hint <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -237,6 +247,16 @@ repository from functions such as
 
 <dt id="arg-multiple">multiple<a class="anchor" aria-label="anchor" href="#arg-multiple"></a></dt>
 <dd><p>whether to allow multiple inputs</p></dd>
+
+
+<dt id="arg-hint">hint<a class="anchor" aria-label="anchor" href="#arg-hint"></a></dt>
+<dd><p>hints for agents (see <code>shidashi::input_hint_classes</code>):
+whether they ask the user for an input before loading data or running the
+analysis, keep its default, or leave it alone.  Each preset has its own
+defaults (for example, loader inputs are <code>"loader_mandatory"</code>); give
+one unnamed value for every input of the preset, or values named by input
+ID to override some of them, for example
+<code>c(loader_epoch_name__trial_starts = "loader_optional")</code></p></dd>
 
 
 <dt id="arg-env">env<a class="anchor" aria-label="anchor" href="#arg-env"></a></dt>

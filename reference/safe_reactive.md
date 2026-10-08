@@ -52,7 +52,7 @@ again to every consumer until the expression is invalidated; when the
 consumer is an observer, or the expression is a trigger of
 [`bindEvent`](https://rdrr.io/pkg/shiny/man/bindEvent.html), the session
 is closed. The last good value therefore lives in this wrapper, not in
-the reactive's cache.
+the cache of the reactive expression.
 
 ## Examples
 
