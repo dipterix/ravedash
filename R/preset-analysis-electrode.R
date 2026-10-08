@@ -8,6 +8,7 @@ presets_analysis_electrode_selector2 <- function(
   pipeline_repository = "repository",
   start_simple = FALSE,
   multiple = TRUE,
+  hint = NULL,
   env = parent.frame()
 ) {
 
@@ -25,6 +26,10 @@ presets_analysis_electrode_selector2 <- function(
   download_str <- "download"
   btn_previous_str <- "previous"
   btn_next_str <- "next"
+  hint_of <- preset_hint_getter(comp, hint, structure(
+    rep("analysis_optional", 4L),
+    names = c("main", category_str, category_choices_str, merge_hemisphere_str)
+  ))
 
   css_class_optional <- ifelse(start_simple, "rave-optional soft-hidden", "rave-optional")
 
@@ -109,6 +114,7 @@ presets_analysis_electrode_selector2 <- function(
                                             with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
           description = "Electrode metadata column to use for categorization.",
+          hint = hint_of(category_str),
           quoted = TRUE,
           env = parse_env
         ),
@@ -126,6 +132,7 @@ presets_analysis_electrode_selector2 <- function(
                                             with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
           description = sprintf("Filter electrodes by category values (%s-select).", ifelse(multiple, "multi", "single")),
+          hint = hint_of(category_choices_str),
           quoted = TRUE,
           env = parse_env
         ),
@@ -141,6 +148,7 @@ presets_analysis_electrode_selector2 <- function(
                                             with_namespace = FALSE),
           update = "shiny::updateCheckboxInput",
           description = "Merge left/right hemisphere labels into unified categories.",
+          hint = hint_of(merge_hemisphere_str),
           quoted = TRUE,
           env = parse_env
         )
@@ -159,6 +167,7 @@ presets_analysis_electrode_selector2 <- function(
             inputId = comp$get_sub_element_id(),
             update = "shiny::updateTextInput",
             description = "Electrodes for analysis. Format: comma-separated ranges, e.g. '1-30,55-60,88'.",
+            hint = hint_of(),
             quoted = TRUE,
             env = parse_env
           )
@@ -175,6 +184,7 @@ presets_analysis_electrode_selector2 <- function(
               inputId = comp$get_sub_element_id(),
               update = "shiny::updateSelectInput(value=selected)",
               description = "Single electrode selection for analysis.",
+              hint = hint_of(),
               quoted = TRUE,
               env = parse_env
             ),
@@ -193,6 +203,7 @@ presets_analysis_electrode_selector2 <- function(
                                                     with_namespace = FALSE),
                   update = "shiny::updateActionButton",
                   description = "Select previous electrode in the list.",
+                  hint = hint_of(btn_previous_str),
                   quoted = TRUE,
                   env = parse_env
                 )
@@ -211,6 +222,7 @@ presets_analysis_electrode_selector2 <- function(
                                                     with_namespace = FALSE),
                   update = "shiny::updateActionButton",
                   description = "Select next electrode in the list.",
+                  hint = hint_of(btn_next_str),
                   quoted = TRUE,
                   env = parse_env
                 )

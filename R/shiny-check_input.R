@@ -148,7 +148,7 @@ shiny_check_input <- function(
       auto_correcting <<- FALSE
       return(x)
     }
-    auto_correcting <<- TRUE
+    auto_correcting <<- TRUE # nolint: assignment_linter.
     x <- eval(on_check_fails, envir = env)
     impl <- .subset2(session$input, "impl")
     impl$set(inputId, value = x)

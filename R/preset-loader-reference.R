@@ -8,6 +8,7 @@ presets_loader_reference <- function(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   mode = c("default", "create"),
+  hint = NULL,
   env = parent.frame()
 ) {
   parse_env <- env
@@ -15,6 +16,7 @@ presets_loader_reference <- function(
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
   comp$no_save <- "default"
+  hint_of <- preset_hint_getter(comp, hint, c(main = "loader_mandatory"))
 
   if (mode == "default") {
     comp$ui_func <- function(id, value, depends) {
@@ -32,6 +34,7 @@ presets_loader_reference <- function(
           inputId = comp$get_sub_element_id(with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
           description = "Reference scheme name for electrode re-referencing.",
+          hint = hint_of(),
           quoted = TRUE,
           env = parse_env
         ),
@@ -59,6 +62,7 @@ presets_loader_reference <- function(
           inputId = comp$get_sub_element_id(with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
           description = "Reference scheme name or '[Blank profile]' for new reference creation.",
+          hint = hint_of(),
           quoted = TRUE,
           env = parse_env
         )

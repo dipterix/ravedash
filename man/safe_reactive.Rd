@@ -41,7 +41,8 @@ through, so outputs still stop rendering as they do with
 it again to every consumer until the expression is invalidated; when the
 consumer is an observer, or the expression is a trigger of
 \code{\link[shiny]{bindEvent}}, the session is closed. The last good value
-therefore lives in this wrapper, not in the reactive's cache.
+therefore lives in this wrapper, not in the cache of the reactive
+expression.
 }
 \examples{
 

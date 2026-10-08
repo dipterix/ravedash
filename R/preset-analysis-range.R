@@ -5,6 +5,7 @@ presets_analysis_ranges <- function(
   label = "Configure Analysis",
   pipeline_repository = "repository",
   max_components = 2,
+  hint = NULL,
   env = parent.frame()
 ) {
   parse_env <- env
@@ -12,6 +13,7 @@ presets_analysis_ranges <- function(
   if (max_components < 1L) { max_components <- 1L }
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$repository_name <- pipeline_repository
+  hint_of <- preset_hint_getter(comp, hint, c(main = "analysis_mandatory"))
 
   # component_container$add_components(comp)
   analysis_lock_str <- "lock"
@@ -112,6 +114,7 @@ presets_analysis_ranges <- function(
             inputId = comp$get_sub_element_id(with_namespace = FALSE),
             update = "dipsaus::updateCompoundInput2",
             description = "Analysis frequency/time ranges. Value: list of lists, e.g. list(list(frequency=c(75,150), time=c(0,1))). Each inner list has 'frequency' (Hz range) and 'time' (seconds range).",
+            hint = hint_of(),
             quoted = TRUE,
             env = parse_env
           )

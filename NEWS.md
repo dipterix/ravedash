@@ -1,3 +1,8 @@
+# ravedash 0.1.4
+
+* Preset inputs carry hints for `MCP` agents (see `shidashi::input_hint_classes`): loader inputs such as the project, subject, epoch, trial window, reference, and electrodes are `loader_mandatory` (agents ask the user before loading data), analysis inputs such as condition groups, baseline windows, and analysis ranges are `analysis_mandatory`, and the inputs that create subjects are `loader_forbidden`. Presets gain a `hint` argument to override them, by input ID or for all inputs of a preset; requires `shidashi` 0.2.0.17
+* Module servers report to agents whether the data loader is open (`@state$loader_opened` in `shidashi`'s `shiny_input_info`), so agents do not ask loader questions once the data are loaded
+
 # ravedash 0.1.3
 
 * Added `safe_reactive()`: a reactive expression that logs its errors and keeps returning its last good value, so a failing reactive cannot close the session through an observer or a `bindEvent()` trigger; validation errors (`req()`, `validate()`) still pass through

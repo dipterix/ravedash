@@ -9,12 +9,20 @@ presets_loader_epoch <- function(
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
   allow_stitch = FALSE,
+  hint = NULL,
   env = parent.frame()
 ) {
   parse_env <- env
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
   comp$no_save <- "default"
+  hint_of <- preset_hint_getter(comp, hint, c(
+    main = "loader_mandatory",
+    trial_starts = "loader_mandatory",
+    trial_ends = "loader_mandatory",
+    trial_starts_rel_to_event = "loader_optional",
+    trial_ends_rel_to_event = "loader_optional"
+  ))
 
   # pre_id <- paste0(id, "_pre")
   # post_id <- paste0(id, "_post")
@@ -51,6 +59,7 @@ presets_loader_epoch <- function(
           inputId = comp$get_sub_element_id(with_namespace = FALSE),
           update = "shiny::updateSelectInput(value=selected)",
           description = "Epoch definition name containing trial onset times.",
+          hint = hint_of(),
           quoted = TRUE,
           env = parse_env
         )
@@ -68,6 +77,7 @@ presets_loader_epoch <- function(
           inputId = comp$get_sub_element_id("trial_starts", with_namespace = FALSE),
           update = "shiny::updateNumericInput",
           description = "Pre-stimulus time in seconds (negative or zero).",
+          hint = hint_of("trial_starts"),
           quoted = TRUE,
           env = parse_env
         )
@@ -88,6 +98,7 @@ presets_loader_epoch <- function(
                 inputId = comp$get_sub_element_id("trial_starts_rel_to_event", with_namespace = FALSE),
                 update = "shiny::updateSelectInput(value=selected)",
                 description = "Event marker for pre-stimulus anchor point.",
+                hint = hint_of("trial_starts_rel_to_event"),
                 quoted = TRUE,
                 env = parse_env
               )
@@ -111,6 +122,7 @@ presets_loader_epoch <- function(
           inputId = comp$get_sub_element_id("trial_ends", with_namespace = FALSE),
           update = "shiny::updateNumericInput",
           description = "Post-stimulus time in seconds (positive).",
+          hint = hint_of("trial_ends"),
           quoted = TRUE,
           env = parse_env
         )
@@ -130,6 +142,7 @@ presets_loader_epoch <- function(
               inputId = comp$get_sub_element_id("trial_ends_rel_to_event", with_namespace = FALSE),
               update = "shiny::updateSelectInput(value=selected)",
               description = "Event marker for post-stimulus anchor point.",
+              hint = hint_of("trial_ends_rel_to_event"),
               quoted = TRUE,
               env = parse_env
             )

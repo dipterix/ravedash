@@ -8,11 +8,13 @@ presets_loader_electrodes <- function(
   label = "Electrodes",
   loader_project_id = "loader_project_name",
   loader_subject_id = "loader_subject_code",
+  hint = NULL,
   env = parent.frame()
 ) {
   parse_env <- env
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- c(loader_project_id, loader_subject_id)
+  hint_of <- preset_hint_getter(comp, hint, c(main = "loader_mandatory"))
 
   comp$ui_func <- function(id, value, depends) {
     shidashi::register_input(
@@ -26,7 +28,11 @@ presets_loader_electrodes <- function(
       ),
       inputId = comp$get_sub_element_id(with_namespace = FALSE),
       update = "shiny::updateTextInput",
-      description = "Electrodes to load. Format: comma-separated ranges, e.g. '1-84,90-100'.",
+      description = paste(
+        "Electrodes to load. Format: comma-separated ranges, e.g. '1-84,90-100'.",
+        "When the user asks for all electrodes, use all LFP channels of the subject."
+      ),
+      hint = hint_of(),
       quoted = TRUE,
       env = parse_env
     )

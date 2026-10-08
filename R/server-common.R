@@ -111,6 +111,8 @@ module_server_common <- function(module_id, check_data_loaded, ..., session = sh
 
   # Initialize and create shidashi session registry
   shidashi::register_session(session = session)
+  # Agents see whether the data loader is open (`shiny_input_info`)
+  register_loader_state(session = session)
 
   # Ensure ravedash userData and handlers are initialized
   if (!inherits(session$userData$ravedash, "fastmap2")) {

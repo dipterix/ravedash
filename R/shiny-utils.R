@@ -237,6 +237,22 @@ watch_loader_opened <- function(session = shiny::getDefaultReactiveDomain()) {
   structure(!is.null(res), timestamp = res)
 }
 
+# Report to agents whether the data loader is open: `shidashi`'s
+# `shiny_input_info` tool shows it as `@state$loader_opened`
+register_loader_state <- function(session = shiny::getDefaultReactiveDomain()) {
+  shidashi::register_input_state(
+    "loader_opened",
+    function() isTRUE(watch_loader_opened(session = session)),
+    description = paste(
+      "TRUE while the data loader is open. FALSE means the data are loaded",
+      "and the loader is closed: the user most likely wants to change",
+      "analysis inputs only, so take the loader values from the page and do",
+      "not ask about them unless the user asks for other data."
+    ),
+    session = session
+  )
+}
+
 #' @rdname rave-runtime-events
 #' @export
 watch_data_loaded <- function(session = shiny::getDefaultReactiveDomain()) {
@@ -453,8 +469,8 @@ ravedash_footer <- function(
             href = "#",
             hidden = NA,
             role = "button",
-            'aria-pressed' = "false",
-            'data-toggle' = "tooltip",
+            `aria-pressed` = "false",
+            `data-toggle` = "tooltip",
             title = "Pin this tab: AI agent tool calls will run here.",
             shiny_icons$thumbtack
           ),

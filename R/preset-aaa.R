@@ -47,8 +47,38 @@
 #' calling frame, typically the module environment where the module scripts
 #' are sourced. \pkg{shidashi} looks up the module's input registry from this
 #' environment, so that agents can query and update the preset inputs
+#' @param hint hints for agents (see \code{shidashi::input_hint_classes}):
+#' whether they ask the user for an input before loading data or running the
+#' analysis, keep its default, or leave it alone.  Each preset has its own
+#' defaults (for example, loader inputs are \code{"loader_mandatory"}); give
+#' one unnamed value for every input of the preset, or values named by input
+#' ID to override some of them, for example
+#' \code{c(loader_epoch_name__trial_starts = "loader_optional")}
 #' @param ... ignored, typically reserved for obsolete arguments
 #' @returns A \code{'RAVEShinyComponent'} instance.
 #' @seealso \code{\link{new_rave_shiny_component_container}}
 NULL
+
+# The hint of each input a preset registers with `shidashi`. `defaults` maps
+# the preset's sub-element names (`main` for its main input) to hints; the
+# caller's `hint` overrides them: one unnamed value for every input, or
+# values named by input ID. Inputs without a hint get "no_hint".
+preset_hint_getter <- function(comp, hint, defaults = c(main = "no_hint")) {
+  hint <- unlist(hint)
+  force(defaults)
+  function(sub = "main") {
+    if (length(hint) == 1L && is.null(names(hint))) {
+      return(hint[[1]])
+    }
+    input_id <- if (identical(sub, "main")) {
+      comp$get_sub_element_id(with_namespace = FALSE)
+    } else {
+      comp$get_sub_element_id(sub, with_namespace = FALSE)
+    }
+    if (length(hint) && input_id %in% names(hint)) {
+      return(hint[[input_id]])
+    }
+    if (sub %in% names(defaults)) defaults[[sub]] else "no_hint"
+  }
+}
 

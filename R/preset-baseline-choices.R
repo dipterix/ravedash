@@ -8,6 +8,7 @@ presets_baseline_choices <- function(
                        "z-score Decibel", "z-score Power", "z-score Amplitude"),
   baseline_along_choices = c("Per frequency, trial, and electrode", "Across electrode",
                              "Across trial", "Across trial and electrode"),
+  hint = NULL,
   env = parent.frame()
 ) {
   parse_env <- env
@@ -22,6 +23,9 @@ presets_baseline_choices <- function(
   unit_of_analysis_str <- "unit_of_analysis"
   global_baseline_choice_str <- "global_baseline_choice"
   baseline_windows_str <- "windows"
+  hint_of <- preset_hint_getter(
+    comp, hint, structure("analysis_mandatory", names = baseline_windows_str)
+  )
 
   # comp$no_save <- c(reset_str, category_choices_str, selected_electrode_text_str)
 
@@ -88,6 +92,7 @@ presets_baseline_choices <- function(
             inputId = comp$get_sub_element_id(unit_of_analysis_str, with_namespace = FALSE),
             update = "shiny::updateSelectInput(value=selected)",
             description = "Unit of analysis for electrode data (e.g. Decibel, z-score Power).",
+            hint = hint_of(unit_of_analysis_str),
             quoted = TRUE,
             env = parse_env
           ),
@@ -102,6 +107,7 @@ presets_baseline_choices <- function(
             inputId = comp$get_sub_element_id(global_baseline_choice_str, with_namespace = FALSE),
             update = "shiny::updateSelectInput(value=selected)",
             description = "Baseline calculation method (per frequency/trial/electrode or across).",
+            hint = hint_of(global_baseline_choice_str),
             quoted = TRUE,
             env = parse_env
           )
@@ -129,6 +135,7 @@ presets_baseline_choices <- function(
             inputId = comp$get_sub_element_id(baseline_windows_str, with_namespace = FALSE),
             update = "dipsaus::updateCompoundInput2",
             description = "Baseline time windows (seconds). Value: list of lists, e.g. list(list(window_interval=c(-1,0))) for pre-stimulus baseline.",
+            hint = hint_of(baseline_windows_str),
             quoted = TRUE,
             env = parse_env
           )

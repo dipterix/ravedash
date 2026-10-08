@@ -8,6 +8,7 @@ presets_loader_subject <- function(
   loader_project_id = "loader_project_name",
   checks = c("notch", "wavelet"),
   allow_new = FALSE,
+  hint = NULL,
   env = parent.frame()
 ) {
   parse_env <- env
@@ -18,6 +19,11 @@ presets_loader_subject <- function(
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$depends <- loader_project_id
   comp$no_save <- c("create_new", "cancel_new", "new_subject_code")
+  hint_of <- preset_hint_getter(comp, hint, c(
+    main = "loader_mandatory",
+    create_new = "loader_forbidden",
+    new_subject_code = "loader_forbidden"
+  ))
 
   comp$ui_func <- function(id, value, depends) {
     shidashi::register_input(
@@ -33,6 +39,7 @@ presets_loader_subject <- function(
       inputId = comp$get_sub_element_id(with_namespace = FALSE),
       update = "shiny::updateSelectInput(value=selected)",
       description = "Subject code within the selected project.",
+      hint = hint_of(),
       quoted = TRUE,
       env = parse_env
     )
@@ -132,6 +139,7 @@ presets_loader_subject <- function(
                 inputId = comp$get_sub_element_id("cancel_new", with_namespace = FALSE),
                 update = "shiny::updateActionButton",
                 description = "Cancel button of the 'Create new subject' dialog: closes the dialog without creating a subject and clears the subject selection.",
+                hint = hint_of("cancel_new"),
                 quoted = TRUE,
                 env = parse_env
               ),
@@ -146,6 +154,7 @@ presets_loader_subject <- function(
                 update = "dipsaus::updateActionButtonStyled",
                 description = "Create button of the 'Create new subject' dialog; only the user may create subjects.",
                 writable = FALSE,
+                hint = hint_of("create_new"),
                 quoted = TRUE,
                 env = parse_env
               )
@@ -165,6 +174,7 @@ presets_loader_subject <- function(
                   update = "shiny::updateTextInput",
                   description = "Subject code entered in the 'Create new subject' dialog; only the user may enter it.",
                   writable = FALSE,
+                  hint = hint_of("new_subject_code"),
                   quoted = TRUE,
                   env = parse_env
                 )
@@ -312,11 +322,13 @@ presets_loader_subject_only <- function(
     varname = "subject_code",
     label = "Subject",
     multiple = FALSE,
+    hint = NULL,
     env = parent.frame()
 ) {
   parse_env <- env
   force(multiple)
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
+  hint_of <- preset_hint_getter(comp, hint, c(main = "loader_mandatory"))
 
   comp$ui_func <- function(id, value, depends) {
     choices <- list.dirs(ravepipeline::raveio_getopt("raw_data_dir"),
@@ -342,6 +354,7 @@ presets_loader_subject_only <- function(
       inputId = comp$get_sub_element_id(with_namespace = FALSE),
       update = "shiny::updateSelectInput(value=selected)",
       description = "Subject code(s) from raw data directory.",
+      hint = hint_of(),
       quoted = TRUE,
       env = parse_env
     )

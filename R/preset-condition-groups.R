@@ -4,11 +4,13 @@ presets_condition_groups <- function(
   id = "condition_groups", varname = "condition_groups",
   label = "Create Condition Contrast",
   pipeline_repository = "repository",
+  hint = NULL,
   env = parent.frame()
 ) {
   parse_env <- env
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
   comp$repository_name <- pipeline_repository
+  hint_of <- preset_hint_getter(comp, hint, c(main = "analysis_mandatory"))
 
   # component_container$add_components(comp)
 
@@ -93,6 +95,7 @@ presets_condition_groups <- function(
         inputId = comp$get_sub_element_id(with_namespace = FALSE),
         update = "dipsaus::updateCompoundInput2",
         description = "Condition contrast groups. Value: list of lists, e.g. list(list(group_name='Group1', group_conditions=c('cond1','cond2'))). Each group has 'group_name' (string) and 'group_conditions' (character vector of epoch conditions).",
+        hint = hint_of(),
         quoted = TRUE,
         env = parse_env
       )

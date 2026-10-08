@@ -4,10 +4,11 @@
 #' @export
 presets_loader_project <- function(
   id = "loader_project_name", varname = "project_name",
-  label = "Project", env = parent.frame()
+  label = "Project", hint = NULL, env = parent.frame()
 ) {
 
   comp <- RAVEShinyComponent$new(id = id, varname = varname)
+  hint_of <- preset_hint_getter(comp, hint, c(main = "loader_mandatory"))
 
   # shidashi::register_input calls .register_input
   # which exists when presets_loader_project() is called, not when ui_func is called
@@ -27,6 +28,7 @@ presets_loader_project <- function(
       update = "shiny::updateSelectInput(value=selected)",
       description = "RAVE project name to load data from.",
       env = parse_env,
+      hint = hint_of(),
       quoted = TRUE
     )
   }
